@@ -1,0 +1,4661 @@
+--------------------------------------------------------------------------------
+title: TRTC SDK TXAudioEffectManager 音效管理 (Android/iOS/C++)
+description: 核心方法：startPlayMusic、stopPlayMusic、setVoiceChangerType、setVoiceReverbType。用于背景音乐、变声、混响控制。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/audio-effect-api.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 C++ 接口为基准。Android (TXAudioEffectManager)、iOS (TXAudioEffectManager)、C++ (ITXAudioEffectManager) 的接口名称和参数语义完全一致，仅函数签名格式不同。
+> - Android: Java 风格（如 `enterRoom(TRTCParams param, int scene)`）
+> - iOS: ObjC 风格（如 `enterRoom:appScene:`）
+> - C++: 标准 C++ 风格（如 `enterRoom(const TRTCParams& params, TRTCAppScene scene)`）
+
+# 腾讯云实时音视频(TRTC SDK) TXAudioEffectManager 音效管理 文档
+
+## 概述
+本文档是 实时音视频(TRTC SDK) TXAudioEffectManager 音效管理 的跨平台 API 参考，适用于 Android/iOS/C++ 平台。
+
+## TXAudioEffectManager
+## ITXMusicPlayObserver
+> **适用平台：** C++
+
+## 结构体类型
+
+## 枚举类型
+
+## onLoadProgress
+> **适用平台：** Android, C++
+
+#### 背景音乐预加载进度
+
+## onLoadError
+> **适用平台：** Android, C++
+
+#### 背景音乐预加载出错
+| 参数 | 描述 |
+| --- | --- |
+| errorCode | -4001:打开文件失败，如音频数据无效，FFMPEG 协议未找到等；-4002:解码失败，如音频文件损坏，网络音频文件服务器无法访问等；-4003:预加载数量超上限，请先调用 stopPlayMusic 释放无用的预加载；-4005:非法路径导致打开文件失败，请检查您传入的路径参数是否指向一个合法的音乐文件；-4006:非法URL导致打开文件失败，请用浏览器检查您传入的 URL 地址是否可以下载到期望的音乐文件；-4007:无音频流导致打开文件失败，请确认您传入的文件是否是合法的音频文件，以及文件是否被损坏；-4008:格式不支持导致打开文件失败，请确认您传入的文件格式是否是支持的文件格式，移动端支持【mp3，aac，m4a，wav，ogg，mp4，mkv】，桌面端支持 【mp3，aac，m4a，wav，mp4，mkv】。 |
+
+## onStart
+> **适用平台：** Android, C++
+
+#### 背景音乐开始播放
+
+在背景音乐开始播放成功或者失败时调用。
+| 参数 | 描述 |
+| --- | --- |
+| errCode | 错误码。0: 开始播放成功；-4001:打开文件失败，如音频数据无效，FFMPEG 协议未找到等；-4005:非法路径导致打开文件失败，请检查您传入的路径参数是否指向一个合法的音乐文件；-4006:非法URL导致打开文件失败，请用浏览器检查您传入的 URL 地址是否可以下载到期望的音乐文件，如果操作系统为 iOS 或 MacOS 请确保使用 https 链接；-4007:无音频流导致打开文件失败，请确认您传入的文件是否是合法的音频文件，以及文件是否被损坏；-4008:格式不支持导致打开文件失败，请确认您传入的文件格式是否是支持的文件格式，移动端支持【mp3，aac，m4a，wav，ogg，mp4，mkv】，桌面端支持 【mp3，aac，m4a，wav，mp4，mkv】；-4009:同时播放 bgm 数量超过限定值，如当前同时播放 bgm 数量超过 10 后提示该错误，请检查并发播放 bgm 数量。 |
+| id | 音乐 ID。 |
+
+## onPlayProgress
+> **适用平台：** Android, C++
+
+#### 背景音乐的播放进度
+
+## onComplete
+> **适用平台：** Android, C++
+
+#### 背景音乐已经播放完毕
+
+在背景音乐播放完毕或播放错误时调用。
+| 参数 | 描述 |
+| --- | --- |
+| errCode | 错误码。0: 播放结束；-4002: 解码失败，如音频文件损坏，网络音频文件服务器无法访问等。 |
+| id | 音乐 ID。 |
+
+## enableVoiceEarMonitor
+
+#### 开启耳返
+主播开启耳返后，可以在耳机里听到麦克风采集到的自己发出的声音，该特效适用于主播唱歌的应用场景中。
+需要您注意的是，由于蓝牙耳机的硬件延迟非常高，所以在主播佩戴蓝牙耳机时无法开启此特效，请尽量在用户界面上提示主播佩戴有线耳机。
+同时也需要注意，并非所有的手机开启此特效后都能达到优秀的耳返效果，我们已经对部分耳返效果不佳的手机屏蔽了该特效。目前 12.2 及其以上的版本针对硬件耳返的支持扩展到了荣耀、OPPO/一加、小米/红米等主流的机型。
+全新的耳返效果可以在 [Demo 体验](https://cloud.tencent.com/document/product/647/17021) 中的 KTV 合唱场景来体验。
+**OPPO**
+在 12.6 及其以上的版本，使用 OPPO 硬件耳返的客户需要在 [OPPO 开放平台](https://open.oppomobile.com/new/developmentDoc/info?id=10889) 中申请开通耳返的授权码，将自己应用的授权码配置到 ` AndroidManifest.xml ` 中。
+这个文档中其他的配置如 ` 环境准备中 ` 的 ` build.gradle ` 配置、` 修改 Module 的 build.gradle 文件 `中的 ` build.gradle `修改 以及 ` 权限添加 ` 都不需要配置。配置完成后，此时打开耳返时会弹出悬浮球，关闭耳返后悬浮球消失，耳返的音量以及音效可以通过悬浮球来调节。
+否则在打开耳返时会因为服务鉴权失败而自动切换为软件耳返。
+**荣耀**
+在 12.2 及其以上的版本，使用荣耀硬件耳返的客户需要在 ` AndroidManifest.xml ` 中配置如下字段。
+否则在打开耳返的时候会偶现耳返无声现象，可能需要用户重新开关下硬件耳返才能正常听到耳返的声音。
+**VIVO**
+部分 VIVO 手机在使用 USB 数字耳机的时候，会出现硬件耳返无声的问题，这里可以将耳机更换为 3.5mm 的圆孔耳机来进行体验，目前 VIVO 厂商没有对 USB 的耳机全部适配，建议首选 VIVO 品牌的耳机进行 K 歌体验。
+| 参数 | 描述 |
+| --- | --- |
+| enable | true：开启；false：关闭。 |
+
+> **注意**
+> 仅在主播佩戴耳机时才能开启此特效，同时请您提示主播佩戴有线耳机。
+
+**代码示例：**
+
+**Android：**
+``` java
+<meta-data
+    android:name="com.coloros.ocs.media.AUTH_CODE"
+    android:value="请替换为自身授权码" />
+```
+``` java
+<meta-data
+    android:name="com.hihonor.hcs.client.appid"
+    android:value="请替换为自身的 appid" />
+```
+
+## setVoiceEarMonitorVolume
+
+#### 设置耳返音量。
+
+通过该接口您可以设置耳返特效中声音的音量大小。
+| 参数 | 描述 |
+| --- | --- |
+| volume | 音量大小，取值范围为 [0, 150]，默认值：100。 |
+
+> **注意**
+> 耳返的音量大小是影响用户耳返体验的重要因素之一，考虑到不同用户对音量的敏感度不同，强烈建议您在 UI 界面上开放耳返音量的调节滑杆，调节范围建议在 0~150 之间，其中 100~150 的增益效果对于部分采集音量较小的 Android 手机很有帮助。
+## setVoiceReverbType
+
+#### 设置人声的混响效果。
+通过该接口您可以设置人声的混响效果，具体特效请参见枚举定义 TXVoiceReverbType。
+
+> **注意**
+> 设置的效果在退出房间后会自动失效，如果下次进房还需要对应特效，需要调用此接口再次进行设置。
+
+## setVoiceChangerType
+
+#### 设置人声的变声特效。
+通过该接口您可以设置人声的变声特效，具体特效请参见枚举定义 TXVoiceChangeType。
+> **注意**
+> 设置的效果在退出房间后会自动失效，如果下次进房还需要对应特效，需要调用此接口再次进行设置。
+
+## setVoiceCaptureVolume
+> **适用平台：** Android, C++
+
+#### 设置语音音量。
+该接口可以设置语音音量的大小，一般配合音乐音量的设置接口 setAllMusicVolume 协同使用，用于调谐语音和音乐在混音前各自的音量占比。
+| 参数 | 描述 |
+| --- | --- |
+| volume | 音量大小，取值范围为 [0 - 150]，默认值：100。 |
+> **注意**
+> 如果将 volume 设置成 100 之后感觉音量还是太小，可以将 volume 最大设置成 150，但超过 100 的 volume 会有爆音的风险，请谨慎操作。
+
+## setVoicePitch
+
+#### 设置语音音调。
+
+该接口可以设置语音音调，用于实现变调不变速的目的。
+| 参数 | 描述 |
+| --- | --- |
+| pitch | 音调，取值范围[-1.0f, 1.0f]，默认值：0.0f。 |
+
+## setMusicObserver
+> **适用平台：** Android, C++
+
+#### 设置背景音乐的事件回调接口。
+请在播放背景音乐之前使用该接口设置播放事件回调，以便感知背景音乐的播放进度。
+| 参数 | 描述 |
+| --- | --- |
+| musicId | 音乐 ID。 |
+| observer | 具体参考 TXMusicPlayObserver 中定义接口。 |
+> **注意**
+> 1. 如果该 ID 不需要使用，observer 可设置为 NULL 彻底释放。
+
+## startPlayMusic
+
+#### 开始播放背景音乐。
+每个音乐都需要您指定具体的 ID，您可以通过该 ID 对音乐的开始、停止、音量等进行设置。
+| 参数 | 描述 |
+| --- | --- |
+| completeBlock | 播放结束回调。 |
+| musicParam | 音乐参数。 |
+| progressBlock | 播放进度回调。 |
+| startBlock | 播放开始回调。 |
+> **注意**
+> 1. 如果要多次播放同一首背景音乐，请不要每次播放都分配一个新的 ID，我们推荐使用相同的 ID。
+> 2. 若您希望同时播放多首不同的音乐，请为不同的音乐分配不同的 ID 进行播放。
+> 3. 如果使用同一个 ID 播放不同音乐，SDK 会先停止播放旧的音乐，再播放新的音乐。
+
+## stopPlayMusic
+
+#### 停止播放背景音乐。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+
+## pausePlayMusic
+
+#### 暂停播放背景音乐。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+
+## resumePlayMusic
+
+#### 恢复播放背景音乐。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+
+## setAllMusicVolume
+
+#### 设置所有背景音乐的本地音量和远端音量的大小。
+
+该接口可以设置所有背景音乐的本地音量和远端音量。
+-  本地音量：即主播本地可以听到的背景音乐的音量大小。
+
+-  远端音量：即观众端可以听到的背景音乐的音量大小。
+
+| 参数 | 描述 |
+| --- | --- |
+| volume | 音量大小，取值范围为 [0, 150]，默认值：60。 |
+
+> **注意**
+> 如果将 volume 设置成 100 之后感觉音量还是太小，可以将 volume 最大设置成 150，但超过 100 的 volume 会有爆音的风险，请谨慎操作。
+## setMusicPublishVolume
+
+#### 设置某一首背景音乐的远端音量的大小。
+
+该接口可以细粒度地控制每一首背景音乐的远端音量，也就是观众端可听到的背景音乐的音量大小。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+| volume | 音量大小，取值范围为 [0, 150]；默认值：60。 |
+
+> **注意**
+> 如果将 volume 设置成 100 之后感觉音量还是太小，可以将 volume 最大设置成 150，但超过 100 的 volume 会有爆音的风险，请谨慎操作。
+## setMusicPlayoutVolume
+
+#### 设置某一首背景音乐的本地音量的大小。
+
+该接口可以细粒度地控制每一首背景音乐的本地音量，也就是主播本地可以听到的背景音乐的音量大小。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+| volume | 音量大小，取值范围为 [0, 150]，默认值：60。 |
+
+> **注意**
+> 如果将 volume 设置成 100 之后感觉音量还是太小，可以将 volume 最大设置成 150，但超过 100 的 volume 会有爆音的风险，请谨慎操作。
+## setMusicPitch
+
+#### 调整背景音乐的音调高低。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+| pitch | 音调，取值范围为 [-1.0f, 1.0f] 之间的浮点数，默认值：0.0f。 |
+
+## setMusicSpeedRate
+
+#### 调整背景音乐的变速效果。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+| speedRate | 速度，取值范围为 [0.5f, 2.0f] 之间的浮点数，默认值：1.0f。 |
+
+## getMusicCurrentPosInMS
+
+#### 获取背景音乐的播放进度（单位：毫秒）。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+
+#### 返回值说明：
+
+成功返回当前播放时间，单位：毫秒，失败返回 -1。
+
+## getMusicDurationInMS
+
+#### 获取背景音乐的总时长（单位：毫秒）。
+| 参数 | 描述 |
+| --- | --- |
+| path | 音乐文件路径。 |
+
+#### 返回值说明：
+
+成功返回时长，失败返回 -1。
+
+## seekMusicToPosInTime
+> **适用平台：** C++
+
+#### 设置背景音乐的播放进度（单位：毫秒）。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+| pts | 单位: 毫秒。 |
+
+> **注意**
+> 请尽量避免过度频繁地调用该接口，因为该接口可能会再次读写音乐文件，耗时稍高。
+> 因此，当用户拖拽音乐的播放进度条时，请在用户完成拖拽操作后再调用本接口。
+> 因为 UI 上的进度条控件往往会以很高的频率反馈用户的拖拽进度，如不做频率限制，会导致较差的用户体验。
+>
+
+## setMusicScratchSpeedRate
+
+#### 调整搓碟的变速效果。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+| scratchSpeedRate | 搓碟速度，取值范围为 [-12.0, 12.0] 之间的浮点数，默认值是 1.0f，速度值正/负表示方向正/反，绝对值大小表示速度快慢。 |
+
+> **注意**
+> 前置条件 preloadMusic 成功。
+## setPreloadObserver
+> **适用平台：** Android, C++
+
+#### 设置预加载事件回调。
+请在预加载背景音乐之前使用该接口设置回调，以便感知背景音乐的预加载进度。
+| 参数 | 描述 |
+| --- | --- |
+| observer | 具体参考 TXMusicPreloadObserver 中定义接口。 |
+
+## preloadMusic
+
+#### 预加载背景音乐。
+每个音乐都需要您指定具体的 ID，您可以通过该 ID 对音乐的开始、停止、音量等进行设置。
+| 参数 | 描述 |
+| --- | --- |
+| preloadParam | 预加载音乐参数。 |
+
+> **注意**
+> 1. 预先加载最多同时支持2个不同 ID 的预加载，且预加载时长不超过10分钟，使用完需调用 stopPlayMusic，否则内存不释放。
+> 2. 若该ID对应的音乐正在播放中，预加载会失败，需先调用 stopPlayMusic。
+> 3. 当 ` musicParam ` 和传入 startPlayMusic 的 ` musicParam ` 完全相同时，预加载有效。
+
+## getMusicTrackCount
+
+#### 获取背景音乐的音轨数量。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+
+## setMusicTrack
+
+#### 指定背景音乐的播放音轨。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+| index | 默认播放第一个音轨。取值范围0, 音轨总数)。 |
+
+> **注意**
+> 音轨总数量可通过 getMusicTrackCount 接口获取。
+## TXVoiceReverbType
+
+#### 混响特效
+混响特效可以作用于人声之上，通过声学算法对声音进行叠加处理，模拟出各种不同环境下的临场感受，目前支持如下几种混响效果：
+0：关闭；1：KTV；2：小房间；3：大会堂；4：低沉；5：洪亮；6：金属声；7：磁性；8：空灵；9：录音棚；10：悠扬 11：录音棚2。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TXLiveVoiceReverbType_0 | 0 | 关闭特效 |
+| TXLiveVoiceReverbType_1 | 1 | KTV |
+| TXLiveVoiceReverbType_2 | 2 | 小房间 |
+| TXLiveVoiceReverbType_3 | 3 | 大会堂 |
+| TXLiveVoiceReverbType_4 | 4 | 低沉 |
+| TXLiveVoiceReverbType_5 | 5 | 洪亮 |
+| TXLiveVoiceReverbType_6 | 6 | 金属声 |
+| TXLiveVoiceReverbType_7 | 7 | 磁性 |
+| TXLiveVoiceReverbType_8 | 8 | 空灵 |
+| TXLiveVoiceReverbType_9 | 9 | 录音棚 |
+| TXLiveVoiceReverbType_10 | 10 | 悠扬 |
+| TXLiveVoiceReverbType_11 | 11 | 录音棚2 |
+
+## TXVoiceChangeType
+
+#### 变声特效
+变声特效可以作用于人声之上，通过声学算法对人声进行二次处理，以获得与原始声音所不同的音色，目前支持如下几种变声特效：
+0：关闭；1：熊孩子；2：萝莉；3：大叔；4：重金属；5：感冒；6：外语腔；7：困兽；8：肥宅；9：强电流；10：重机械；11：空灵；12：猪八戒；13：绿巨人。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TXLiveVoiceChangerType_0 | 0 | 关闭 |
+| TXLiveVoiceChangerType_1 | 1 | 熊孩子 |
+| TXLiveVoiceChangerType_2 | 2 | 萝莉 |
+| TXLiveVoiceChangerType_3 | 3 | 大叔 |
+| TXLiveVoiceChangerType_4 | 4 | 重金属 |
+| TXLiveVoiceChangerType_5 | 5 | 感冒 |
+| TXLiveVoiceChangerType_6 | 6 | 外语腔 |
+| TXLiveVoiceChangerType_7 | 7 | 困兽 |
+| TXLiveVoiceChangerType_8 | 8 | 肥宅 |
+| TXLiveVoiceChangerType_9 | 9 | 强电流 |
+| TXLiveVoiceChangerType_10 | 10 | 重机械 |
+| TXLiveVoiceChangerType_11 | 11 | 空灵 |
+| TXLiveVoiceChangerType_12 | 12 | 猪八戒 |
+| TXLiveVoiceChangerType_13 | 13 | 绿巨人 |
+
+## TXAudioMusicParam
+
+#### 背景音乐的播放控制信息
+该信息用于在接口 [startPlayMusic 中指定背景音乐的相关信息，包括播放 ID、文件路径和循环次数等：
+1. 如果要多次播放同一首背景音乐，请不要每次播放都分配一个新的 ID，我们推荐使用相同的 ID。
+2. 若您希望同时播放多首不同的音乐，请为不同的音乐分配不同的 ID 进行播放。
+3. 如果使用同一个 ID 播放不同音乐，SDK 会先停止播放旧的音乐，再播放新的音乐。
+| 枚举类型 | 描述 |
+| --- | --- |
+| endTimeMS | 【字段含义】音乐结束播放时间点，单位毫秒，0表示播放至文件结尾。 |
+| id | 【字段含义】音乐 ID。 【特殊说明】SDK 允许播放多路音乐，因此需要使用 ID 进行标记，用于控制音乐的开始、停止、音量等。 |
+| isShortFile | 【字段含义】播放的是否为短音乐文件。 【推荐取值】true：需要重复播放的短音乐文件；false：正常的音乐文件。默认值：false。 |
+| loopCount | 【字段含义】音乐循环播放的次数。 【推荐取值】取值范围为 [0, 任意正整数]，默认值：0。0 表示播放音乐一次；1 表示播放音乐两次；以此类推。 |
+| path | 【字段含义】音效文件的完整路径或 URL 地址。支持的音频格式包括 MP3、AAC、M4A、WAV。 |
+| publish | 【字段含义】是否将音乐传到远端。 【推荐取值】true：音乐在本地播放的同时，远端用户也能听到该音乐；false：主播只能在本地听到该音乐，远端观众听不到。默认值：false。 |
+| startTimeMS | 【字段含义】音乐开始播放时间点，单位：毫秒。 |
+
+## TXMusicPreloadObserver
+> **适用平台：** Android
+
+## TXMusicPlayObserver
+> **适用平台：** Android
+
+## seekMusicToPosInMS
+> **适用平台：** Android, iOS
+
+#### 设置背景音乐的播放进度（单位：毫秒）。
+| 参数 | 描述 |
+| --- | --- |
+| id | 音乐 ID。 |
+| pts | 单位: 毫秒。 |
+
+> **注意**
+> 请尽量避免过度频繁地调用该接口，因为该接口可能会再次读写音乐文件，耗时稍高。
+> 因此，当用户拖拽音乐的播放进度条时，请在用户完成拖拽操作后再调用本接口。
+> 因为 UI 上的进度条控件往往会以很高的频率反馈用户的拖拽进度，如不做频率限制，会导致较差的用户体验。
+>
+
+## setVoiceVolume
+> **适用平台：** iOS
+
+#### 设置语音音量。
+
+该接口可以设置语音音量的大小，一般配合音乐音量的设置接口 setAllMusicVolume 协同使用，用于调谐语音和音乐在混音前各自的音量占比。
+| 参数 | 描述 |
+| --- | --- |
+| volume | 音量大小，取值范围为 [0 - 150]，默认值：100。 |
+
+> **注意**
+> 如果将 volume 设置成 100 之后感觉音量还是太小，可以将 volume 最大设置成 150，但超过 100 的 volume 会有爆音的风险，请谨慎操作。
+
+--------------------------------------------------------------------------------
+title: TRTC SDK TXBeautyManager 美颜管理 (Android/iOS)
+description: 核心方法：setBeautyStyle、setBeautyLevel、setWhitenessLevel、setRuddyLevel。用于磨皮、美白、红润调节。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/beauty-filter-api.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 C++ 接口为基准。Android (TXBeautyManager)、iOS (TXBeautyManager) 的接口名称和参数语义完全一致，仅函数签名格式不同。
+
+# 腾讯云实时音视频(TRTC SDK) TXBeautyManager 美颜管理 文档
+
+## 概述
+本文档是 实时音视频(TRTC SDK) TXBeautyManager 美颜管理 的跨平台 API 参考，适用于 Android/iOS 平台。
+
+## TXBeautyManager
+## setBeautyStyle
+
+#### 设置美颜（磨皮）算法。
+
+TRTC 内置多种不同的磨皮算法，您可以选择最适合您产品定位的方案：
+| 参数 | 描述 |
+| --- | --- |
+| beautyStyle | 美颜风格，TXBeautyStyleSmooth：光滑；TXBeautyStyleNature：自然；TXBeautyStylePitu：优图。 |
+
+## setBeautyLevel
+
+#### 设置美颜级别。
+| 参数 | 描述 |
+| --- | --- |
+| beautyLevel | 美颜级别，取值范围 [0, 9]； 0 表示关闭，9 表示效果最明显。 |
+
+## setWhitenessLevel
+
+#### 设置美白级别。
+| 参数 | 描述 |
+| --- | --- |
+| whitenessLevel | 美白级别，取值范围 [0, 9]；0 表示关闭，9 表示效果最明显。 |
+
+## enableSharpnessEnhancement
+
+#### 开启清晰度增强。
+
+## setRuddyLevel
+
+#### 设置红润级别。
+| 参数 | 描述 |
+| --- | --- |
+| ruddyLevel | 红润级别，取值范围 [0, 9]；0 表示关闭，9 表示效果最明显。 |
+
+## setFilter
+
+#### 设置色彩滤镜效果。
+
+色彩滤镜，是一张包含色彩映射关系的颜色查找表图片，您可以在我们提供的官方 Demo 中找到预先准备好的几张滤镜图片。
+
+SDK 会根据该查找表中的映射关系，对摄像头采集出的原始视频画面进行二次处理，以达到预期的滤镜效果。
+| 参数 | 描述 |
+| --- | --- |
+| image | 包含色彩映射关系的颜色查找表图片，必须是 png 格式。 |
+
+## setFilterStrength
+
+#### 设置色彩滤镜的强度。
+
+该数值越高，色彩滤镜的作用强度越明显，经过滤镜处理后的视频画面跟原画面的颜色差异越大。
+
+我默认的滤镜浓度是 0.5，如果您觉得默认的滤镜效果不明显，可以设置为 0.5 以上的数字，最大值为 1。
+| 参数 | 描述 |
+| --- | --- |
+| strength | 取值范围 [0, 1]，数值越大滤镜效果越明显，默认值为 0.5。 |
+
+## setGreenScreenFile
+
+#### 设置绿幕背景视频。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。此接口所开启的绿幕功能不具备智能去除背景的能力，需要被拍摄者的背后有一块绿色的幕布来辅助产生特效。
+| 参数 | 描述 |
+| --- | --- |
+| path | MP4格式的视频文件路径; 设置空值表示关闭特效。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setEyeScaleLevel
+
+#### 设置大眼级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| eyeScaleLevel | 大眼级别，取值范围 [0, 9]；0 表示关闭，9 表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setFaceSlimLevel
+
+#### 设置瘦脸级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| faceSlimLevel | 瘦脸级别，取值范围 [0, 9]；0 表示关闭，9 表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setFaceVLevel
+
+#### 设置 V 脸级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| faceVLevel | V 脸级别，取值范围 [0, 9]；0 表示关闭，9 表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setChinLevel
+
+#### 设置下巴拉伸或收缩。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| chinLevel | 下巴拉伸或收缩级别，取值范围 [-9, 9]；0 表示关闭，小于 0 表示收缩，大于 0 表示拉伸。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setFaceShortLevel
+
+#### 设置短脸级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| faceShortLevel | 短脸级别，取值范围 [0, 9]；0 表示关闭，9 表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setFaceNarrowLevel
+
+#### 设置窄脸级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| level | 窄脸级别，取值范围 [0, 9]；0 表示关闭，9 表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setNoseSlimLevel
+
+#### 设置瘦鼻级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| noseSlimLevel | 瘦鼻级别，取值范围 [0, 9]；0 表示关闭，9 表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setEyeLightenLevel
+
+#### 设置亮眼级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| eyeLightenLevel | 亮眼级别，取值范围 [0, 9]；0 表示关闭，9 表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setToothWhitenLevel
+
+#### 设置牙齿美白级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| toothWhitenLevel | 白牙级别，取值范围 [0, 9]；0表示关闭，9 表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setWrinkleRemoveLevel
+
+#### 设置祛皱级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| wrinkleRemoveLevel | 祛皱级别，取值范围 [0, 9]；0 表示关闭，9 表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setPounchRemoveLevel
+
+#### 设置祛眼袋级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| pounchRemoveLevel | 祛眼袋级别，取值范围 [0, 9]；0 表示关闭，9 表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setSmileLinesRemoveLevel
+
+#### 设置法令纹去除级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| smileLinesRemoveLevel | 法令纹级别，取值范围 [0, 9]；0表示关闭，9 表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setForeheadLevel
+
+#### 设置发际线调整级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| foreheadLevel | 发际线级别，取值范围 [-9, 9]；0表示关闭，9表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setEyeDistanceLevel
+
+#### 设置眼距。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| eyeDistanceLevel | 眼距级别，取值范围 -9 - 9；0 表示关闭，小于 0 表示拉伸，大于 0 表示收缩。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setEyeAngleLevel
+
+#### 设置眼角调整级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| eyeAngleLevel | 眼角调整级别，取值范围 [-9, 9]；0表示关闭，9表示效果最明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setMouthShapeLevel
+
+#### 设置嘴型调整级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| mouthShapeLevel | 嘴型级别，取值范围 [-9, 9]；0 表示关闭，小于 0 表示拉伸，大于 0 表示收缩。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setNoseWingLevel
+
+#### 设置鼻翼调整级别。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| noseWingLevel | 鼻翼调整级别，取值范围 [-9, 9]；0 表示关闭，小于 0 表示拉伸，大于 0 表示收缩。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setNosePositionLevel
+
+#### 设置鼻子位置。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| nosePositionLevel | 鼻子位置级别，取值范围 [-9, 9]；0 表示关闭，小于 0 表示抬高，大于 0 表示降低。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setLipsThicknessLevel
+
+#### 设置嘴唇厚度。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| lipsThicknessLevel | 嘴唇厚度级别，取值范围 [-9, 9]；0 表示关闭，小于 0 表示拉伸，大于 0 表示收缩。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setFaceBeautyLevel
+
+#### 设置脸型。
+
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| faceBeautyLevel | 美型级别，取值范围 [0, 9]；0 表示关闭，1 - 9 值越大，效果越明显。 |
+
+#### 返回值说明：
+
+0：成功；-5：当前 License 对应 feature 不支持。
+
+## setMotionTmpl
+
+#### 选择 AI 动效挂件。
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+| 参数 | 描述 |
+| --- | --- |
+| tmplDir | 动效素材文件所在目录。 |
+| tmplName | 动效挂件名称。 |
+
+## setMotionMute
+
+#### 是否在动效素材播放时静音。
+该接口仅在 企业版 SDK（旧版已下线，新版本SDK如需使用高级美颜功能请参见[腾讯美颜特效SDK](https://cloud.tencent.com/document/product/647/68504)）中生效。
+有些挂件本身会有声音特效，通过此 API 可以关闭这些特效播放时所带的声音效果。
+| 参数 | 描述 |
+| --- | --- |
+| motionMute | true：静音；false：不静音。 |
+
+## TXBeautyStyle
+
+#### 美颜（磨皮）算法。
+
+TRTC 内置多种不同的磨皮算法，您可以选择最适合您产品定位的方案。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TXBeautyStyleSmooth | 0 | 光滑，算法比较激进，磨皮效果比较明显，适用于秀场直播。 |
+| TXBeautyStyleNature | 1 | 自然，算法更多地保留了面部细节，磨皮效果更加自然，适用于绝大多数直播场景。 |
+| TXBeautyStylePitu | 2 | 优图，由优图实验室提供，磨皮效果介于光滑和自然之间，比光滑保留更多皮肤细节，比自然磨皮程度更高。 |
+
+--------------------------------------------------------------------------------
+title: TRTC SDK TXDeviceManager 设备管理 (Android/iOS/C++)
+description: 核心方法：switchCamera、setSystemVolumeType、设备枚举与切换。用于摄像头、音频设备和音量类型控制。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/device-manager-api.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 C++ 接口为基准。Android (TXDeviceManager)、iOS (TXDeviceManager)、C++ (ITXDeviceManager) 的接口名称和参数语义完全一致，仅函数签名格式不同。
+> - Android: Java 风格（如 `enterRoom(TRTCParams param, int scene)`）
+> - iOS: ObjC 风格（如 `enterRoom:appScene:`）
+> - C++: 标准 C++ 风格（如 `enterRoom(const TRTCParams& params, TRTCAppScene scene)`）
+
+# 腾讯云实时音视频(TRTC SDK) TXDeviceManager 设备管理 文档
+
+## 概述
+本文档是 实时音视频(TRTC SDK) TXDeviceManager 设备管理 的跨平台 API 参考，适用于 Android/iOS/C++ 平台。
+
+## TXDeviceManager
+
+## 枚举类型
+
+## isFrontCamera
+
+#### 判断当前是否为前置摄像头（仅适用于移动端）。
+
+## switchCamera
+
+#### 切换前置或后置摄像头（仅适用于移动端）。
+
+## getCameraZoomMaxRatio
+
+#### 获取摄像头的最大缩放倍数（仅适用于移动端）。
+
+## setCameraZoomRatio
+
+#### 设置摄像头的缩放倍数（仅适用于移动端）。
+| 参数 | 描述 |
+| --- | --- |
+| zoomRatio | 取值范围 [1, 5]，取值为1表示最远视角（正常镜头），取值为5表示最近视角（放大镜头）。最大值推荐为5，若超过5，视频数据会变得模糊不清。 |
+
+## isAutoFocusEnabled
+
+#### 查询是否支持自动识别人脸位置（仅适用于移动端）。
+
+## enableCameraAutoFocus
+
+#### 开启自动对焦功能（仅适用于移动端）。
+
+开启后，SDK 会自动检测画面中的人脸位置，并将摄像头的焦点始终对焦在人脸位置上。
+
+## setCameraFocusPosition
+
+#### 设置摄像头的对焦位置（仅适用于移动端）。
+您可以通过该接口实现如下交互：
+1. 在本地摄像头的预览画面上，允许用户单击操作。
+2. 在用户的单击位置显示一个矩形方框，以示摄像头会在此处对焦。
+3. 随后将用户点击位置的坐标通过本接口传递给 SDK，之后 SDK 会操控摄像头按照用户期望的位置进行对焦。
+| 参数 | 描述 |
+| --- | --- |
+| position | 对焦位置，请传入期望对焦点的坐标值 |
+#### 返回值说明：
+0：操作成功；负数：操作失败。
+
+> **注意**
+> 使用该接口的前提是先通过 enableCameraAutoFocus 关闭自动对焦功能。
+
+## enableCameraTorch
+
+#### 开启/关闭闪光灯，也就是手电筒模式（仅适用于移动端）。
+
+## setAudioRoute
+
+#### 设置音频路由（仅适用于移动端）。
+
+手机有两个音频播放设备：一个是位于手机顶部的听筒，一个是位于手机底部的立体声扬声器。
+
+设置音频路由为听筒时，声音比较小，只有将耳朵凑近才能听清楚，隐私性较好，适合用于接听电话。
+
+设置音频路由为扬声器时，声音比较大，不用将手机贴脸也能听清，因此可以实现“免提”的功能。
+
+## getDevicesList
+> **适用平台：** iOS, C++
+
+#### 获取设备列表（仅适用于桌面端）。
+| 参数 | 描述 |
+| --- | --- |
+| type | 设备类型，指定需要获取哪种设备的列表。详见 TXMediaDeviceType 定义。 |
+
+> **注意**
+> -  使用完毕后请调用 release 方法释放资源，这样可以让 SDK 维护 ITXDeviceCollection 对象的生命周期。
+> -  不要使用 delete 释放返回的 Collection 对象，` delete ITXDeviceCollection* ` 指针会导致异常崩溃。
+> -  type 只支持 ` TXMediaDeviceTypeMic `、` TXMediaDeviceTypeSpeaker `、` TXMediaDeviceTypeCamera `。
+> -  此接口只支持 Mac 和 Windows 平台。
+
+## setCurrentDevice
+> **适用平台：** iOS, C++
+
+#### 设置当前要使用的设备（仅适用于桌面端）。
+| 参数 | 描述 |
+| --- | --- |
+| deviceId | 设备ID，您可以通过接口 getDevicesList 获得设备 ID。 |
+| type | 设备类型，详见 TXMediaDeviceType 定义。 |
+#### 返回值说明：
+0：操作成功；负数：操作失败。
+
+## getCurrentDevice
+> **适用平台：** iOS, C++
+
+#### 获取当前正在使用的设备（仅适用于桌面端）。
+
+## setCurrentDeviceVolume
+> **适用平台：** iOS, C++
+
+#### 设置当前设备的音量（仅适用于桌面端）。
+
+这里的音量指的是麦克风的采集音量或者扬声器的播放音量，摄像头是不支持设置音量的。
+| 参数 | 描述 |
+| --- | --- |
+| volume | 音量大小，取值范围为 [0, 100]，默认值：100。 |
+
+## getCurrentDeviceVolume
+> **适用平台：** iOS, C++
+
+#### 获取当前设备的音量（仅适用于桌面端）。
+
+这里的音量指的是麦克风的采集音量或者扬声器的播放音量，摄像头是不支持获取音量的。
+
+## setCurrentDeviceMute
+> **适用平台：** iOS, C++
+
+#### 设置当前设备的静音状态（仅适用于桌面端）。
+
+这里的音量指的是麦克风和扬声器，摄像头是不支持静音操作的。
+
+## getCurrentDeviceMute
+> **适用平台：** iOS, C++
+
+#### 获取当前设备的静音状态（仅适用于桌面端）。
+
+这里的音量指的是麦克风和扬声器，摄像头是不支持静音操作的。
+
+## enableFollowingDefaultAudioDevice
+> **适用平台：** iOS, C++
+
+#### 设置 SDK 使用的音频设备根据跟随系统默认设备（仅适用于桌面端）。
+仅支持设置麦克风和扬声器类型，摄像头暂不支持跟随系统默认设备
+| 参数 | 描述 |
+| --- | --- |
+| enable | 是否跟随系统默认的音频设备。 -  true：跟随。当系统默认音频设备发生改变或者有新音频设备插入时，SDK 立即切换音频设备。 -  false：不跟随。当系统默认音频设备发生改变或者有新音频设备插入时，SDK 不会切换音频设备。 |
+| type | 设备类型，详见 TXMediaDeviceType 定义。 |
+
+## startCameraDeviceTest
+> **适用平台：** iOS, C++
+
+#### 开始摄像头测试（仅适用于桌面端）。
+该接口支持自定义渲染，即您可以通过接 ITRTCVideoRenderCallback 回调接口接管摄像头的渲染画面。
+
+> **注意**
+> 在测试过程中可以使用 setCurrentDevice 接口切换摄像头。
+
+## stopCameraDeviceTest
+> **适用平台：** iOS, C++
+
+#### 结束摄像头测试（仅适用于桌面端）。
+
+## startMicDeviceTest
+> **适用平台：** iOS, C++
+
+#### 开始麦克风测试（仅适用于桌面端）。
+该接口可以测试麦克风是否能正常工作，测试到的麦克风采集音量的大小，会以回调的形式通知给您，其中 volume 的取值范围为 [0, 100]。
+| 参数 | 描述 |
+| --- | --- |
+| interval | 麦克风音量的回调间隔。 |
+| playback | 是否开启回播麦克风声音，开启后用户测试麦克风时会听到自己的声音。 |
+
+> **注意**
+> 该接口调用后默认会回播麦克风录制到的声音到扬声器中。
+
+## stopMicDeviceTest
+> **适用平台：** iOS, C++
+
+#### 结束麦克风测试（仅适用于桌面端）。
+
+## startSpeakerDeviceTest
+> **适用平台：** iOS, C++
+
+#### 开始扬声器测试（仅适用于桌面端）。
+
+该接口通过播放指定的音频文件，用于测试播放设备是否能正常工作。如果用户在测试时能听到声音，说明播放设备能正常工作。
+| 参数 | 描述 |
+| --- | --- |
+| filePath | 声音文件的路径 |
+
+## stopSpeakerDeviceTest
+> **适用平台：** iOS, C++
+
+#### 结束扬声器测试（仅适用于桌面端）。
+
+## setApplicationPlayVolume
+> **适用平台：** C++
+
+#### 设置 Windows 系统音量合成器中当前进程的音量（仅适用于 Windows 系统）。
+
+## getApplicationPlayVolume
+> **适用平台：** C++
+
+#### 获取 Windows 系统音量合成器中当前进程的音量（仅适用于 Windows 系统）。
+
+## setApplicationMuteState
+> **适用平台：** C++
+
+#### 设置 Windows 系统音量合成器中当前进程的静音状态（仅适用于 Windows 系统）。
+
+## getApplicationMuteState
+> **适用平台：** C++
+
+#### 获取 Windows 系统音量合成器中当前进程的静音状态（仅适用于 Windows 系统）。
+
+## setCameraCapturerParam
+
+#### 设置摄像头采集偏好。
+
+## setDeviceObserver
+> **适用平台：** C++
+
+#### 设置 onDeviceChanged 事件回调。
+
+## setSystemVolumeType
+
+#### 设置系统音量类型（仅适用于移动端）。
+
+@deprecated v9.5 版本开始不推荐使用，建议使用 ` TRTCCloud ` 中的 ` startLocalAudio(quality) ` 接口替代之，通过 quality 参数来决策音质。
+
+## TXSystemVolumeType
+
+#### 系统音量类型（仅适用于移动设备）。
+@deprecated v9.5 版本开始不推荐使用。
+现代智能手机中一般都具备两套系统音量类型，即“通话音量”和“媒体音量”。
+-  通话音量：手机专门为接打电话所设计的音量类型，自带回声抵消（AEC）功能，并且支持通过蓝牙耳机上的麦克风进行拾音，缺点是音质比较一般。
+当您通过手机侧面的音量按键下调手机音量时，如果无法将其调至零（也就是无法彻底静音），说明您的手机当前处于通话音量。
+-  媒体音量：手机专门为音乐场景所设计的音量类型，无法使用系统的 AEC 功能，并且不支持通过蓝牙耳机的麦克风进行拾音，但具备更好的音乐播放效果。
+当您通过手机侧面的音量按键下调手机音量时，如果能够将手机音量调至彻底静音，说明您的手机当前处于媒体音量。
+SDK 目前提供了三种系统音量类型的控制模式：自动切换模式、全程通话音量模式、全程媒体音量模式。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TXSystemVolumeTypeAuto | Not Defined | 自动切换模式 |
+| TXSystemVolumeTypeMedia | Not Defined | 全程媒体音量 |
+| TXSystemVolumeTypeVOIP | Not Defined | 全程通话音量 |
+
+## TXAudioRoute
+
+#### 音频路由（即声音的播放模式）。
+音频路由，即声音是从手机的扬声器还是从听筒中播放出来，因此该接口仅适用于手机等移动端设备。
+手机有两个扬声器：一个是位于手机顶部的听筒，一个是位于手机底部的立体声扬声器。
+-  设置音频路由为听筒时，声音比较小，只有将耳朵凑近才能听清楚，隐私性较好，适合用于接听电话。
+-  设置音频路由为扬声器时，声音比较大，不用将手机贴脸也能听清，因此可以实现“免提”的功能。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TXAudioRouteSpeakerphone | Not Defined | Speakerphone：使用扬声器播放（即“免提”），扬声器位于手机底部，声音偏大，适合外放音乐。 |
+| TXAudioRouteEarpiece | Not Defined | Earpiece：使用听筒播放，听筒位于手机顶部，声音偏小，适合需要保护隐私的通话场景。 |
+
+## TXMediaDeviceType
+> **适用平台：** iOS, C++
+
+#### 设备类型（仅适用于桌面平台）。
+该枚举值用于定义三种类型的音视频设备，即摄像头、麦克风和扬声器，以便让一套设备管理接口可以操控三种不同类型的设备。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TXMediaDeviceTypeUnknown | -1 | 未定义的设备类型 |
+| TXMediaDeviceTypeAudioInput | 0 | 麦克风类型设备 |
+| TXMediaDeviceTypeAudioOutput | 1 | 扬声器类型设备 |
+| TXMediaDeviceTypeVideoCamera | 2 | 摄像头类型设备 |
+
+## TXMediaDeviceState
+> **适用平台：** iOS, C++
+
+#### 设备操作。
+该枚举值用于本地设备的状态变化通知 onDeviceChanged。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TXMediaDeviceStateAdd | 0 | 设备已被插入 |
+| TXMediaDeviceStateRemove | 1 | 设备已被移除 |
+| TXMediaDeviceStateActive | 2 | 设备已启用 |
+| TXMediaDefaultDeviceChanged | 3 | 系统默认设备变更 |
+
+## TXCameraCaptureMode
+
+#### 摄像头采集偏好。
+该枚举类型用于摄像头采集参数设置。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TXCameraResolutionStrategyAuto | Not Defined | 自动调整采集参数。 SDK 根据实际的采集设备性能及网络情况，选择合适的摄像头输出参数，在设备性能及视频预览质量之间，维持平衡。 |
+| TXCameraResolutionStrategyPerformance | Not Defined | 优先保证设备性能。 SDK 根据用户设置编码器的分辨率和帧率，选择最接近的摄像头输出参数，从而保证设备性能。 |
+| TXCameraResolutionStrategyHighQuality | Not Defined | 优先保证视频预览质量。 SDK选择较高的摄像头输出参数，从而提高预览视频的质量。在这种情况下，会消耗更多的 CPU 及内存做视频前处理。 |
+| TXCameraCaptureManual | Not Defined | 允许用户设置本地摄像头采集的视频宽高。 |
+
+## TXCameraCaptureParam
+
+#### 摄像头采集参数。
+该设置能决定本地预览图像画质。
+| 枚举类型 | 描述 |
+| --- | --- |
+| height | **字段含义：** 采集图像宽度 |
+| mode | **字段含义：** 摄像头采集偏好，请参见 TXCameraCaptureMode |
+| width | **字段含义：** 采集图像长度 |
+
+## TXMediaDeviceInfo
+> **适用平台：** iOS, C++
+
+#### 音视频设备的相关信息（仅适用于桌面平台）。
+该结构体用于描述一个音视频设备的关键信息，例如设备 ID、设备名称等等，以便用户能够在用户界面上选择自己期望使用的音视频设备。
+| 枚举类型 | 描述 |
+| --- | --- |
+| deviceId | 设备 ID （UTF-8） |
+| deviceName | 设备名称 （UTF-8） |
+| deviceProperties | 设备属性 |
+| type | 设备类型 |
+
+## ITXDeviceCollection
+> **适用平台：** C++
+
+#### 设备信息列表（仅适用于桌面平台）。
+
+此结构体的作用相当于 std::vector<ITXDeviceInfo>，用于解决不同版本的 STL 容器的二进制兼容问题。
+| 枚举类型 | 描述 |
+| --- | --- |
+| getCount() | 设备数量 |
+| index) | 设备信息（JSON 格式） **注意** 示例：{"SupportedResolution":[{"width":640,"height":480},{"width":320,"height":240}]} param index 设备索引，值为 [0,getCount)，return 返回 JSON 格式的设备信息 |
+| release() | 释放设备列表，请不要使用 delete 释放资源 !!! |
+
+## setExposureCompensation
+> **适用平台：** Android, iOS
+
+#### 设置摄像头的曝光参数，取值范围为 [-1, 1]。
+
+## TXDeviceObserver
+> **适用平台：** iOS
+
+## onDeviceChanged
+> **适用平台：** iOS
+
+#### 本地设备的通断状态发生变化（仅适用于桌面系统）。
+
+当本地设备（包括摄像头、麦克风以及扬声器）被插入或者拔出时，SDK 便会抛出此事件回调。
+| 参数 | 描述 |
+| --- | --- |
+| deviceId | 设备 ID |
+| state | 通断状态，0：设备已添加；1：设备已被移除；2：设备已启用。 |
+| type | 设备类型 |
+
+## isCameraZoomSupported
+> **适用平台：** iOS
+
+#### 查询当前摄像头是否支持缩放（仅适用于移动端）。
+
+## isCameraTorchSupported
+> **适用平台：** iOS
+
+#### 查询是否支持开启闪光灯（仅适用于移动端）。
+
+## setObserver
+> **适用平台：** iOS
+
+#### 设备热插拔回调（仅适用于 Mac 系统）。
+
+--------------------------------------------------------------------------------
+title: TRTC SDK 错误码参考 (Android/iOS/C++)
+description: 错误码与警告码完整列表, 用于定位进房失败、推拉流异常等问题。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/error-codes.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 C++ 接口为基准。Android (TXLiteAVCode)、iOS (TXLiteAVCode)、C++ (TXLiteAVCode) 的接口名称和参数语义完全一致，仅函数签名格式不同。
+> - Android: Java 风格（如 `enterRoom(TRTCParams param, int scene)`）
+> - iOS: ObjC 风格（如 `enterRoom:appScene:`）
+> - C++: 标准 C++ 风格（如 `enterRoom(const TRTCParams& params, TRTCAppScene scene)`）
+
+# 腾讯云实时音视频(TRTC SDK) TXLiteAVCode 错误码 文档
+
+## 概述
+本文档是 实时音视频(TRTC SDK) TXLiteAVCode 错误码 的跨平台 API 参考，适用于 Android/iOS/C++ 平台。
+
+## TXLiteAVCode
+## TXLiteAVError
+
+#### 错误码。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| ERR_NULL | 0 | 无错误 |
+| ERR_FAILED | -1 | 暂未归类的通用错误 |
+| ERR_INVALID_PARAMETER | -2 | 调用 API 时，传入的参数不合法 |
+| ERR_REFUSED | -3 | API 调用被拒绝 |
+| ERR_NOT_SUPPORTED | -4 | 当前 API 不支持调用 |
+| ERR_INVALID_LICENSE | -5 | license 不合法，调用失败 |
+| ERR_REQUEST_SERVER_TIMEOUT | -6 | 请求服务器超时 |
+| ERR_SERVER_PROCESS_FAILED | -7 | 服务器无法处理您的请求 |
+| ERR_DISCONNECTED | -8 | 断开连接 |
+| ERR_CAMERA_START_FAIL | -1301 | 打开摄像头失败，在移动端中是授权后调用系统接口开启摄像头异常，在 Windows 或 Mac 设备，摄像头的配置程序（驱动程序）异常，禁用后重新启用设备，或者重启机器，或者更新配置程序 |
+| ERR_CAMERA_NOT_AUTHORIZED | -1314 | 摄像头设备未授权，通常在移动设备出现，可能是权限被用户拒绝了 |
+| ERR_CAMERA_SET_PARAM_FAIL | -1315 | 摄像头参数设置出错（参数不支持或其它） |
+| ERR_CAMERA_OCCUPY | -1316 | 摄像头正在被占用中，可尝试打开其他摄像头 |
+| ERR_SCREEN_CAPTURE_START_FAIL | -1308 | 开始录屏失败，如果在移动设备出现，可能是权限被用户拒绝了。在 Windows 或 Mac 系统的设备出现，请检查录屏接口的参数是否符合要求 |
+| ERR_SCREEN_CAPTURE_UNSURPORT | -1309 | 录屏失败，在 Android 平台，需要5.0以上的系统，在 iOS 平台，需要11.0以上的系统 |
+| ERR_SCREEN_CAPTURE_STOPPED | -7001 | 录屏被系统中止 |
+| ERR_SCREEN_SHARE_NOT_AUTHORIZED | -102015 | 没有权限上行辅路 |
+| ERR_SCREEN_SHRAE_OCCUPIED_BY_OTHER | -102016 | 其他用户正在上行辅路 |
+| ERR_VIDEO_ENCODE_FAIL | -1303 | 视频帧编码失败，编码器异常导致编码失败 |
+| ERR_UNSUPPORTED_RESOLUTION | -1305 | 不支持的视频分辨率 |
+| ERR_PIXEL_FORMAT_UNSUPPORTED | -1327 | 自定视频采集：设置的 pixel format 不支持 |
+| ERR_BUFFER_TYPE_UNSUPPORTED | -1328 | 自定视频采集：设置的 buffer type 不支持 |
+| ERR_NO_AVAILABLE_HEVC_DECODERS | -2304 | 找不到可用的 HEVC 解码器 |
+| ERR_MIC_START_FAIL | -1302 | 打开麦克风失败，例如在 Windows 或 Mac 设备，麦克风的配置程序（驱动程序）异常，禁用后重新启用设备，或者重启机器，或者更新配置程序 |
+| ERR_MIC_NOT_AUTHORIZED | -1317 | 麦克风设备未授权，通常在移动设备出现，可能是权限被用户拒绝了 |
+| ERR_MIC_OCCUPY | -1319 | 麦克风正在被占用中，例如移动设备正在通话时，打开麦克风会失败 |
+| ERR_MIC_STOP_FAIL | -1320 | 停止麦克风失败 |
+| ERR_SPEAKER_START_FAIL | -1321 | 打开扬声器失败，例如在 Windows 或 Mac 设备，扬声器的配置程序（驱动程序）异常，禁用后重新启用设备，或者重启机器，或者更新配置程序 |
+| ERR_SPEAKER_SET_PARAM_FAIL | -1322 | 扬声器设置参数失败 |
+| ERR_SPEAKER_STOP_FAIL | -1323 | 停止扬声器失败 |
+| ERR_AUDIO_PLUGIN_START_FAIL | -1330 | 开启系统声音录制失败，例如音频驱动插件不可用 |
+| ERR_AUDIO_PLUGIN_INSTALL_NOT_AUTHORIZED | -1331 | 安装音频驱动插件未授权 |
+| ERR_AUDIO_PLUGIN_INSTALL_FAILED | -1332 | 安装音频驱动插件失败 |
+| ERR_AUDIO_PLUGIN_INSTALLED_BUT_NEED_RESTART | -1333 | 安装虚拟声卡插件成功，但首次安装后功能暂时不可用，此为 Mac 系统限制，请在收到此错误码后提示用户重启当前 APP |
+| ERR_AUDIO_ENCODE_FAIL | -1304 | 音频帧编码失败，例如传入自定义音频数据，SDK 无法处理 |
+| ERR_UNSUPPORTED_SAMPLERATE | -1306 | 不支持的音频采样率 |
+| ERR_SYSTEM_LOOPBACK_START_FAILED | -1307 | 系统混音启动出错，常见的出错原因及解决：1.当前系统版本无法支持，指定、排除指定进程混音功能需满足 Windows 系统为10.0.19042（20H2）或更高版本，指定路径混音功能 x64 版本需满足 Windows 系统为10.0.19042（20H2）或更高版本，请检查当前系统版本。2.传入参数非法（包括参数为空、传入路径不存在、传入进程号不存在、传入设备名不存在），请检查传入参数是否合法。3.无可用扬声器设备，请检查是否可用 |
+| ERR_SYSTEM_LOOPBACK_THIRD_PARTY_APP_EXIT | -1324 | 第三方应用混音采集出错，该错误可能出现于第三方应用混音启动成功后，在采集声音的过程中指定进程或应用意外退出，请检查指定进程或应用的状态，可通过重新输入进程号进行重试 |
+| ERR_TRTC_ENTER_ROOM_FAILED | -3301 | 进入房间失败，请查看 onError 中的 -3301 对应的 msg 提示确认失败原因 |
+| ERR_TRTC_REQUEST_IP_TIMEOUT | -3307 | 请求 IP 和 sig 超时，请检查网络是否正常，或网络防火墙是否放行 UDP。 可尝试访问下列 IP：162.14.22.165:8000 162.14.6.105:8000 和域名：default-query.trtc.tencent-cloud.com:8000 |
+| ERR_TRTC_CONNECT_SERVER_TIMEOUT | -3308 | 请求进房超时，请检查是否断网或者是否开启vpn，您也可以切换4G进行测试确认 |
+| ERR_TRTC_ROOM_PARAM_NULL | -3316 | 进房参数为空，请检查： enterRoom:appScene: 接口调用是否传入有效的 param |
+| ERR_TRTC_INVALID_SDK_APPID | -3317 | 进房参数 sdkAppId 错误，请检查 TRTCParams.sdkAppId 是否为空 |
+| ERR_TRTC_INVALID_ROOM_ID | -3318 | 进房参数 roomId 错误，请检查 TRTCParams.roomId 或 TRTCParams.strRoomId 是否为空，注意 roomId 和 strRoomId 不可混用 |
+| ERR_TRTC_INVALID_USER_ID | -3319 | 进房参数 userId 不正确，请检查 TRTCParams.userId 是否为空 |
+| ERR_TRTC_INVALID_USER_SIG | -3320 | 进房参数 userSig 不正确，请检查 TRTCParams.userSig 是否为空 |
+| ERR_TRTC_ENTER_ROOM_REFUSED | -3340 | 进房请求被拒绝，请检查是否连续调用 enterRoom 进入相同 Id 的房间 |
+| ERR_TRTC_INVALID_PRIVATE_MAPKEY | -100006 | 您开启了高级权限控制，但参数 TRTCParams.privateMapKey 校验失败， 您可参考 [高级权限控制](https://cloud.tencent.com/document/product/647/32240) 进行检查 |
+| ERR_TRTC_SERVICE_SUSPENDED | -100013 | 服务不可用。请检查：套餐包剩余分钟数是否大于0，腾讯云账号是否欠费。 您可参考 [套餐包管理](https://cloud.tencent.com/document/product/647/50492) 进行查看与配置 |
+| ERR_TRTC_USER_SIG_CHECK_FAILED | -100018 | UserSig 校验失败，请检查参数 TRTCParams.userSig 是否填写正确，或是否已经过期。 您可参考 [UserSig 生成与校验](https://cloud.tencent.com/document/product/647/50686) 进行校验 |
+| ERR_TRTC_PUSH_THIRD_PARTY_CLOUD_TIMEOUT | -3321 | 旁路转推请求超时 |
+| ERR_TRTC_MIX_TRANSCODING_TIMEOUT | -3322 | 云端混流请求超时 |
+| ERR_TRTC_PUSH_THIRD_PARTY_CLOUD_FAILED | -3323 | 旁路转推回包异常 |
+| ERR_TRTC_MIX_TRANSCODING_FAILED | -3324 | 云端混流回包异常 |
+| ERR_TRTC_START_PUBLISHING_TIMEOUT | -3333 | 开始向腾讯云的直播 CDN 推流信令超时 |
+| ERR_TRTC_START_PUBLISHING_FAILED | -3334 | 开始向腾讯云的直播 CDN 推流信令异常 |
+| ERR_TRTC_STOP_PUBLISHING_TIMEOUT | -3335 | 停止向腾讯云的直播 CDN 推流信令超时 |
+| ERR_TRTC_STOP_PUBLISHING_FAILED | -3336 | 停止向腾讯云的直播 CDN 推流信令异常 |
+| ERR_TRTC_CONNECT_OTHER_ROOM_TIMEOUT | -3326 | 请求连麦超时 |
+| ERR_TRTC_DISCONNECT_OTHER_ROOM_TIMEOUT | -3327 | 请求退出连麦超时 |
+| ERR_TRTC_CONNECT_OTHER_ROOM_INVALID_PARAMETER | -3328 | 无效参数 |
+| ERR_TRTC_CONNECT_OTHER_ROOM_AS_AUDIENCE | -3330 | 当前是观众角色，不能请求或断开跨房连麦，需要先 ` switchRole ` 到主播 |
+| ERR_BGM_OPEN_FAILED | -4001 | 打开文件失败，如音频数据无效，FFMPEG 协议未找到等 |
+| ERR_BGM_DECODE_FAILED | -4002 | 音频文件解码失败 |
+| ERR_BGM_OVER_LIMIT | -4003 | 数量超过限定值，如同时预加载两首背景音乐 |
+| ERR_BGM_INVALID_OPERATION | -4004 | 无效操作，如开始播放后再调用预加载操作 |
+| ERR_BGM_INVALID_PATH | -4005 | 非法路径导致打开文件失败，请检查您传入的路径参数是否指向一个合法的音乐文件 |
+| ERR_BGM_INVALID_URL | -4006 | 非法URL导致打开文件失败，请用浏览器检查您传入的 URL 地址是否可以下载到期望的音乐文件，如果操作系统为 iOS 或 MacOS 请确保使用 https 链接 |
+| ERR_BGM_NO_AUDIO_STREAM | -4007 | 无音频流导致打开文件失败，请确认您传入的文件是否是合法的音频文件，以及文件是否被损坏 |
+| ERR_BGM_FORMAT_NOT_SUPPORTED | -4008 | 格式不支持导致打开文件失败，请确认您传入的文件格式是否是支持的文件格式，移动端支持【mp3，aac，m4a，wav，ogg，mp4，mkv】，桌面端支持 【mp3，aac，m4a，wav，mp4，mkv】 |
+| ERR_CONCURRENT_BGM_OVER_LIMIT | -4009 | 同时播放 bgm 数量超过限定值，如当前同时播放 bgm 数量超过 10 后提示该错误，请检查并发播放 bgm 数量 |
+
+## TXLiteAVWarning
+
+#### 警告码。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| WARNING_HW_ENCODER_START_FAIL | 1103 | 硬编码启动出现问题，自动切换到软编码 |
+| WARNING_CURRENT_ENCODE_TYPE_CHANGED | 1104 | 表示编码器发生改变，可以通过 onWarning 函数的扩展信息中的相关字段来获取当前的编码格式和类型。 type 字段值为 0 代表 H.264 编码，1 代表 H.265 编码 hardware 字段值为 0 代表软件编码，1 代表硬件编码 stream 字段值为 0 代表大流，1 代表小流，2 代表辅流 |
+| WARNING_VIDEO_ENCODER_SW_TO_HW | 1107 | 当前 CPU 使用率太高，无法满足软件编码需求，自动切换到硬件编码 |
+| WARNING_INSUFFICIENT_CAPTURE_FPS | 1108 | 摄像头采集帧率不足，部分自带美颜算法的 Android 手机上会出现 |
+| WARNING_SW_ENCODER_START_FAIL | 1109 | 软编码启动失败 |
+| WARNING_REDUCE_CAPTURE_RESOLUTION | 1110 | 摄像头采集分辨率被降低，以满足当前帧率和性能最优解。 |
+| WARNING_CAMERA_DEVICE_EMPTY | 1111 | 没有检测到可用的摄像头设备 |
+| WARNING_CAMERA_NOT_AUTHORIZED | 1112 | 用户未授权当前应用使用摄像头 |
+| WARNING_OUT_OF_MEMORY | 1113 | 内存不足，部分功能可能不正常。 |
+| WARNING_CAMERA_IS_OCCUPIED | 1114 | 摄像头被占用. |
+| WARNING_CAMERA_DEVICE_ERROR | 1115 | 摄像头设备异常. |
+| WARNING_CAMERA_DISCONNECTED | 1116 | 摄像头无法连接. |
+| WARNING_CAMERA_START_FAILED | 1117 | 摄像头启动失败. |
+| WARNING_CAMERA_SERVER_DIED | 1118 | 系统异常. |
+| WARNING_SCREEN_CAPTURE_NOT_AUTHORIZED | 1206 | 用户未授权当前应用使用屏幕录制 |
+| WARNING_CURRENT_DECODE_TYPE_CHANGED | 2008 | 表示解码器发生改变，可以通过 onWarning 函数的扩展信息中的 type 字段来获取当前的解码格式。 其中 1 代表 265 解码，0 代表 264 解码。注意 Windows 端不支持此错误码的扩展信息。 |
+| WARNING_VIDEO_FRAME_DECODE_FAIL | 2101 | 当前视频帧解码失败 |
+| WARNING_HW_DECODER_START_FAIL | 2106 | 硬解启动失败，采用软解码 |
+| WARNING_VIDEO_DECODER_HW_TO_SW | 2108 | 当前流硬解第一个 I 帧失败，SDK 自动切软解 |
+| WARNING_SW_DECODER_START_FAIL | 2109 | 软解码器启动失败 |
+| WARNING_VIDEO_RENDER_FAIL | 2110 | 视频渲染失败 |
+| WARNING_VIRTUAL_BACKGROUND_DEVICE_UNSURPORTED | 8001 | 虚拟背景设备不支持 |
+| WARNING_VIRTUAL_BACKGROUND_NOT_AUTHORIZED | 8002 | 虚拟背景未授权 |
+| WARNING_VIRTUAL_BACKGROUND_INVALID_PARAMETER | 8003 | 虚拟背景参数异常 |
+| WARNING_VIRTUAL_BACKGROUND_PERFORMANCE_INSUFFICIENT | 8004 | 虚拟背景性能不足 |
+| WARNING_MICROPHONE_DEVICE_EMPTY | 1201 | 没有检测到可用的麦克风设备 |
+| WARNING_SPEAKER_DEVICE_EMPTY | 1202 | 没有检测到可用的扬声器设备 |
+| WARNING_MICROPHONE_NOT_AUTHORIZED | 1203 | 用户未授权当前应用使用麦克风 |
+| WARNING_MICROPHONE_DEVICE_ABNORMAL | 1204 | 音频采集设备不可用（例如被占用或者PC判定无效设备） |
+| WARNING_SPEAKER_DEVICE_ABNORMAL | 1205 | 音频播放设备不可用（例如被占用或者PC判定无效设备） |
+| WARNING_BLUETOOTH_DEVICE_CONNECT_FAIL | 1207 | 蓝牙设备连接失败（例如其他应用通过设置通话音量占用音频通道） |
+| WARNING_MICROPHONE_IS_OCCUPIED | 1208 | 音频采集设备被占用 |
+| WARNING_AUDIO_FRAME_DECODE_FAIL | 2102 | 当前音频帧解码失败 |
+| WARNING_AUDIO_RECORDING_WRITE_FAIL | 7001 | 音频录制写入文件失败 |
+| WARNING_MICROPHONE_HOWLING_DETECTED | 7002 | 录制音频时监测到啸叫 |
+| WARNING_IGNORE_UPSTREAM_FOR_AUDIENCE | 6001 | 当前是观众角色，不支持发布音视频，需要先切换成主播角色 |
+| WARNING_UPSTREAM_AUDIO_AND_VIDEO_OUT_OF_SYNC | 6006 | 音视频发送时间戳异常，可能引起音画不同步问题 |
+| WARNING_RECONNECT_ON_SERVER_STATUS_ABNORMAL | 6007 | 服务器状态异常，正在进行重连 |
+
+--------------------------------------------------------------------------------
+title: TRTC SDK 事件回调参考 (Android/iOS/C++)
+description: SDK 事件回调完整列表, 涵盖房间状态、用户音视频状态变更、网络质量等通知。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/event-callbacks.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 C++ 接口为基准。Android (TRTCCloudListener)、iOS (TRTCCloudDelegate)、C++ (ITRTCCloudCallback) 的接口名称和参数语义完全一致，仅函数签名格式不同。
+> - Android: Java 风格（如 `enterRoom(TRTCParams param, int scene)`）
+> - iOS: ObjC 风格（如 `enterRoom:appScene:`）
+> - C++: 标准 C++ 风格（如 `enterRoom(const TRTCParams& params, TRTCAppScene scene)`）
+
+**跨平台 API 命名对照（仅列出名称不一致的 API）：**
+| 通用名 | Android | iOS | C++ |
+| --- | --- | --- | --- |
+| 回调类名 | TRTCCloudListener | TRTCCloudDelegate | ITRTCCloudCallback |
+| sharedInstance | sharedInstance | sharedInstance | getTRTCShareInstance |
+| destroySharedInstance | destroySharedInstance | destroySharedInstance | destroyTRTCShareInstance |
+| addListener | addListener | addDelegate | addCallback |
+| removeListener | removeListener | removeDelegate | removeCallback |
+| enableEncSmallVideoStream | enableEncSmallVideoStream | enableEncSmallVideoStream | enableSmallVideoStream |
+| setWatermark | setWatermark | setWatermark | setWaterMark |
+| setLocalVideoProcessListener | setLocalVideoProcessListener | setLocalVideoProcessDelegete | setLocalVideoCustomProcessCallback |
+| getScreenCaptureSourcesWithThumbnailSize | getScreenCaptureSourcesWithThumbnailSize | getScreenCaptureSourcesWithThumbnailSize | getScreenCaptureSources |
+| removeAllExcludedShareWindows | removeAllExcludedShareWindows | removeAllExcludedShareWindows | removeAllExcludedShareWindow |
+| removeAllIncludedShareWindows | removeAllIncludedShareWindows | removeAllIncludedShareWindows | removeAllIncludedShareWindow |
+| setLocalVideoRenderListener | setLocalVideoRenderListener | setLocalVideoRenderDelegate | setLocalVideoRenderCallback |
+| setRemoteVideoRenderListener | setRemoteVideoRenderListener | setRemoteVideoRenderDelegate | setRemoteVideoRenderCallback |
+| setAudioFrameListener | setAudioFrameListener | setAudioFrameDelegate | setAudioFrameCallback |
+| setLogListener | setLogListener | setLogDelegate | setLogCallback |
+| setListenerHandler | setListenerHandler | delegateQueue | setListenerHandler |
+| setCapturedAudioFrameCallbackFormat | setCapturedAudioFrameCallbackFormat | setCapturedAudioFrameDelegateFormat | setCapturedAudioFrameCallbackFormat |
+| setLocalProcessedAudioFrameCallbackFormat | setLocalProcessedAudioFrameCallbackFormat | setLocalProcessedAudioFrameDelegateFormat | setLocalProcessedAudioFrameCallbackFormat |
+| setMixedPlayAudioFrameCallbackFormat | setMixedPlayAudioFrameCallbackFormat | setMixedPlayAudioFrameDelegateFormat | setMixedPlayAudioFrameCallbackFormat |
+| TRTCViewMargin | TRTCViewMargin | setDebugViewMargin | TRTCViewMargin |
+| setPerspectiveCorrectionPoints | setPerspectiveCorrectionPoints | setPerspectiveCorrectionWithUser | setPerspectiveCorrectionPoints |
+| connectOtherRoom | ConnectOtherRoom | connectOtherRoom | connectOtherRoom |
+| disconnectOtherRoom | DisconnectOtherRoom | disconnectOtherRoom | disconnectOtherRoom |
+
+# 腾讯云实时音视频(TRTC SDK) TRTCCloudDelegate 事件回调 文档
+
+## 概述
+本文档是 实时音视频(TRTC SDK) TRTCCloudDelegate 事件回调 的跨平台 API 参考，适用于 Android/iOS/C++ 平台。
+
+## TRTCCloudCallback
+## ITRTCVideoFrameCallback
+> **适用平台：** C++
+
+## ITRTCAudioFrameCallback
+> **适用平台：** C++
+
+## ITRTCLogCallback
+> **适用平台：** C++
+
+## onError
+
+#### 错误事件回调。
+
+错误事件，表示 SDK 抛出的不可恢复的错误，例如进入房间失败或设备开启失败等。
+
+参考文档：[错误码表](https://cloud.tencent.com/document/product/647/38308)
+| 参数 | 描述 |
+| --- | --- |
+| errCode | 错误码 |
+| errMsg | 错误信息 |
+| extInfo | 扩展信息字段，个别错误码可能会带额外的信息帮助定位问题 |
+
+## onWarning
+
+#### 警告事件回调。
+
+警告事件，表示 SDK 抛出的提示性问题，例如视频出现卡顿或 CPU 使用率太高等。
+
+参考文档：[错误码表](https://cloud.tencent.com/document/product/647/38308)
+| 参数 | 描述 |
+| --- | --- |
+| extInfo | 扩展信息字段，个别警告码可能会带额外的信息帮助定位问题 |
+| warningCode | 警告码 |
+| warningMsg | 警告信息 |
+
+## onEnterRoom
+
+#### 进入房间成功与否的事件回调。
+调用 TRTCCloud 中的 enterRoom 接口执行进房操作后，会收到来自 ITRTCCloudCallback 的 ` onEnterRoom(result) ` 回调：
+-  如果加入成功，回调 result 会是一个正数（result > 0），代表进入房间所消耗的时间，单位是毫秒（ms）。
+-  如果加入失败，回调 result 会是一个负数（result < 0），代表失败原因的错误码。
+进房失败的错误码含义请参见[错误码表](https://cloud.tencent.com/document/product/647/38308)。
+| 参数 | 描述 |
+| --- | --- |
+| result | result > 0 时为进房耗时（ms），result < 0 时为进房错误码。 |
+
+> **注意**
+> 1. 在 Ver6.6 之前的版本，只有进房成功会抛出 ` onEnterRoom(result) ` 回调，进房失败由 onError 回调抛出。
+> 2. 在 Ver6.6 之后的版本：无论进房成功或失败，均会抛出 ` onEnterRoom(result) ` 回调，同时进房失败也会有 onError 回调抛出。
+
+## onExitRoom
+
+#### 离开房间的事件回调。
+调用 TRTCCloud 中的 exitRoom 接口会执行退出房间的相关逻辑，例如释放音视频设备资源和编解码器资源等。
+待 SDK 占用的所有资源释放完毕后，SDK 会抛出 ` onExitRoom() ` 回调通知到您。
+如果您要再次调用 enterRoom 或者切换到其他的音视频 SDK，请等待 ` onExitRoom ` 回调到来后再执行相关操作。否则可能会遇到例如摄像头、麦克风设备被强占等各种异常问题。
+| 参数 | 描述 |
+| --- | --- |
+| reason | 离开房间原因，0：主动调用 exitRoom 退出房间；1：被服务器移出当前房间；2：当前房间整个被解散 3: 服务器状态异常。 |
+
+## onSwitchRole
+
+#### 切换角色的事件回调。
+调用 TRTCCloud 中的 switchRole 接口会切换主播和观众的角色，该操作会伴随一个线路切换的过程，待 SDK 切换完成后，会抛出 ` onSwitchRole() ` 事件回调。
+| 参数 | 描述 |
+| --- | --- |
+| errCode | 错误码，ERR_NULL 代表切换成功，其他请参见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| errMsg | 错误信息。 |
+
+## onSwitchRoom
+
+#### 切换房间的结果回调。
+调用 TRTCCloud 中的 switchRoom 接口可以让用户快速地从一个房间切换到另一个房间，待 SDK 切换完成后，会抛出 ` onSwitchRoom() ` 事件回调。
+| 参数 | 描述 |
+| --- | --- |
+| errCode | 错误码，ERR_NULL 代表切换成功，其他请参见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| errMsg | 错误信息。 |
+
+## onConnectOtherRoom
+
+#### 请求跨房通话的结果回调。
+调用 TRTCCloud 中的 connectOtherRoom 接口会将两个不同房间中的主播拉通视频通话，也就是所谓的“主播PK”功能。
+调用者会收到 ` onConnectOtherRoom() ` 回调来获知跨房通话是否成功。
+| 参数 | 描述 |
+| --- | --- |
+| errCode | 错误码，ERR_NULL 代表切换成功，其他请参见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| errMsg | 错误信息。 |
+| userId | 要跨房通话的另一个房间中的主播的用户 ID。 |
+
+## onDisconnectOtherRoom
+> **适用平台：** iOS, C++
+
+#### 结束跨房通话的结果回调。
+
+调用 TRTCCloud 中的 disConnectOtherRoom 接口会结束两个不同房间中的主播视频通话，也就是所谓的“主播PK”功能。
+
+调用者会收到 ` onDisconnectOtherRoom() ` 回调来获知结束跨房通话是否成功。
+| 参数 | 描述 |
+| --- | --- |
+| errCode | 错误码，ERR_NULL 代表成功，其他请参见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| errMsg | 错误信息。 |
+
+## onUpdateOtherRoomForwardMode
+
+#### 更改跨房主播上行能力的结果回调。
+调用 TRTCCloud 中的 updateOtherRoomForwardMode 接口会限制跨房主播在本房间内的上行能力，禁止或允许跨房主播发布音频/主路视频/辅路视频，该行为会影响房间内的所有用户。
+调用者会收到 ` onUpdateOtherRoomForwardMode() ` 回调来获知更改跨房主播上行能力是否成功。
+| 参数 | 描述 |
+| --- | --- |
+| errCode | 错误码，ERR_NULL 代表成功，其他请参见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| errMsg | 错误信息。 |
+
+## onRemoteUserEnterRoom
+
+#### 有用户加入当前房间。
+出于性能方面的考虑，在 TRTC 两种不同的应用场景（即 ` AppScene `，在 enterRoom 时通过第二个参数指定）下，该通知的行为会有差别：
+-  直播类场景（TRTC_APP_SCENE_LIVE 和 TRTC_APP_SCENE_VOICE_CHATROOM）：该场景下的用户区分主播和观众两种角色，只有主播进入房间时才会触发该通知，观众进入房间时不会触发该通知。
+-  通话类场景（TRTC_APP_SCENE_VIDEOCALL 和 TRTC_APP_SCENE_AUDIOCALL）：该场景下的用户没有角色的区分（可认为都是主播），任何用户进入房间都会触发该通知。
+| 参数 | 描述 |
+| --- | --- |
+| userId | 远端用户的用户标识。 |
+> **注意**
+> 1. 事件回调 ` onRemoteUserEnterRoom ` 和 onRemoteUserLeaveRoom 只适用于维护当前房间里的“用户列表”，有此事件回调不代表一定有视频画面。
+> 2. 如果需要显示远程画面，请监听代表某个用户是否有视频画面的 onUserVideoAvailable 事件回调。
+
+## onRemoteUserLeaveRoom
+
+#### 有用户离开当前房间。
+与 onRemoteUserEnterRoom 相对应，在两种不同的应用场景（即 AppScene，在 enterRoom 时通过第二个参数指定）下，该通知的行为会有差别：
+-  直播类场景（TRTC_APP_SCENE_LIVE 和 TRTC_APP_SCENE_VOICE_CHATROOM）：该场景下的用户区分主播和观众两种角色，只有主播离开房间时才会触发该通知，观众离开房间时不会触发该通知。
+-  通话类场景（TRTC_APP_SCENE_VIDEOCALL 和 TRTC_APP_SCENE_AUDIOCALL）：该场景下的用户没有角色的区分（可认为都是主播），任何用户离开房间都会触发该通知。
+| 参数 | 描述 |
+| --- | --- |
+| reason | 离开原因，0表示用户主动退出房间，1表示用户超时退出，2表示被移出房间，3表示主播因切换到观众退出房间。 |
+| userId | 远端用户的用户标识。 |
+
+## onUserVideoAvailable
+
+#### 某远端用户发布/取消了主路视频画面。
+**主路画面** 一般被用于承载摄像头画面。当您收到 ` onUserVideoAvailable(userId, true) ` 通知时，表示该路画面已经有可播放的视频帧到达。
+此时，您需要调用 startRemoteView 接口订阅该用户的远程画面，订阅成功后，您会继续收到该用户的首帧画面渲染回调 ` onFirstVideoFrame(userId) `。
+当您收到 ` onUserVideoAvailable(userId, false) ` 通知时，表示该路远程画面已经被关闭，关闭的原因可能是该用户调用了 muteLocalVideo 或 stopLocalPreview。
+| 参数 | 描述 |
+| --- | --- |
+| available | 该用户是否发布（或取消发布）了主路视频画面，true：发布；false：取消发布。 |
+| userId | 远端用户的用户标识。 |
+
+## onUserSubStreamAvailable
+
+#### 某远端用户发布/取消了辅路视频画面。
+“辅路画面”一般被用于承载屏幕分享的画面。当您收到 ` onUserSubStreamAvailable(userId, true) ` 通知时，表示该路画面已经有可播放的视频帧到达。
+此时，您需要调用 startRemoteView 接口订阅该用户的远程画面，订阅成功后，您会继续收到该用户的首帧画面渲染回调 ` onFirstVideoFrame(userId) `。
+| 参数 | 描述 |
+| --- | --- |
+| available | 该用户是否发布（或取消发布）了辅路视频画面，true: 发布；false：取消发布。 |
+| userId | 远端用户的用户标识。 |
+> **注意**
+> 显示辅路画面使用的函数是 startRemoteView 而非 startRemoteSubStreamView，startRemoteSubStreamView 已经被废弃。
+
+## onUserAudioAvailable
+
+#### 某远端用户发布/取消了自己的音频。
+当您收到 ` onUserAudioAvailable(userId, true) ` 通知时，表示该用户发布了自己的声音，此时 SDK 的表现为：
+-  在自动订阅模式下，您无需做任何操作，SDK 会自动播放该用户的声音。
+-  在手动订阅模式下，您可以通过 muteRemoteAudio(userid, false) 来播放该用户的声音。
+| 参数 | 描述 |
+| --- | --- |
+| available | 该用户是否发布（或取消发布）了自己的音频，true: 发布；false：取消发布。 |
+| userId | 远端用户的用户标识。 |
+> **注意**
+> SDK 默认使用自动订阅模式，您可以通过 setDefaultStreamRecvMode 设置为手动订阅，但需要在您进入房间之前调用才生效。
+
+## onFirstVideoFrame
+
+#### SDK 开始渲染自己本地或远端用户的首帧画面。
+SDK 会在渲染自己本地或远端用户的首帧画面时抛出该事件，您可以通过回调事件中的 userId 参数来判断事件来自于“本地”还是来自于“远端”。
+-  如果 userId 为空值，代表 SDK 已经开始渲染自己本地的视频画面，不过前提是您已经调用了 startLocalPreview 或 startScreenCapture。
+-  如果 userId 不为空，代表 SDK 已经开始渲染远端用户的视频画面，不过前提是您已经调用了 startRemoteView 订阅了该用户的视频画面。
+| 参数 | 描述 |
+| --- | --- |
+| height | 画面的高度。 |
+| streamType | 视频流类型：主路（Main）一般用于承载摄像头画面，辅路（Sub）一般用于承载屏幕分享画面。 |
+| userId | 本地或远端的用户标识，如果 userId 为空值代表自己本地的首帧画面已到来，userId 不为空则代表远端用户的首帧画面已到来。 |
+| width | 画面的宽度。 |
+> **注意**
+> 1. 只有当您调用了 startLocalPreview 或 startScreenCapture 之后，才会触发自己本地的首帧画面事件回调。
+> 2. 只有当您调用了 startRemoteView 或 startRemoteSubStreamView 之后，才会触发远端用户的首帧画面事件回调。
+
+## onFirstAudioFrame
+
+#### SDK 开始播放远端用户的首帧音频。
+
+SDK 会在播放远端用户的首帧音频时抛出该事件，本地音频的首帧事件暂不抛出。
+| 参数 | 描述 |
+| --- | --- |
+| userId | 远端用户的用户标识。 |
+
+## onSendFirstLocalVideoFrame
+
+#### 自己本地的首个视频帧已被发布出去。
+当您成功进入房间并通过 startLocalPreview 或 startScreenCapture 开启本地视频采集之后（开启采集和进入房间的先后顺序无影响），SDK 就会开始进行视频编码，并通过自身的网络模块向云端发布自己本地的视频数据。当 SDK 成功地向云端送出自己的第一帧视频数据帧以后，就会抛出 ` onSendFirstLocalVideoFrame ` 事件回调。
+| 参数 | 描述 |
+| --- | --- |
+| streamType | 视频流类型：主路（Main）一般用于承载摄像头画面，辅路（Sub）一般用于承载屏幕分享画面。 |
+
+## onSendFirstLocalAudioFrame
+
+#### 自己本地的首个音频帧已被发布出去。
+当您成功进入房间并通过 startLocalAudio 开启本地音频采集之后（开启采集和进入房间的先后顺序无影响），SDK 就会开始进行音频编码，并通过自身的网络模块向云端发布自己本地的音频数据。当 SDK 成功地向云端送出自己的第一帧音频数据帧以后，就会抛出 ` onSendFirstLocalAudioFrame ` 事件回调。
+
+## onRemoteVideoStatusUpdated
+
+#### 远端视频状态变化的事件回调。
+
+您可以通过此事件回调获取远端每一路画面的播放状态（包括 Playing、Loading 和 Stopped 三种状态），从而进行相应的 UI 展示。
+| 参数 | 描述 |
+| --- | --- |
+| extrainfo | 额外信息。 |
+| reason | 视频状态改变的原因。 |
+| status | 视频状态：包括 Playing、Loading 和 Stopped 三种状态。 |
+| streamType | 视频流类型：主路（Main）一般用于承载摄像头画面，辅路（Sub）一般用于承载屏幕分享画面。 |
+| userId | 用户标识。 |
+
+## onRemoteAudioStatusUpdated
+
+#### 远端音频状态变化的事件回调。
+
+您可以通过此事件回调获取远端每一路音频的播放状态（包括 Playing、Loading 和 Stopped 三种状态），从而进行相应的 UI 展示。
+| 参数 | 描述 |
+| --- | --- |
+| extrainfo | 额外信息。 |
+| reason | 音频状态改变的原因。 |
+| status | 音频状态：包括 Playing、Loading 和 Stopped 三种状态。 |
+| userId | 用户标识。 |
+
+## onUserVideoSizeChanged
+
+#### 用户视频大小发生改变回调。
+当您收到 ` onUserVideoSizeChanged(userId, streamType, newWidth, newHeight) ` 通知时，表示该路画面大小发生了调整，调整的原因可能是该用户调用了 setVideoEncoderParam 或者 setSubStreamEncoderParam 重新设置了画面尺寸。
+| 参数 | 描述 |
+| --- | --- |
+| newHeight | 视频流的高度（像素）。 |
+| newWidth | 视频流的宽度（像素）。 |
+| streamType | 视频流类型：主路（Main）一般用于承载摄像头画面，辅路（Sub）一般用于承载屏幕分享画面。 |
+| userId | 用户标识。 |
+
+## onNetworkQuality
+
+#### 网络质量的实时统计回调。
+
+该统计回调每间隔2秒抛出一次，用于通知 SDK 感知到的当前网络的上行和下行质量。
+
+SDK 会使用一组内嵌的自研算法对当前网络的延迟高低、带宽大小以及稳定情况进行评估，并计算出一个评估结果：如果评估结果为 1（Excellent） 代表当前的网络情况非常好，如果评估结果为 6（Down）代表当前网络无法支撑 TRTC 的正常通话。
+| 参数 | 描述 |
+| --- | --- |
+| localQuality | 上行网络质量。 |
+| remoteQuality | 下行网络质量，代表数据流历经“远端->云端->本端”这样一条完整的传输链路后，最终在本端统计到的数据质量。因此，这里的下行网络质量代表的是远端上行链路与本端下行链路共同影响的结果。 |
+
+> **注意**
+> 暂时无法通过该接口单独判定远端用户的上行质量。
+## onStatistics
+
+#### 音视频技术指标的实时统计回调。
+该统计回调每间隔2秒抛出一次，用于通知 SDK 内部音频、视频以及网络相关的专业技术指标，这些信息在 TRTCStatistics 均有罗列：
+-  视频统计信息：视频的分辨率（resolution）、帧率（FPS）和比特率（bitrate）等信息。
+-  音频统计信息：音频的采样率（samplerate）、声道（channel）和比特率（bitrate）等信息。
+-  网络统计信息：SDK 和云端一次往返（SDK > Cloud > SDK）的网络耗时（rtt）、丢包率（loss）、上行流量（sentBytes）和下行流量（receivedBytes）等信息。
+| 参数 | 描述 |
+| --- | --- |
+| statistics | 统计数据，包括自己本地的统计信息和远端用户的统计信息，详情请参考 TRTCStatistics。 |
+
+> **注意**
+> 如果您只需要获知当前网络质量的好坏，并不需要花太多时间研究本统计回调，更推荐您使用 onNetworkQuality 来解决问题。
+
+## onSpeedTestResult
+
+#### 网速测试的结果回调。
+该统计回调由 startSpeedTest 触发。
+| 参数 | 描述 |
+| --- | --- |
+| result | 网速测试结果，包括丢包、往返延迟、上下行的带宽速率，详情请参见 TRTCSpeedTestResult。 |
+
+## onConnectionLost
+
+#### SDK 与云端的连接已经断开。
+SDK 会在跟云端的连接断开时抛出此事件回调，导致断开的原因大多是网络不可用或者网络切换所致，例如用户在通话中走进电梯时就可能会遇到此事件。
+在抛出此事件之后，SDK 会努力跟云端重新建立连接，重连过程中会抛出 onTryToReconnect，连接恢复后会抛出 onConnectionRecovery 。
+所以，SDK 会在如下三个连接相关的事件中按如下规律切换：
+
+## onTryToReconnect
+
+#### SDK 正在尝试重新连接到云端。
+SDK 会在跟云端的连接断开时抛出 onConnectionLost，之后会努力跟云端重新建立连接并抛出本事件，连接恢复后会抛出 onConnectionRecovery。
+
+## onConnectionRecovery
+
+#### SDK 与云端的连接已经恢复。
+SDK 会在跟云端的连接断开时抛出 onConnectionLost，之后会努力跟云端重新建立连接并抛出 onTryToReconnect，连接恢复后会抛出本事件回调。
+
+## onCameraDidReady
+
+#### 摄像头准备就绪。
+当您调用 startLocalPreview 之后，SDK 会尝试启动摄像头，如果摄像头能够启动成功就会抛出本事件。
+如果启动失败，大概率是因为当前应用没有获得访问摄像头的权限，或者摄像头当前正在被其他程序独占使用中。
+您可以通过捕获 onError 事件回调获知这些异常情况并通过 UI 界面提示用户。
+
+## onMicDidReady
+
+#### 麦克风准备就绪。
+当您调用 startLocalAudio 之后，SDK 会尝试启动麦克风，如果麦克风能够启动成功就会抛出本事件。
+如果启动失败，大概率是因为当前应用没有获得访问麦克风的权限，或者麦克风当前正在被其他程序独占使用中。
+您可以通过捕获 onError 事件回调获知这些异常情况并通过 UI 界面提示用户。
+
+## onAudioRouteChanged
+
+#### 当前音频路由发生变化（仅适用于移动设备）。
+
+所谓“音频路由”，是指声音是从手机的扬声器还是从听筒中播放出来，音频路由变化也就是声音的播放位置发生了变化。
+-  当音频路由为听筒时，声音比较小，只有将耳朵凑近才能听清楚，隐私性较好，适合用于接听电话。
+
+-  当音频路由为扬声器时，声音比较大，不用将手机贴脸也能听清，因此可以实现“免提”的功能。
+
+-  当音频路由为有线耳机。
+
+-  当音频路由为蓝牙耳机。
+
+-  当音频路由为USB专业声卡设备。
+
+| 参数 | 描述 |
+| --- | --- |
+| fromRoute | 变更前的音频路由。 |
+| route | 音频路由，即声音由哪里输出（扬声器、听筒）。 |
+
+## onUserVoiceVolume
+
+#### 音量大小的反馈回调。
+SDK 可以评估每一路音频的音量大小，并每隔一段时间抛出该事件回调，您可以根据音量大小在 UI 上做出相应的提示，例如` 波形图 `或` 音量槽 `。
+要完成这个功能， 您需要先调用 enableAudioVolumeEvaluation 开启这个能力并设定事件抛出的时间间隔。
+需要补充说明的是，无论当前房间中是否有人说话，SDK 都会按照您设定的时间间隔定时抛出此事件回调。
+| 参数 | 描述 |
+| --- | --- |
+| totalVolume | 所有远端用户的总音量大小，取值范围 [0, 100]。 |
+| userVolumes | 是一个数组，用于承载所有正在说话的用户的音量大小，取值范围 [0, 100]。 |
+> **注意**
+> userVolumes 为一个数组，对于数组中的每一个元素，当 userId 为空时表示本地麦克风采集的音量大小，当 userId 不为空时代表远端用户的音量大小。
+
+## onDeviceChange
+> **适用平台：** C++
+
+#### 本地设备的通断状态发生变化（仅适用于桌面系统）。
+
+当本地设备（包括摄像头、麦克风以及扬声器）被插入或者拔出时，SDK 便会抛出此事件回调。
+| 参数 | 描述 |
+| --- | --- |
+| deviceId | 设备 ID。 |
+| deviceType | 设备类型。0：麦克风设备；1：扬声器设备；2：摄像头设备。 |
+| state | 通断状态，0：设备已添加；1：设备已被移除；2：设备已启用。 |
+
+## onAudioDeviceCaptureVolumeChanged
+> **适用平台：** iOS, C++
+
+#### 当前麦克风的系统采集音量发生变化。
+在 Mac 或 Windows 这样的桌面操作系统上，用户可以在设置中心找到声音相关的设置面板，并设置麦克风的采集音量大小。
+用户将麦克风的采集音量设置得越大，麦克风采集到的声音的原始音量也就会越大，反之就会越小。
+在有些型号的键盘以及笔记本电脑上，用户还可以通过按下` 禁用麦克风 `按钮（图标是一个` 话筒 `叠加了一道代表禁用的斜线）来将麦克风静音。
+当用户通过系统设置界面或者通过键盘上的快捷键设定操作系统的麦克风采集音量时，SDK 便会抛出此事件。
+| 参数 | 描述 |
+| --- | --- |
+| muted | 麦克风是否被用户禁用了：true 被禁用，false 被启用。 |
+| volume | 系统采集音量，取值范围 0 - 100，用户可以在系统的声音设置面板上进行拖拽调整。 |
+> **注意**
+> 您需要调用 enableAudioVolumeEvaluation 接口并设定 interval 大于 0 开启次事件回调，设定 interval 等于 0 关闭此事件回调。
+
+## onAudioDevicePlayoutVolumeChanged
+> **适用平台：** iOS, C++
+
+#### 当前系统的播放音量发生变化。
+在 Mac 或 Windows 这样的桌面操作系统上，用户可以在设置中心找到声音相关的设置面板，并设置系统的播放音量大小。
+在有些型号的键盘以及笔记本电脑上，用户还可以通过按下“静音”按钮（图标是一个喇叭上叠加了一道代表禁用的斜线）来将系统静音。
+当用户通过系统设置界面或者通过键盘上的快捷键设定操作系统的播放音量时，SDK 便会抛出此事件。
+| 参数 | 描述 |
+| --- | --- |
+| muted | 系统是否被用户静音了：true 被静音，false 已恢复。 |
+| volume | 系统播放音量，取值范围 [0, 100]，用户可以在系统的声音设置面板上进行拖拽调整。 |
+> **注意**
+> 您需要调用 enableAudioVolumeEvaluation 接口并设定 interval 大于 0 开启次事件回调，设定 interval 等于 0 关闭此事件回调。
+
+## onSystemAudioLoopbackError
+> **适用平台：** iOS, C++
+
+#### 系统声音采集是否被成功开启的事件回调（仅适用于桌面系统）。
+在 Mac 系统上，您可以通过调用 startSystemAudioLoopback 为当前系统安装一个音频驱动，并让 SDK 通过该音频驱动捕获当前 Mac 系统播放出的声音。
+在 Windows 系统上，您可以通过调用 startSystemAudioLoopback 让 SDK 捕获当前 Windows 系统播放出的声音。
+当用于播片教学或音乐直播中，例如老师端可以使用此功能，让 SDK 能够采集老师所播放的电影中的声音，使同房间的学生端也能听到电影中的声音。
+SDK 会将系统声音采集是否被成功开启的结果，通过本事件回调抛出，需要您关注参数中的错误码。
+| 参数 | 描述 |
+| --- | --- |
+| err | ERR_NULL 表示成功，其余值表示失败，详见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+
+## onTestMicVolume
+> **适用平台：** C++
+
+#### 测试麦克风时的音量回调。
+
+当您调用 startMicDeviceTest 测试麦克风是否正常工作时，SDK 会不断地抛出此回调，参数中的 volume 代表当前麦克风采集到的音量大小。
+
+如果在测试期间 volume 出现了大小波动的情况，说明麦克风状态健康；如果 volume 的数值始终是 0，说明麦克风的状态异常，需要提示用户进行更换。
+| 参数 | 描述 |
+| --- | --- |
+| volume | 麦克风采集到的音量值，取值范围 [0, 100]。 |
+
+## onTestSpeakerVolume
+> **适用平台：** C++
+
+#### 测试扬声器时的音量回调。
+
+当您调用 startSpeakerDeviceTest 测试扬声器是否正常工作时，SDK 会不断地抛出此回调。
+
+参数中的 volume 代表的是 SDK 提交给系统扬声器去播放的声音的音量值大小，如果该数值持续变化，但用户反馈听不到声音，则说明扬声器状态异常。
+| 参数 | 描述 |
+| --- | --- |
+| volume | SDK 提交给扬声器去播放的声音的音量，取值范围 [0, 100]。 |
+
+## onRecvCustomCmdMsg
+> **适用平台：** Android, C++
+
+#### 收到自定义消息的事件回调。
+当房间中的某个用户使用 sendCustomCmdMsg 发送自定义 UDP 消息时，房间中的其他用户可以通过 ` onRecvCustomCmdMsg ` 事件回调接收到该条消息。
+| 参数 | 描述 |
+| --- | --- |
+| cmdID | 命令 ID。 |
+| message | 消息数据。 |
+| seq | 消息序号。 |
+| userId | 用户标识。 |
+
+## onMissCustomCmdMsg
+> **适用平台：** Android, C++
+
+#### 自定义消息丢失的事件回调。
+当您使用 sendCustomCmdMsg 发送自定义 UDP 消息时，即使设置了可靠传输（reliable），也无法确 100% 不丢失，只是丢消息概率极低，能满足常规可靠性要求。
+在发送端设置了可靠运输（reliable）后，SDK 都会通过此回调通知过去时间段内（通常为5s）传输途中丢失的自定义消息数量统计信息。
+| 参数 | 描述 |
+| --- | --- |
+| cmdID | 命令 ID。 |
+| errCode | 错误码。 |
+| missed | 丢失的消息数量。 |
+| userId | 用户标识。 |
+> **注意**
+> 只有在发送端设置了可靠传输（reliable），接收方才能收到消息的丢失回调。
+
+## onRecvSEIMsg
+
+#### 收到 SEI 消息的回调。
+当房间中的某个用户使用 sendSEIMsg 借助视频数据帧发送 SEI 消息时，房间中的其他用户可以通过 ` onRecvSEIMsg ` 事件回调接收到该条消息。
+| 参数 | 描述 |
+| --- | --- |
+| message | 数据。 |
+| userId | 用户标识。 |
+
+## onStartPublishing
+
+#### 开始向腾讯云直播 CDN 上发布音视频流的事件回调。
+
+当您调用 startPublishing 开始向腾讯云直播 CDN 上发布音视频流时，SDK 会立刻将这一指令同步给云端服务器。
+
+随后 SDK 会收到来自云端服务器的处理结果，并将指令的执行结果通过本事件回调通知给您。
+| 参数 | 描述 |
+| --- | --- |
+| err | 0表示成功，其余值表示失败，详见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| errMsg | 具体错误原因。 |
+
+## onStopPublishing
+
+#### 停止向腾讯云直播 CDN 上发布音视频流的事件回调。
+
+当您调用 stopPublishing 停止向腾讯云直播 CDN 上发布音视频流时，SDK 会立刻将这一指令同步给云端服务器。
+
+随后 SDK 会收到来自云端服务器的处理结果，并将指令的执行结果通过本事件回调通知给您。
+| 参数 | 描述 |
+| --- | --- |
+| err | 0表示成功，其余值表示失败，详见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| errMsg | 具体错误原因。 |
+
+## onStartPublishCDNStream
+
+#### 开始向非腾讯云 CDN 上发布音视频流的事件回调。
+
+当您调用 startPublishCDNStream 开始向非腾讯云直播 CDN 上发布音视频流时，SDK 会立刻将这一指令同步给云端服务器。随后 SDK 会收到来自云端服务器的处理结果，并将指令的执行结果通过本事件回调通知给您。
+| 参数 | 描述 |
+| --- | --- |
+| err | 0表示成功，其余值表示失败，详见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| errMsg | 具体错误原因。 |
+
+> **注意**
+> 当您收到成功的事件回调时，只是说明您的发布指令已经同步到腾讯云后台服务器，但如果目标 CDN 厂商的服务器不接收该条视频流，依然可能导致发布失败。
+## onStopPublishCDNStream
+
+#### 停止向非腾讯云 CDN 上发布音视频流的事件回调。
+
+当您调用 stopPublishCDNStream 开始向非腾讯云直播 CDN 上发布音视频流时，SDK 会立刻将这一指令同步给云端服务器。随后 SDK 会收到来自云端服务器的处理结果，并将指令的执行结果通过本事件回调通知给您。
+| 参数 | 描述 |
+| --- | --- |
+| err | 0表示成功，其余值表示失败，详见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| errMsg | 具体错误原因。 |
+
+## onSetMixTranscodingConfig
+
+#### 设置云端混流的排版布局和转码参数的事件回调。
+
+当您调用 setMixTranscodingConfig 调整云端混流的排版布局和转码参数时，SDK 会立刻将这一调整指令同步给云端服务器。随后 SDK 会收到来自云端服务器的处理结果，并将指令的执行结果通过本事件回调通知给您。
+| 参数 | 描述 |
+| --- | --- |
+| err | 错误码：0表示成功，其余值表示失败，详见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| errMsg | 具体的错误原因。 |
+
+## onStartPublishMediaStream
+
+#### 开始发布媒体流的事件回调。
+当您调用 startPublishMediaStream 开始向 TRTC 后台服务发布媒体流时，SDK 会立刻将这一指令同步给云端服务器，随后 SDK 会收到来自云端服务器的处理结果，并将指令的执行结果通过本事件回调通知给您。
+| 参数 | 描述 |
+| --- | --- |
+| code | 回调结果，0 表示成功，其余值表示失败，详见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| extraInfo | 扩展信息字段，个别错误码可能会带额外的信息帮助定位问题。 当 code 返回值为 ERR_SERVER_PROCESS_FAILED 时，意味着服务器无法处理您的请求，此时可使用"error_code"做为 key 获取到服务器返回的错误码，具体的错误码以及建议处理措施说明如下： -  2000: 参数错误，建议检查请求参数 -  2001: 未开通直播服务，建议去直播控制台开通直播服务 -  2021: 未开通转推第三方服务，建议联系产品开通转推第三方服务 -  3000: 服务器内部错误，建议重试 -  4006: 同一个任务并发冲突，上一个 startPublishMediaStream 任务服务器还在处理中，建议延迟重试 -  4007: 同一个任务已经通过 startPublishMediaStream 启动成功，建议使用返回的 taskId 调用 updatePublishMediaStream 接口更新任务 -  5001: 资源受限，建议延迟重试 |
+| message | 具体回调信息。 |
+| taskId | 当请求成功时，TRTC 后台会在回调中提供给您这项任务的 taskId，后续您可以通过该 taskId 结合 updatePublishMediaStream 和 stopPublishMediaStream 进行更新和停止。 |
+
+## onUpdatePublishMediaStream
+
+#### 更新媒体流的事件回调。
+当您调用媒体流发布接口 (updatePublishMediaStream) 开始向 TRTC 后台服务更新媒体流时，SDK 会立刻将这一指令同步给云端服务器，随后 SDK 会收到来自云端服务器的处理结果，并将指令的执行结果通过本事件回调通知给您。
+| 参数 | 描述 |
+| --- | --- |
+| code | 回调结果，0 表示成功，其余值表示失败，详见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| extraInfo | 扩展信息字段，个别错误码可能会带额外的信息帮助定位问题。 当 code 返回值为 ERR_SERVER_PROCESS_FAILED 时，意味着服务器无法处理您的请求，此时可使用"error_code"做为 key 获取到服务器返回的错误码，具体的错误码以及建议处理措施说明如下： -  2000: 参数错误，建议检查请求参数 -  2001: 未开通直播服务，建议去直播控制台开通直播服务 -  2002: 找不到任务，建议调用 startPublishMediaStream 接口重新启动任务 -  2018: 并发请求乱序，建议使用最新混流参数重试 -  2021: 未开通转推第三方服务，建议联系产品开通转推第三方服务 -  3000: 服务器内部错误，建议重试 -  4003: 任务正在退出中，建议先调用 stopPublishMediaStream 接口停止任务，再调用 startPublishMediaStream 接口启动任务 |
+| message | 具体回调信息。 |
+| taskId | 您调用媒体流发布接口 (updatePublishMediaStream) 时传入的 taskId，会通过此回调再带回给您，用于标识该回调属于哪一次更新请求。 |
+
+## onStopPublishMediaStream
+
+#### 停止媒体流的事件回调。
+当您调用停止发布媒体流 (stopPublishMediaStream) 开始向 TRTC 后台服务停止媒体流时，SDK 会立刻将这一指令同步给云端服务器，随后 SDK 会收到来自云端服务器的处理结果，并将指令的执行结果通过本事件回调通知给您。
+| 参数 | 描述 |
+| --- | --- |
+| code | 回调结果，0 表示成功，其余值表示失败，详见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| extraInfo | 扩展信息字段，个别错误码可能会带额外的信息帮助定位问题。 当 code 返回值为 ERR_SERVER_PROCESS_FAILED 时，意味着服务器无法处理您的请求，此时可使用"error_code"做为 key 获取到服务器返回的错误码，具体的错误码以及建议处理措施说明如下： -  2000: 参数错误，建议检查请求参数 -  2002: 找不到任务，无需处理 -  3000: 服务器内部错误，建议重试 -  4003: 任务正在退出中，无需处理 |
+| message | 具体回调信息。 |
+| taskId | 您调用停止发布媒体流 (stopPublishMediaStream) 时传入的 taskId，会通过此回调再带回给您，用于标识该回调属于哪一次停止请求。 |
+
+## onCdnStreamStateChanged
+
+#### RTMP/RTMPS 推流状态发生改变回调。
+当您调用 startPublishMediaStream 开始向 TRTC 后台服务发布媒体流时，SDK 会立刻将这一指令同步给云端服务。
+若您在目标推流配置 (TRTCPublishTarget) 设置了向腾讯或者第三方 CDN 上发布音视频流的 URL 配置，则具体 RTMP 或者 RTMPS 推流状态将通过此回调同步给您。
+| 参数 | 描述 |
+| --- | --- |
+| cdnUrl | 您调用 startPublishMediaStream 时通过目标推流配置 (TRTCPublishTarget) 传入的 url，在推流状态变更时，会通过此回调同步给您。 |
+| code | 推流结果，0 表示成功，其余值表示出错，详见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| extraInfo | 扩展信息字段，个别错误码可能会带额外的信息帮助定位问题。 |
+| message | 具体推流信息。 |
+| status | 推流状态。 -  0：推流未开始或者已结束。在您调用 stopPublishMediaStream 时会返回该状态。 -  1：正在连接 TRTC 服务器和 CDN 服务器。若无法立刻成功，TRTC 后台服务会多次重试尝试推流，并返回该状态（5s回调一次）。如成功进行推流，则进入状态 2；如服务器出错或 60 秒内未成功推流，则进入状态 4。 -  2：CDN 推流正在进行。在成功推流后，会返回该状态。 -  3：TRTC 服务器和 CDN 服务器推流中断，正在恢复。当 CDN 出现异常，或推流短暂中断时，TRTC 后台服务会自动尝试恢复推流，并返回该状态（5s回调一次）。如成功恢复推流，则进入状态 2；如服务器出错或 60 秒内未成功恢复，则进入状态 4。 -  4：TRTC 服务器和 CDN 服务器推流中断，且恢复或连接超时。即此时推流失败，您可以再次调用 updatePublishMediaStream 尝试推流。 -  5：正在断开 TRTC 服务器和 CDN 服务器。在您调用 stopPublishMediaStream 时，TRTC 后台服务会依次同步状态 5 和状态 0。 |
+
+## onScreenCaptureStarted
+
+#### 屏幕分享开启的事件回调。
+当您通过 startScreenCapture 等相关接口启动屏幕分享时，SDK 便会抛出此事件回调。
+
+## onScreenCapturePaused
+
+#### 屏幕分享暂停的事件回调。
+当您通过 pauseScreenCapture 暂停屏幕分享时，SDK 便会抛出此事件回调。
+| 参数 | 描述 |
+| --- | --- |
+| reason | 原因。 -  0：用户主动暂停。 -  1：注意此字段的含义在 MAC 和 Windows 平台有稍微差异。屏幕窗口不可见暂停（Mac）。表示设置屏幕分享参数导致的暂停（Windows）。 -  2：表示屏幕分享窗口被最小化导致的暂停（仅 Windows）。 -  3：表示屏幕分享窗口被隐藏导致的暂停（仅 Windows）。 -  4：表示屏幕共享因系统操作而暂停（仅 iOS）。 |
+
+## onScreenCaptureResumed
+
+#### 屏幕分享恢复的事件回调。
+当您通过 resumeScreenCapture 恢复屏幕分享时，SDK 便会抛出此事件回调。
+| 参数 | 描述 |
+| --- | --- |
+| reason | 恢复原因。 -  0：用户主动恢复。 -  1：注意此字段的含义在 MAC 和 Windows 平台有稍微差异。屏幕窗口恢复可见从而恢复分享（Mac）。屏幕分享参数设置完毕后自动恢复（Windows）。 -  2：表示屏幕分享窗口从最小化被恢复（仅 Windows）。 -  3：表示屏幕分享窗口从隐藏被恢复（仅 Windows）。 -  4：表示屏幕共享因系统操作而恢复（仅 iOS）。 |
+
+## onScreenCaptureStoped
+> **适用平台：** iOS, C++
+
+#### 屏幕分享停止的事件回调。
+当您通过 stopScreenCapture 停止屏幕分享时，SDK 便会抛出此事件回调。
+| 参数 | 描述 |
+| --- | --- |
+| reason | 停止原因，0：用户主动停止；1：屏幕窗口关闭导致停止；2：表示屏幕分享的显示屏状态变更（如接口被拔出、投影模式变更等）。 |
+
+## onScreenCaptureCovered
+> **适用平台：** C++
+
+#### 屏幕分享的目标窗口被遮挡的事件回调（仅适用于 Windows 操作系统）。
+
+当屏幕分享的目标窗口被遮挡无法正常捕获时，SDK 会抛出此事件回调，您可以在捕获到该事件回调后，通过 UI 上的一些变化来提示用户移开遮盖窗口。
+
+## onLocalRecordBegin
+
+#### 本地录制任务已经开始的事件回调。
+当您调用 startLocalRecording 启动本地媒体录制任务时，SDK 会抛出该事件回调，用于通知您录制任务是否已经顺利启动。
+| 参数 | 描述 |
+| --- | --- |
+| errCode | 状态码。 -  0：录制任务启动成功。 -  -1：内部错误导致录制任务启动失败。 -  -2：文件后缀名有误（例如不支持的录制格式）。 -  -6：录制已经启动，需要先停止录制。 -  -7：录制文件已存在，需要先删除文件。 -  -8：录制目录无写入权限，请检查目录权限问题。 |
+| storagePath | 录制文件存储路径。 |
+
+## onLocalRecording
+
+#### 本地录制任务正在进行中的进展事件回调。
+当您调用 startLocalRecording 成功启动本地媒体录制任务后，SDK 会定时地抛出本事件回调。
+您可通过捕获该事件回调来获知录制任务的健康状况。
+您可以在 startLocalRecording 时设定本事件回调的抛出间隔。
+| 参数 | 描述 |
+| --- | --- |
+| duration | 已经录制的累计时长，单位毫秒。 |
+| storagePath | 录制文件存储路径。 |
+
+## onLocalRecordFragment
+
+#### 本地录制分片的事件回调。
+
+当您开启分片录制时，每完成一个分片，都会通过此接口回调。
+| 参数 | 描述 |
+| --- | --- |
+| storagePath | 分片文件存储路径。 |
+
+## onLocalRecordComplete
+
+#### 本地录制任务已经结束的事件回调。
+当您调用 stopLocalRecording 停止本地媒体录制任务时，SDK 会抛出该事件回调，用于通知您录制任务的最终结果。
+| 参数 | 描述 |
+| --- | --- |
+| errCode | 状态码。 -   0：结束录制任务成功。 -  -1：录制失败。 -  -2：切换分辨率或横竖屏导致录制结束。 -  -3：录制时间太短，或未采集到任何视频或音频数据，请检查录制时长，或是否已开启音、视频采集。 |
+| storagePath | 录制文件存储路径。 |
+
+## onSnapshotComplete
+> **适用平台：** Android, C++
+
+#### 本地截图完成的事件回调。
+| 参数 | 描述 |
+| --- | --- |
+| bmp | 截图结果，如果 bmp 为 null 代表本次截图操作失败。 |
+| data | 截图数据，为 nullptr 表示截图失败。 |
+| format | 截图数据格式，目前只支持 TRTCVideoPixelFormat_BGRA32。 |
+| height | 截图画面的高度。 |
+| length | 截图数据长度，对于BGRA32而言，` length = width * height * 4 `。 |
+| type | 视频流类型。 |
+| userId | 用户标识，如果 userId 为空字符串，则代表截取的是本地画面。 |
+| width | 截图画面的宽度。 |
+
+> **注意**
+> 全平台 C++ 接口和 Java 接口在参数上是不一样的，C++ 接口用 7 个参数描述一个截图画面，Java 接口只用一个 Bitmap 描述一个截图画面。
+
+## onUserEnter
+
+#### 有主播加入当前房间（已废弃）。
+@deprecated 新版本开始不推荐使用，建议使用 onRemoteUserEnterRoom 替代之。
+
+## onUserExit
+
+#### 有主播离开当前房间（已废弃）。
+@deprecated 新版本开始不推荐使用，建议使用 onRemoteUserLeaveRoom 替代之。
+
+## onAudioEffectFinished
+
+#### 音效播放已结束（已废弃）。
+@deprecated 新版本开始不推荐使用，建议使用 TXAudioEffectManager 接口替代之。
+新的接口中不再区分背景音乐和音效，而是统一用 startPlayMusic 取代之。
+
+## onPlayBGMBegin
+> **适用平台：** C++
+
+#### 开始播放背景音乐（已废弃）。
+
+@deprecated 新版本开始不推荐使用，建议使用 ITXMusicPlayObserver 接口替代之。
+
+新的接口中不再区分背景音乐和音效，而是统一用 startPlayMusic 取代之。
+
+## onPlayBGMProgress
+> **适用平台：** C++
+
+#### 背景音乐的播放进度回调（已废弃）。
+
+@deprecated 新版本开始不推荐使用，建议使用 ITXMusicPlayObserver 接口替代之。
+
+新的接口中不再区分背景音乐和音效，而是统一用 startPlayMusic 取代之。
+
+## onPlayBGMComplete
+> **适用平台：** C++
+
+#### 背景音乐播放已经结束（已废弃）。
+
+@deprecated 新版本开始不推荐使用，建议使用 ITXMusicPlayObserver 接口替代之。
+
+新的接口中不再区分背景音乐和音效，而是统一用 startPlayMusic 取代之。
+
+## onSpeedTest
+> **适用平台：** Android, C++
+
+#### 服务器测速的结果回调（已废弃）。
+@deprecated 新版本开始不推荐使用，建议使用 onSpeedTestResult 接口替代之。
+
+## onRenderVideoFrame
+
+#### 自定义视频渲染回调。
+当您设置了本地或者远端的视频自定义渲染回调之后，SDK 就会将原本要交给渲染控件进行渲染的视频帧通过此回调接口抛送给您，以便于您进行自定义渲染。
+| 参数 | 描述 |
+| --- | --- |
+| frame | 待渲染的视频帧信息。 |
+| streamType | 频流类型：主路（Main）一般用于承载摄像头画面，辅路（Sub）一般用于承载屏幕分享画面。 |
+| userId | 视频源的 userId，如果是本地视频回调（setLocalVideoRenderDelegate），该参数可以忽略。 |
+
+## onGLContextCreated
+
+#### SDK 内部 OpenGL 环境已经创建的通知。
+
+## onProcessVideoFrame
+
+#### 用于对接第三方美颜组件的视频处理回调。
+如果您选购了第三方美颜组件，就需要在 TRTCCloud 中设置第三方美颜回调，之后 TRTC 就会将原本要进行预处理的视频帧通过此回调接口抛送给您。
+之后您就可以将 TRTC 抛出的视频帧交给第三方美颜组件进行图像处理，由于抛出的数据是可读且可写的，因此第三方美颜的处理结果也可以同步给 TRTC 进行后续的编码和发送。
+情况一：美颜组件自身会产生新的纹理。
+如果您使用的美颜组件会在处理图像的过程中产生一帧全新的纹理（用于承载处理后的图像），那请您在回调函数中将 dstFrame.textureId 设置为新纹理的 ID：
+情况二：美颜组件需要您提供目标纹理。
+如果您使用的第三方美颜模块并不生成新的纹理，而是需要您设置给该模块一个输入纹理和一个输出纹理，则可以考虑如下方案：
+| 参数 | 描述 |
+| --- | --- |
+| dstFrame | 用于接收第三方美颜处理过的视频画面。 |
+| srcFrame | 用于承载 TRTC 采集到的摄像头画面。 |
+> **注意**
+> 目前仅支持 OpenGL 纹理方案（ PC 仅支持 TRTCVideoBufferType_Buffer 格式）。
+
+**代码示例：**
+
+**Android：**
+``` java
+private final TRTCVideoFrameListener mVideoFrameListener = new TRTCVideoFrameListener() {
+    @Override
+    public void onGLContextCreated() {
+        mFURenderer.onSurfaceCreated();
+        mFURenderer.setUseTexAsync(true);
+    }
+    @Override
+    public int onProcessVideoFrame(TRTCVideoFrame srcFrame, TRTCVideoFrame dstFrame) {
+        dstFrame.texture.textureId = mFURenderer.onDrawFrameSingleInput(srcFrame.texture.textureId, srcFrame.width, srcFrame.height);
+        return 0;
+    }
+    @Override
+    public void onGLContextDestory() {
+        mFURenderer.onSurfaceDestroyed();
+    }
+};
+```
+``` java
+int onProcessVideoFrame(TRTCCloudDef.TRTCVideoFrame srcFrame, TRTCCloudDef.TRTCVideoFrame dstFrame) {
+    thirdparty_process(srcFrame.texture.textureId, srcFrame.width, srcFrame.height, dstFrame.texture.textureId);
+    return 0;
+}
+```
+
+**iOS：**
+``` objectivec
+uint32_t onProcessVideoFrame(TRTCVideoFrame * _Nonnull)srcFrame dstFrame:(TRTCVideoFrame * _Nonnull)dstFrame{
+    self.frameID += 1;
+    dstFrame.pixelBuffer = [[FURenderer shareRenderer] renderPixelBuffer:srcFrame.pixelBuffer
+                                                             withFrameId:self.frameID
+                                                                   items:self.renderItems
+                                                               itemCount:self.renderItems.count];
+    return 0;
+}
+```
+``` objectivec
+uint32_t onProcessVideoFrame(TRTCVideoFrame * _Nonnull)srcFrame dstFrame:(TRTCVideoFrame * _Nonnull)dstFrame{
+    thirdparty_process(srcFrame.textureId, srcFrame.width, srcFrame.height, dstFrame.textureId);
+    return 0;
+}
+```
+
+**C++：**
+``` cpp
+int onProcessVideoFrame(TRTCVideoFrame * srcFrame, TRTCVideoFrame *dstFrame) {
+    dstFrame->textureId = mFURenderer.onDrawFrameSingleInput(srcFrame->textureId);
+    return 0;
+}
+```
+``` cpp
+int onProcessVideoFrame(TRTCVideoFrame *srcFrame, TRTCVideoFrame *dstFrame) {
+    thirdparty_process(srcFrame->textureId, srcFrame->width, srcFrame->height, dstFrame->textureId);
+    return 0;
+}
+```
+
+## onGLContextDestroy
+> **适用平台：** C++
+
+#### SDK 内部 OpenGL 环境被销毁的通知。
+
+## onCapturedAudioFrame
+
+#### 本地采集并经过音频模块前处理后的音频数据回调。
+
+当您设置完音频数据自定义回调之后，SDK 内部会把刚采集到并经过前处理(ANS、AEC、AGC）之后的数据，以 PCM 格式的形式通过本接口回调给您。
+-  此接口回调出的音频时间帧长固定为0.02s，格式为 PCM 格式。
+
+-  由时间帧长转化为字节帧长的公式为 ` 采样率 × 时间帧长 × 声道数 × 采样点位宽 `。
+
+-  以 TRTC 默认的音频录制格式48000采样率、单声道、16采样点位宽为例，字节帧长为 ` 48000 × 0.02s × 1 × 16bit = 15360bit = 1920字节 `。
+
+| 参数 | 描述 |
+| --- | --- |
+| frame | PCM 格式的音频数据帧。 |
+
+> **注意**
+> 1. 请不要在此回调函数中做任何耗时操作，由于 SDK 每隔 20ms 就要处理一帧音频数据，如果您的处理时间超过 20ms，就会导致声音异常。
+> 2. 此接口回调出的音频数据是可读写的，也就是说您可以在回调函数中同步修改音频数据，但请保证处理耗时。
+> 
+
+> 3. 此接口回调出的音频数据已经经过了前处理(ANS、AEC、AGC），但**不包含**背景音、音效、混响等前处理效果，延迟较低。
+>
+
+## onLocalProcessedAudioFrame
+
+#### 本地采集并经过音频模块前处理、音效处理和混 BGM 后的音频数据回调。
+当您设置完音频数据自定义回调之后，SDK 内部会把刚采集到并经过前处理、音效处理和混 BGM 之后的数据，在最终进行网络编码之前，以 PCM 格式的形式通过本接口回调给您。
+-  此接口回调出的音频时间帧长固定为0.02s，格式为 PCM 格式。
+-  由时间帧长转化为字节帧长的公式为` 采样率 × 时间帧长 × 声道数 × 采样点位宽 `。
+-  以 TRTC 默认的音频录制格式48000采样率、单声道、16采样点位宽为例，字节帧长为` 48000 × 0.02s × 1 × 16bit = 15360bit = 1920字节 `。
+特殊说明：
+您可以通过设置接口中的 ` TRTCAudioFrame.extraData ` 字段，达到传输信令的目的。由于音频帧头部的数据块不能太大，建议您写入 ` extraData ` 时，尽量将信令控制在几个字节的大小，如果超过 100 个字节，写入的数据不会被发送。
+房间内其他用户可以通过 ITRTCAudioFrameCallback 中的 ` onRemoteUserAudioFrame ` 中的 ` TRTCAudioFrame.extraData ` 字段回调接收数据。
+| 参数 | 描述 |
+| --- | --- |
+| frame | PCM 格式的音频数据帧。 |
+
+> **注意**
+> 1. 请不要在此回调函数中做任何耗时操作，由于 SDK 每隔 20ms 就要处理一帧音频数据，如果您的处理时间超过 20ms，就会导致声音异常。
+> 2. 此接口回调出的音频数据是可读写的，也就是说您可以在回调函数中同步修改音频数据，但请保证处理耗时。
+> 3. 此接口回调出的数据已经经过了前处理(ANS、AEC、AGC）、音效和混 BGM 处理，声音的延迟相比于 onCapturedAudioFrame 要高一些。
+
+## onPlayAudioFrame
+> **适用平台：** C++
+
+#### 混音前的每一路远程用户的音频数据。
+
+当您设置完音频数据自定义回调之后，SDK 内部会把远端的每一路原始数据，在最终混音之前，以 PCM 格式的形式通过本接口回调给您。
+-  此接口回调出的音频时间帧长固定为0.02s，格式为 PCM 格式。
+
+-  由时间帧长转化为字节帧长的公式为` 采样率 × 时间帧长 × 声道数 × 采样点位宽 `。
+
+-  以 TRTC 默认的音频录制格式48000采样率、单声道、16采样点位宽为例，字节帧长为` 48000 × 0.02s × 1 × 16bit = 15360bit = 1920字节 `。
+
+| 参数 | 描述 |
+| --- | --- |
+| frame | PCM 格式的音频数据帧。 |
+| userId | 用户标识。 |
+
+> **注意**
+> 此接口回调出的音频数据是只读的，不支持修改。
+## onMixedPlayAudioFrame
+
+#### 将各路待播放音频混合之后并在最终提交系统播放之前的数据回调。
+
+当您设置完音频数据自定义回调之后，SDK 内部会把各路待播放的音频混合之后的音频数据，在提交系统播放之前，以 PCM 格式的形式通过本接口回调给您。
+-  此接口回调出的音频时间帧长固定为0.02s，格式为 PCM 格式。
+
+-  由时间帧长转化为字节帧长的公式为 ` 采样率 × 时间帧长 × 声道数 × 采样点位宽 `。
+
+-  以 TRTC 默认的音频录制格式48000采样率、单声道、16采样点位宽为例，字节帧长为 ` 48000 × 0.02s × 1 × 16bit = 15360bit = 1920字节 `。
+
+| 参数 | 描述 |
+| --- | --- |
+| frame | PCM 格式的音频数据帧。 |
+
+> **注意**
+> 1. 请不要在此回调函数中做任何耗时操作，由于 SDK 每隔 20ms 就要处理一帧音频数据，如果您的处理时间超过 20ms，就会导致声音异常。
+> 2. 此接口回调出的音频数据是可读写的，也就是说您可以在回调函数中同步修改音频数据，但请保证处理耗时。
+> 3. 此接口回调出的是对各路待播放音频数据的混合，但其中并不包含耳返的音频数据。
+>
+
+## onMixedAllAudioFrame
+
+#### SDK 所有音频混合后的音频数据（包括采集到的和待播放的）。
+
+当您设置完音频数据自定义回调之后，SDK 内部会把所有采集到的和待播放的音频数据混合起来，以 PCM 格式的形式通过本接口回调给您，便于您进行自定义录制。
+-  此接口回调出的音频时间帧长固定为0.02s，格式为 PCM 格式。
+
+-  由时间帧长转化为字节帧长的公式为 ` 采样率 × 时间帧长 × 声道数 × 采样点位宽 `。
+
+-  以 TRTC 默认的音频录制格式48000采样率、单声道、16采样点位宽为例，字节帧长为 ` 48000 × 0.02s × 1 × 16bit = 15360bit = 1920字节 `。
+
+| 参数 | 描述 |
+| --- | --- |
+| frame | PCM 格式的音频数据帧。 |
+
+> **注意**
+> 1. 此接口回调出的是SDK所有音频数据的混合数据，包括：经过 3A 前处理、特效叠加以及背景音乐混音后的本地音频，所有远端音频，但不包括耳返音频。
+> 2. 此接口回调出的音频数据不支持修改。
+## onLog
+
+#### 本地 LOG 的打印回调。
+如果您希望捕获 SDK 的本地日志打印行为，可以通过设置日志回调，让 SDK 将要打印的日志都通过本回调接口抛送给您。
+| 参数 | 描述 |
+| --- | --- |
+| level | 日志等级请参见 TRTC_LOG_LEVEL。 |
+| log | 日志内容。 |
+| module | 保留字段，暂无具体意义，目前为固定值 ` TXLiteAVSDK `。 |
+
+## TRTCVideoRenderListener
+> **适用平台：** Android
+
+## TRTCVideoFrameListener
+> **适用平台：** Android
+
+## TRTCAudioFrameListener
+> **适用平台：** Android
+
+## TRTCLogListener
+> **适用平台：** Android
+
+## onGLContextDestory
+> **适用平台：** Android, iOS
+
+#### SDK 内部 OpenGL 环境被销毁的通知。
+
+## onRemoteUserAudioFrame
+> **适用平台：** Android, iOS
+
+#### 混音前的每一路远程用户的音频数据。
+
+当您设置完音频数据自定义回调之后，SDK 内部会把远端的每一路原始数据，在最终混音之前，以 PCM 格式的形式通过本接口回调给您。
+-  此接口回调出的音频时间帧长固定为0.02s，格式为 PCM 格式。
+
+-  由时间帧长转化为字节帧长的公式为` 采样率 × 时间帧长 × 声道数 × 采样点位宽 `。
+
+-  以 TRTC 默认的音频录制格式48000采样率、单声道、16采样点位宽为例，字节帧长为` 48000 × 0.02s × 1 × 16bit = 15360bit = 1920字节 `。
+
+| 参数 | 描述 |
+| --- | --- |
+| frame | PCM 格式的音频数据帧。 |
+| userId | 用户标识。 |
+
+> **注意**
+> 此接口回调出的音频数据是只读的，不支持修改。
+## onVoiceEarMonitorAudioFrame
+> **适用平台：** Android, iOS
+
+#### 耳返的音频数据。
+
+当您设置完音频数据自定义回调之后，SDK 内部会把耳返的音频数据在播放之前以 PCM 格式的形式通过本接口回调给您。
+-  此接口回调出的音频时间帧长不固定，格式为 PCM 格式。
+
+-  由时间帧长转化为字节帧长的公式为 ` 采样率 × 时间帧长 × 声道数 × 采样点位宽 `。
+
+-  以 TRTC 默认的音频录制格式 48000 采样率、单声道、16采样点位宽为例，0.02s 的音频数据字节帧长为 ` 48000 × 0.02s × 1 × 16bit = 15360bit = 1920字节 `。
+
+| 参数 | 描述 |
+| --- | --- |
+| frame | PCM 格式的音频数据帧。 |
+
+> **注意**
+> 1. 请不要在此回调函数中做任何耗时操作，否则会导致声音异常。
+> 2. 此接口回调出的音频数据是可读写的，也就是说您可以在回调函数中同步修改音频数据，但请保证处理耗时。
+## onDisConnectOtherRoom
+> **适用平台：** Android
+
+#### 结束跨房通话的结果回调。
+
+调用 TRTCCloud 中的 disConnectOtherRoom 接口会结束两个不同房间中的主播视频通话，也就是所谓的“主播PK”功能。
+
+调用者会收到 ` onDisconnectOtherRoom() ` 回调来获知结束跨房通话是否成功。
+| 参数 | 描述 |
+| --- | --- |
+| errCode | 错误码，ERR_NULL 代表成功，其他请参见[错误码](https://cloud.tencent.com/document/product/647/32257)。 |
+| errMsg | 错误信息。 |
+
+## onScreenCaptureStopped
+> **适用平台：** Android
+
+#### 屏幕分享停止的事件回调。
+
+当您通过 stopScreenCapture 停止屏幕分享时，SDK 便会抛出此事件回调。
+| 参数 | 描述 |
+| --- | --- |
+| reason | 停止原因，0：用户主动停止；1：屏幕窗口关闭导致停止；2：表示屏幕分享的显示屏状态变更（如接口被拔出、投影模式变更等）。 |
+
+## TRTCVideoRenderDelegate
+> **适用平台：** iOS
+
+## TRTCVideoFrameDelegate
+> **适用平台：** iOS
+
+## TRTCAudioFrameDelegate
+> **适用平台：** iOS
+
+## TRTCLogDelegate
+> **适用平台：** iOS
+
+## onDevice
+> **适用平台：** iOS
+
+#### 本地设备的通断状态发生变化（仅适用于桌面系统）。
+
+当本地设备（包括摄像头、麦克风以及扬声器）被插入或者拔出时，SDK 便会抛出此事件回调。
+| 参数 | 描述 |
+| --- | --- |
+| deviceId | 设备 ID。 |
+| deviceType | 设备类型。 |
+| state | 通断状态，0：设备断开；1：设备连接。 |
+
+## onRecvCustomCmdMsgUserId
+> **适用平台：** iOS
+
+#### 收到自定义消息的事件回调。
+
+当房间中的某个用户使用 sendCustomCmdMsg 发送自定义 UDP 消息时，房间中的其他用户可以通过 ` onRecvCustomCmdMsg ` 事件回调接收到该条消息。
+| 参数 | 描述 |
+| --- | --- |
+| cmdID | 命令 ID。 |
+| message | 消息数据。 |
+| seq | 消息序号。 |
+| userId | 用户标识。 |
+
+## onMissCustomCmdMsgUserId
+> **适用平台：** iOS
+
+#### 自定义消息丢失的事件回调。
+
+当您使用 sendCustomCmdMsg 发送自定义 UDP 消息时，即使设置了可靠传输（reliable），也无法确 100% 不丢失，只是丢消息概率极低，能满足常规可靠性要求。
+
+在发送端设置了可靠运输（reliable）后，SDK 都会通过此回调通知过去时间段内（通常为5s）传输途中丢失的自定义消息数量统计信息。
+| 参数 | 描述 |
+| --- | --- |
+| cmdID | 命令 ID。 |
+| errCode | 错误码。 |
+| missed | 丢失的消息数量。 |
+| userId | 用户标识。 |
+
+> **注意**
+> 只有在发送端设置了可靠传输（reliable），接收方才能收到消息的丢失回调。
+
+--------------------------------------------------------------------------------
+title: TRTC SDK TRTCCloud API 参考 (Android/iOS/C++)
+description: 核心方法：enterRoom、exitRoom、startLocalAudio、startLocalPreview、muteRemoteAudio。用于进退房、采集发布与远端订阅控制。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/sdk-api-reference.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 C++ 接口为基准。Android (TRTCCloud)、iOS (TRTCCloud)、C++ (ITRTCCloud) 的接口名称和参数语义完全一致，仅函数签名格式不同。
+> - Android: Java 风格（如 `enterRoom(TRTCParams param, int scene)`）
+> - iOS: ObjC 风格（如 `enterRoom:appScene:`）
+> - C++: 标准 C++ 风格（如 `enterRoom(const TRTCParams& params, TRTCAppScene scene)`）
+
+**跨平台 API 命名对照（仅列出名称不一致的 API）：**
+| 通用名 | Android | iOS | C++ |
+| --- | --- | --- | --- |
+| 实例创建 | sharedInstance(context) | sharedInstance | getTRTCShareInstance() |
+| 事件回调 | TRTCCloudListener | TRTCCloudDelegate | ITRTCCloudCallback |
+| 布尔值 | true/false | YES/NO | true/false |
+| sharedInstance | sharedInstance | sharedInstance | getTRTCShareInstance |
+| destroySharedInstance | destroySharedInstance | destroySharedInstance | destroyTRTCShareInstance |
+| addListener | addListener | addDelegate | addCallback |
+| removeListener | removeListener | removeDelegate | removeCallback |
+| enableEncSmallVideoStream | enableEncSmallVideoStream | enableEncSmallVideoStream | enableSmallVideoStream |
+| setWatermark | setWatermark | setWatermark | setWaterMark |
+| setLocalVideoProcessListener | setLocalVideoProcessListener | setLocalVideoProcessDelegete | setLocalVideoCustomProcessCallback |
+| getScreenCaptureSourcesWithThumbnailSize | getScreenCaptureSourcesWithThumbnailSize | getScreenCaptureSourcesWithThumbnailSize | getScreenCaptureSources |
+| removeAllExcludedShareWindows | removeAllExcludedShareWindows | removeAllExcludedShareWindows | removeAllExcludedShareWindow |
+| removeAllIncludedShareWindows | removeAllIncludedShareWindows | removeAllIncludedShareWindows | removeAllIncludedShareWindow |
+| setLocalVideoRenderListener | setLocalVideoRenderListener | setLocalVideoRenderDelegate | setLocalVideoRenderCallback |
+| setRemoteVideoRenderListener | setRemoteVideoRenderListener | setRemoteVideoRenderDelegate | setRemoteVideoRenderCallback |
+| setAudioFrameListener | setAudioFrameListener | setAudioFrameDelegate | setAudioFrameCallback |
+| setLogListener | setLogListener | setLogDelegate | setLogCallback |
+| setListenerHandler | setListenerHandler | delegateQueue | setListenerHandler |
+| setCapturedAudioFrameCallbackFormat | setCapturedAudioFrameCallbackFormat | setCapturedAudioFrameDelegateFormat | setCapturedAudioFrameCallbackFormat |
+| setLocalProcessedAudioFrameCallbackFormat | setLocalProcessedAudioFrameCallbackFormat | setLocalProcessedAudioFrameDelegateFormat | setLocalProcessedAudioFrameCallbackFormat |
+| setMixedPlayAudioFrameCallbackFormat | setMixedPlayAudioFrameCallbackFormat | setMixedPlayAudioFrameDelegateFormat | setMixedPlayAudioFrameCallbackFormat |
+| TRTCViewMargin | TRTCViewMargin | setDebugViewMargin | TRTCViewMargin |
+| setPerspectiveCorrectionPoints | setPerspectiveCorrectionPoints | setPerspectiveCorrectionWithUser | setPerspectiveCorrectionPoints |
+| connectOtherRoom | ConnectOtherRoom | connectOtherRoom | connectOtherRoom |
+| disconnectOtherRoom | DisconnectOtherRoom | disconnectOtherRoom | disconnectOtherRoom |
+
+# 腾讯云实时音视频(TRTC SDK) TRTCCloud 文档
+
+## 概述
+本文档是 实时音视频(TRTC SDK) TRTCCloud 的跨平台 API 参考，适用于 Android/iOS/C++ 平台。
+
+## TRTCCloud
+## getTRTCShareInstance
+> **平台 API 名称：** Android: `sharedInstance` | iOS: `sharedInstance`
+
+#### 创建 TRTCCloud 实例（单例模式）。
+| 参数 | 描述 |
+| --- | --- |
+| context | 仅适用于 Android 平台，SDK 内部会将其转化为 Android 平台的 ApplicationContext 用于调用 Android System API。 如果传入的 ` context ` 参数为空，SDK 内部会自动获取当前进程的 ApplicationContext。 |
+
+## destroyTRTCShareInstance
+> **平台 API 名称：** Android: `destroySharedInstance` | iOS: `destroySharedInstance`
+
+#### 销毁 TRTCCloud 实例（单例模式）。
+
+## addCallback
+> **平台 API 名称：** Android: `addListener` | iOS: `addDelegate`
+
+#### 添加 TRTC 事件回调。
+您可以通过 ITRTCCloudCallback 获得来自 SDK 的各类事件通知（例如：错误码，警告码，音视频状态参数等）。
+
+## removeCallback
+> **平台 API 名称：** Android: `removeListener` | iOS: `removeDelegate`
+
+#### 移除 TRTC 事件回调。
+
+## enterRoom
+
+#### 进入房间。
+TRTC 的所有用户都需要进入房间才能“发布”或“订阅”音视频流，“发布”是指将自己的音频和视频推送到云端，“订阅”是指从云端拉取房间里其他用户的音视频流。
+调用该接口时，您需要指定您的应用场景 TRTCAppScene 以获取最佳的音视频传输体验，这些场景可以分成两大类：
+**实时通话：**
+包括 TRTC_APP_SCENE_VIDEOCALL 和 TRTC_APP_SCENE_AUDIOCALL 两个可选项，分别是视频通话和语音通话，该模式适合 1对1 的音视频通话，或者参会人数在 300 人以内的在线会议。
+**在线直播：**
+包括 TRTC_APP_SCENE_LIVE 和 TRTC_APP_SCENE_VOICE_CHATROOM 两个可选项，分别是视频直播和语音直播，该模式适合十万人以内的在线直播场景，但需要您在接下来介绍的 TRTCParams 参数中指定 **角色(role)** 这个字段，也就是将房间中的用户区分为 **主播** (TRTCRoleAnchor) 和 **观众** (TRTCRoleAudience) 两种不同的角色。
+调用该接口后，您会收到来自 TRTCCloudListener 中的 onEnterRoom 回调：
+-  如果进房成功，参数 ` result ` 会是一个正数（result > 0），表示从函数调用到进入房间所花费的时间，单位是毫秒（ms）。
+-  如果进房失败，参数 ` result ` 会是一个负数（result < 0），表示进房失败的[错误码](https://cloud.tencent.com/document/product/647/32257)。
+| 参数 | 描述 |
+| --- | --- |
+| param | 进房参数，用于指定用户的身份、角色和安全票据等信息，详情请参见  TRTCParams 。 |
+| scene | 应用场景，用于指定您的业务场景，同一个房间内的所有用户需要设定相同的 TRTCAppScene。 |
+
+> **注意**
+> 1. 同一个房间内的所有用户需要设定相同的 ` scene `。不同的 ` scene ` 会导致偶现的异常问题。
+> 2. 当您指定参数 ` scene ` 为 TRTC_APP_SCENE_LIVE 或 TRTC_APP_SCENE_VOICE_CHATROOM 时，您必须通过 TRTCParams 中的 ` role `字段为当前用户设定他/她在房间中的角色。
+> 3. 请您尽量保证 enterRoom 与 exitRoom 前后配对使用，即保证“先退出前一个房间再进入下一个房间”，否则会导致很多异常问题。
+
+## exitRoom
+
+#### 离开房间。
+调用该接口会让用户离开自己所在的音视频房间，并释放摄像头、麦克风、扬声器等设备资源。
+等资源释放完毕之后，SDK 会通过 ITRTCCloudCallback 中的 onExitRoom 回调向您通知。
+如果您要再次调用  enterRoom  或者切换到其他的供应商的 SDK，建议等待 onExitRoom 回调到来之后再执行之后的操作，以避免摄像头或麦克风被占用的问题。
+
+## switchRole
+
+#### 切换角色（支持设置权限位）。
+调用本接口可以实现用户在“主播”和“观众”两种角色之间来回切换。
+由于视频直播和语音聊天室需要支持多达10万名观众同时观看，所以设定了 **只有主播才能发布自己的音视频** 的规则。因此，当有些观众希望发布自己的音视频流（以便能跟主播互动）时，就需要先把自己的角色切换成 **主播**。
+您可以在进入房间时通过 TRTCParams 中的 ` role ` 字段事先确定用户的角色，也可以在进入房间后通过该接口动态切换角色。
+| 参数 | 描述 |
+| --- | --- |
+| privateMapKey | 用于权限控制的权限票据，当您希望某个房间只能让特定的 userId 进入或者上行视频时，需要使用 ` privateMapKey ` 进行权限保护。 -  仅建议有高级别安全需求的客户使用，更多详情请参见 [开启高级权限控制](https://cloud.tencent.com/document/product/647/32240)。 |
+| role | 角色，默认为 **主播**。 - TRTCRoleAnchor ：主播，可以发布自己的音视频，同一个房间里最多支持50个主播同时发布音视频。 - TRTCRoleAudience ：观众，不能发布自己的音视频流，只能观看房间中其他主播的音视频。如果要发布自己的音视频，需要先通过 switchRole 切换成 **主播**，同一个房间内同时最多可以容纳 10 万名观众。 |
+> **注意**
+> 1. 该接口仅适用于视频直播（TRTC_APP_SCENE_LIVE）和语音聊天室（TRTC_APP_SCENE_VOICE_CHATROOM）这两个场景。
+> 2. 如果您在调用 enterRoom 时指定的 ` scene ` 为 TRTC_APP_SCENE_VIDEOCALL 或 TRTC_APP_SCENE_AUDIOCALL，请不要调用这个接口。
+
+## switchRoom
+
+#### 切换房间。
+使用该接口可以让用户快速从一个房间切换到另一个房间。
+-  如果用户的身份是“观众”，该接口的调用效果等同于 ` exitRoom(当前房间) + enterRoom（新的房间） `。
+-  如果用户的身份是“主播”，该接口在切换房间的同时还会保持自己的音视频发布状态，因此在房间切换过程中，摄像头的预览和声音的采集都不会中断。
+该接口适用于在线教育场景中，监课老师在多个房间中进行快速切换的场景。在该场景下使用 ` switchRoom ` 可以获得比 ` exitRoom + enterRoom ` 更好的流畅性和更少的代码量。
+接口调用结果会通过 ITRTCCloudCallback 中的 onSwitchRoom 回调。
+| 参数 | 描述 |
+| --- | --- |
+| config | 房间参数，详情请参见 TRTCSwitchRoomConfig。 |
+> **注意**
+> 由于对老版本 SDK 兼容的需求，参数 ` config ` 中同时包含 ` roomId ` 与 ` strRoomId ` 两个参数，这两个参数的填写格外讲究，请注意如下事项：
+> 1. 若您选用 ` strRoomId `，则 ` roomId ` 需要填写为0。若两者都填，将优先选用 ` roomId `。
+> 2. 所有房间需要同时使用 ` strRoomId ` 或同时使用 ` roomId `，不可混用，否则将会出现很多预期之外的 bug。
+
+## connectOtherRoom
+
+#### 请求跨房通话。
+默认情况下，只有同一个房间中的用户之间可以进行音视频通话，不同的房间之间的音视频流是相互隔离的。
+但您可以通过调用该接口，将另一个房间中某个主播音视频流发布到自己所在的房间中，与此同时，该接口也会将自己的音视频流发布到目标主播的房间中。
+也就是说，您可以使用该接口让身处两个不同房间中的主播进行跨房间的音视频流分享，从而让每个房间中的观众都能观看到这两个主播的音视频。该功能可以用来实现主播之间的 PK 功能。
+跨房通话的请求结果会通过 ITRTCCloudCallback 中的 onConnectOtherRoom 回调通知给您。
+例如：当房间“101”中的主播 A 通过 ` connectOtherRoom() ` 跟房间“102”中的主播 B 建立跨房通话后，
+-  房间“101”中的用户都会收到主播 B 的 ` onRemoteUserEnterRoom(B) ` 和 ` onUserVideoAvailable(B,true) ` 这两个事件回调，即房间“101”中的用户都可以订阅主播 B 的音视频。
+-  房间“102”中的用户都会收到主播 A 的 ` onRemoteUserEnterRoom(A) ` 和 ` onUserVideoAvailable(A,true) ` 这两个事件回调，即房间“102”中的用户都可以订阅主播 A 的音视频。
+
+跨房通话的参数考虑到后续扩展字段的兼容性问题，暂时采用了 JSON 格式的参数：
+**情况一：数字房间号**
+如果房间“101”中的主播 A 要跟房间“102”中的主播 B 连麦，那么主播 A 调用该接口时需要传入：` {"roomId": 102, "userId": "userB"} `
+示例代码如下：
+**情况二：字符串房间号**
+如果您使用的是字符串房间号，务必请将 json 中的 “roomId” 替换成 “strRoomId”: ` {"strRoomId": "102", "userId": "userB"} `
+示例代码如下：
+| 参数 | 描述 |
+| --- | --- |
+| param | 需要您传入 JSON 格式的字符串参数，` roomId ` 代表数字格式的房间号，` strRoomId ` 代表字符串格式的房间号，` userId ` 代表目标主播的用户 ID。 |
+
+**代码示例：**
+
+**Android：**
+``` java
+  JSONObject jsonObj = new JSONObject();
+  jsonObj.put("roomId", 102);
+  jsonObj.put("userId", "userB");
+  trtc.ConnectOtherRoom(jsonObj.toString());
+```
+``` java
+  JSONObject jsonObj = new JSONObject();
+  jsonObj.put("strRoomId", "102");
+  jsonObj.put("userId", "userB");
+  trtc.ConnectOtherRoom(jsonObj.toString());
+```
+
+**iOS：**
+``` objectivec
+  NSMutableDictionaryjsonDict = [[NSMutableDictionary alloc] init];
+  [jsonDict setObject:@(102) forKey:@"roomId"];
+  [jsonDict setObject:@"userB" forKey:@"userId"];
+  NSData* jsonData = [NSJSONSerialization dataWithJSONObject:jsonDict options:NSJSONWritingPrettyPrinted error:nil];
+  NSString* jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+  [trtc connectOtherRoom:jsonString];
+```
+``` objectivec
+  NSMutableDictionaryjsonDict = [[NSMutableDictionary alloc] init];
+  [jsonDict setObject:@"102" forKey:@"strRoomId"];
+  [jsonDict setObject:@"userB" forKey:@"userId"];
+  NSData* jsonData = [NSJSONSerialization dataWithJSONObject:jsonDict options:NSJSONWritingPrettyPrinted error:nil];
+  NSString* jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+  [trtc connectOtherRoom:jsonString];
+```
+
+**C++：**
+``` cpp
+  Json::Value jsonObj;
+  jsonObj["roomId"] = 102;
+  jsonObj["userId"] = "userB";
+  Json::FastWriter writer;
+  std::string params = writer.write(jsonObj);
+  trtc.connectOtherRoom(params.c_str());
+```
+``` cpp
+  Json::Value jsonObj;
+  jsonObj["strRoomId"] = "102";
+  jsonObj["userId"] = "userB";
+  Json::FastWriter writer;
+  std::string params = writer.write(jsonObj);
+  trtc.connectOtherRoom(params.c_str());
+```
+
+## disconnectOtherRoom
+
+#### 退出跨房通话。
+退出结果会通过 ITRTCCloudCallback 中的 onDisconnectOtherRoom 回调通知给您。
+
+## setDefaultStreamRecvMode
+
+#### 设置订阅模式（需要在进入房前设置才能生效）。
+您可以通过该接口在“自动订阅”和“手动订阅”两种模式下进行切换：
+-  自动订阅：默认模式，用户在进入房间后会立刻接收到该房间中的音视频流，音频会自动播放，视频会自动开始解码（依然需要您通过 startRemoteView 接口绑定渲染控件）。
+-  手动订阅：在用户进入房间后，需要手动调用 startRemoteView 接口才能启动视频流的订阅和解码，需要手动调用 muteRemoteAudio (false) 接口才能启动声音的播放。
+在绝大多数场景下，用户进入房间后都会订阅房间中所有主播的音视频流，因此 TRTC 默认采用了自动订阅模式，以求得最佳的“秒开体验”。
+如果您的应用场景中每个房间同时会有很多路音视频流在发布，而每个用户只想选择性地订阅其中的 1-2 路，则推荐使用“手动订阅”模式以节省流量费用。
+| 参数 | 描述 |
+| --- | --- |
+| autoRecvAudio | true：自动订阅音频；false：需手动调用 ` muteRemoteAudio(false) ` 订阅音频。默认值：true。 |
+| autoRecvVideo | true：自动订阅视频；false：需手动调用 ` startRemoteView ` 订阅视频。默认值：true。 |
+> **注意**
+> 1. 需要在进入房间前调用该接口进行设置才能生效。
+> 2. 在自动订阅模式下，如果用户在进入房间后没有调用  startRemoteView 订阅视频流，SDK 会自动停止订阅视频流，以便达到节省流量的目的。
+
+## createSubCloud
+
+#### 创建子房间实例（用于多房间并发观看）。
+TRTCCloud 一开始被设计成单例模式，限制了多房间并发观看的能力。
+通过调用该接口，您可以创建出多个 TRTCCloud 实例，以便同时进入多个不同的房间观看音视频流。
+但需要注意的是，您在多个 TRTCCloud 实例中发布音视频流的能力会受到一定限制。
+该功能主要用于在线教育场景中一种被称为“超级小班课”的业务场景中，用于解决“每个 TRTC 的房间中最多只能有 50 人同时发布自己音视频流”的限制。
+示例代码如下：
+#### 返回值说明：
+子 TRTCCloud 实例
+
+> **注意**
+> 1. 同一个用户，可以使用同一个 userId 进入多个不同 roomId 的房间。
+> 2. 两台不同的终端设备不可以同时使用同一个 userId 进入同一个 roomId 的房间。
+> 3. 您可以分别为不同实例分别设置 ITRTCCloudCallback 获取各自的事件通知。
+> 4. 同一个用户可以在多个 TRTCCloud 实例中推流，也可以调用子实例中与本地音视频相关的接口。但需要注意：
+> -  多实例的音频需要同时为麦克风采集或自定义采集，而且与音频设备相关的接口调用会以最后一次为准；
+> -  与摄像头相关的调用会以最后一次为准：startLocalPreview。
+
+**代码示例：**
+
+**Android：**
+``` java
+    //In the small room that needs interaction, enter the room as an anchor and push audio and video streams
+    TRTCCloud mainCloud = TRTCCloud.sharedInstance(mContext);
+    TRTCCloudDef.TRTCParams mainParams = new TRTCCloudDef.TRTCParams();
+    //Fill your params
+    mainParams.role = TRTCCloudDef.TRTCRoleAnchor;
+    mainCloud.enterRoom(mainParams, TRTCCloudDef.TRTC_APP_SCENE_LIVE);
+    //...
+    mainCloud.startLocalPreview(true, videoView);
+    mainCloud.startLocalAudio(TRTCCloudDef.TRTC_AUDIO_QUALITY_DEFAULT);
+
+    //In the large room that only needs to watch, enter the room as an audience and pull audio and video streams
+    TRTCCloud subCloud = mainCloud.createSubCloud();
+    TRTCCloudDef.TRTCParams subParams = new TRTCCloudDef.TRTCParams();
+    //Fill your params
+    subParams.role = TRTCCloudDef.TRTCRoleAudience;
+    subCloud.enterRoom(subParams, TRTCCloudDef.TRTC_APP_SCENE_LIVE);
+    //...
+    subCloud.startRemoteView(userId, TRTCCloudDef.TRTC_VIDEO_STREAM_TYPE_BIG, view);
+    //...
+    //Exit from new room and release it.
+    subCloud.exitRoom();
+    mainCloud.destroySubCloud(subCloud);
+```
+
+**iOS：**
+``` objectivec
+    //In the small room that needs interaction, enter the room as an anchor and push audio and video streams
+    TRTCCloud *mainCloud = [TRTCCloud sharedInstance];
+    TRTCParams *mainParams = [[TRTCParams alloc] init];
+    //Fill your params
+    mainParams.role = TRTCRoleAnchor;
+    [mainCloud enterRoom:mainParams appScene:TRTCAppSceneLIVE)];
+    //...
+    [mainCloud startLocalPreview:YES view:videoView];
+    [mainCloud startLocalAudio:TRTCAudioQualityDefault];
+
+    //In the large room that only needs to watch, enter the room as an audience and pull audio and video streams
+    TRTCCloud *subCloud = [mainCloud createSubCloud];
+    TRTCParams *subParams = [[TRTCParams alloc] init];
+    //Fill your params
+    subParams.role = TRTCRoleAudience;
+    [subCloud enterRoom:subParams appScene:TRTCAppSceneLIVE)];
+    //...
+    [subCloud startRemoteView:userId streamType:TRTCVideoStreamTypeBig view:videoView];
+    //...
+    //Exit from new room and release it.
+    [subCloud exitRoom];
+    [mainCloud destroySubCloud:subCloud];
+```
+
+**C++：**
+``` cpp
+    //In the small room that needs interaction, enter the room as an anchor and push audio and video streams
+    ITRTCCloud *mainCloud = getTRTCShareInstance();
+    TRTCParams mainParams;
+    //Fill your params
+    mainParams.role = TRTCRoleAnchor;
+    mainCloud->enterRoom(mainParams, TRTCAppSceneLIVE);
+    //...
+    mainCloud->startLocalAudio(TRTCAudioQualityDefault);
+    mainCloud->startLocalPreview(renderView);
+    
+    //In the large room that only needs to watch, enter the room as an audience and pull audio and video streams
+    ITRTCCloud *subCloud = mainCloud->createSubCloud();
+    TRTCParams subParams;
+    //Fill your params
+    subParams.role = TRTCRoleAudience;
+    subCloud->enterRoom(subParams, TRTCAppSceneLIVE);
+    //...
+    subCloud->startRemoteView(userId, TRTCVideoStreamTypeBig, renderView);
+    //...
+    //Exit from new room and release it.
+    subCloud->exitRoom();
+    mainCloud->destroySubCloud(subCloud);
+```
+
+## destroySubCloud
+
+#### 销毁子房间实例。
+| 参数 | 描述 |
+| --- | --- |
+| subCloud | 子房间实例 |
+
+## updateOtherRoomForwardMode
+
+#### 更改跨房主播在本房间的上行能力。
+通常情况下，在调用 connectOtherRoom 接口与另一个房间的主播进行跨房通话后，本房间内的所有观众都将收到该主播发布的音视频流。
+您可以通过调用该接口，限制跨房主播在本房间内的上行能力，禁止或允许跨房主播发布音频/主路视频/辅路视频，该行为会影响房间内的所有用户。
+在禁用跨房主播某种上行能力后，本房间内所有用户将无法收到对应音视频流，且无法再订阅对应的音视频。
+需要注意的是，该接口只能由进行跨房通话的主播调用，且通过该接口设置的限制会因为跨房通话的中断或对应主播退房重置。
+该接口的调用结果会通过 ITRTCCloudCallback 中的 onUpdateOtherRoomForwardMode 回调通知给您。
+例如：
+房间“101”中有主播 A 与观众 B，房间“102”中有主播 C，主播 C 正常发布音视频流。主播 A 通过 connectOtherRoom 跟主播 C 建立跨房通话。
+-  此时，主播 A 与观众 B 都会收到主播 C 的 ` onRemoteUserEnterRoom(C) `, ` onUserVideoAvailable(C,true) ` 和 ` onUserAudioAvailable(C,true) ` 这三个事件回调，可以订阅主播 C 的音视频。
+之后，主播 A 调用该接口禁用主播 C 在本房间发布音频的能力。
+-  此后，主播 C 的音频流将无法发布至房间“101”，主播 A 与观众 B 都将收到 ` onUserAudioAvailable(C,false) ` 事件回调，且无法再通过 ` muteRemoteAudio(C,false) ` 订阅主播 C 的音频。
+-  主播 C 的视频流将不受影响。房间“102”中的其他观众也不受影响，可以正常订阅主播 C 的音频。
+该接口的参数考虑到后续扩展字段的兼容性问题，暂时采用了 JSON 格式的参数，示例如下：
+**情况一：数字房间号**
+**情况二：字符串房间号**
+| 参数 | 描述 |
+| --- | --- |
+| param | 需要您传入 JSON 格式的字符串参数，` roomId ` 代表数字格式的房间号，` strRoomId ` 代表字符串格式的房间号，` userId ` 代表目标主播的用户 ID，` muteAudio `, ` muteVideo `,` muteSubStream ` 均为可选项，分表代表禁止或允许跨房主播发布音频/主路视频/辅路视频的能力。 |
+
+**代码示例：**
+``` java
+{
+  "roomId":102,
+  "userId":"userC",
+  "muteAudio":false,
+  "muteVideo":true,
+  "muteSubStream":false
+}
+```
+``` java
+{
+  "strRoomId":"102",
+  "userId":"userC",
+  "muteAudio":false,
+  "muteVideo":true,
+  "muteSubStream":false
+}
+```
+
+## startPublishMediaStream
+
+#### 开始发布媒体流。
+该接口会向 TRTC 服务器发送指令，要求其将当前用户的音视频流转推/转码到直播 CDN 或者回推到 TRTC 房间中您可以通过 TRTCPublishTarget 配置中的 TRTCPublishMode 指定具体的发布模式
+| 参数 | 描述 |
+| --- | --- |
+| config | 媒体流转码配置参数。具体配置参考 TRTCStreamMixingConfig。转码和回推到 TRTC 房间中时为必填项，您需要指定您预期的转码配置参数。转推模式下则无效。 |
+| params | 媒体流编码输出参数，具体配置参考 TRTCStreamEncoderParam。转码和回推到 TRTC 房间中时为必填项，您需要指定您预期的转码输出参数。在转推时，为了更好的转推稳定性和 CDN 兼容性，也建议您进行配置。 |
+| target | 媒体流发布的目标地址，具体配置参考 TRTCPublishTarget。支持转推/转码到腾讯或者第三方 CDN，也支持转码回推到 TRTC 房间中。 |
+> **注意**
+> 1. SDK 会通过回调 onStartPublishMediaStream 带给您后台启动的任务标识（即 taskId）。
+> 2. 同一个任务（TRTCPublishMode 与 TRTCPublishCdnUrl 均相同）仅支持启动一次。若您后续需要更新或者停止该项任务，需要记录并使用返回的 taskId，通过 updatePublishMediaStream 或者 stopPublishMediaStream 来操作。
+> 3. ` target ` 支持同时配置多个 CDN URL（最多同时 10 个）。若您的同一个转推/转码任务需要发布至多路 CDN，则仅需要在 ` target ` 中配置多个 CDN URL 即可。同一个转码任务即使有多个转推地址，对应的转码计费仍只收取一份。
+> 4. 使用时需要注意不要多个任务同时往相同的 URL 地址推送，以免引起异常推流状态。一种推荐的方案是 URL 中使用 “sdkappid_roomid_userid_main” 作为区分标识，这种命名方式容易辨认且不会在您的多个应用中发生冲突。
+
+## updatePublishMediaStream
+
+#### 更新发布媒体流。
+该接口会向 TRTC 服务器发送指令，更新通过 startPublishMediaStream 启动的媒体流
+| 参数 | 描述 |
+| --- | --- |
+| config | 媒体流转码配置参数。具体配置参考 TRTCStreamMixingConfig。转码和回推到 TRTC 房间中时为必填项，您需要指定您预期的转码配置参数。转推模式下则无效。 |
+| params | 媒体流编码输出参数，具体配置参考 TRTCStreamEncoderParam。转码和回推到 TRTC 房间中时为必填项，您需要指定您预期的转码输出参数。在转推时，为了更好的转推稳定性和 CDN 兼容性，也建议您进行配置。 |
+| target | 媒体流发布的目标地址，具体配置参考 TRTCPublishTarget。支持转推/转码到腾讯或者第三方 CDN，也支持转码回推到 TRTC 房间中。 |
+| taskId | 通过回调 onStartPublishMediaStream 带给您后台启动的任务标识（即 taskId） |
+> **注意**
+> 1. 您可以通过本接口来更新发布的 CDN URL（支持增删，最多同时 10 个），但您使用时需要注意不要多个任务同时往相同的 URL 地址推送，以免引起异常推流状态。
+> 2. 您可以通过 ` taskId ` 来更新调整转推/转码任务。例如在 pk 业务中，您可以先通过 startPublishMediaStream 发起转推，接着在主播发起 pk 时，通过 ` taskId ` 和本接口将转推更新为转码任务。此时，CDN 播放将连续并且不会发生断流（您需要保持媒体流编码输出参数 param 一致）。
+> 3. 同一个任务不支持纯音频、音视频、纯视频之间的切换。
+
+## stopPublishMediaStream
+
+#### 停止发布媒体流。
+该接口会向 TRTC 服务器发送指令，停止通过 startPublishMediaStream 启动的媒体流
+| 参数 | 描述 |
+| --- | --- |
+| taskId | 通过回调 onStartPublishMediaStream 带给您后台启动的任务标识（即 taskId） |
+> **注意**
+> 1. 若您的业务后台并没有保存该 ` taskId `，在您的主播异常退房重进后，如果您需要重新获取 ` taskId `，您可以再次调用 startPublishMediaStream 启动任务。此时 TRTC 后台会返回任务启动失败，同时带给您上一次启动的 ` taskId `。
+> 2. 若 ` taskId ` 填空字符串，将会停止该用户所有通过 startPublishMediaStream 启动的媒体流，如果您只启动了一个媒体流或者想停止所有通过您启动的媒体流，推荐使用这种方式。
+
+## startLocalPreview
+
+#### 开启本地摄像头的预览画面（移动端）。
+在 enterRoom 之前调用此函数，SDK 只会开启摄像头，并一直等到您调用 enterRoom 之后才开始推流。
+在 enterRoom 之后调用此函数，SDK 会开启摄像头并自动开始视频推流。
+当开始渲染首帧摄像头画面时，您会收到 ITRTCCloudCallback 中的 onCameraDidReady 回调通知。
+| 参数 | 描述 |
+| --- | --- |
+| frontCamera | true：前置摄像头；false：后置摄像头。 |
+| view | 承载视频画面的控件。 |
+
+> **注意**
+> 如果希望开播前预览摄像头画面并通过 BeautyManager 调节美颜参数，您可以：
+> -  方案一：在调用 enterRoom 之前调用 ` startLocalPreview `。
+> -  方案二：在调用 enterRoom 之后调用 ` startLocalPreview + muteLocalVideo(true) `。
+
+## updateLocalView
+
+#### 更新本地摄像头的预览画面。
+
+## stopLocalPreview
+
+#### 停止摄像头预览。
+
+## muteLocalVideo
+
+#### 暂停/恢复发布本地的视频流。
+该接口可以暂停（或恢复）发布本地的视频画面，暂停之后，同一房间中的其他用户将无法继续看到自己画面。
+该接口在指定 TRTC_VIDEO_STREAM_TYPE_BIG 时等效于 ` startLocalPreview + stopLocalPreview ` 这两个接口，但具有更好的响应速度。
+因为 ` startLocalPreview + stopLocalPreview ` 需要打开和关闭摄像头，而打开和关闭摄像头都是硬件设备相关的操作，非常耗时。
+相比之下，` muteLocalVideo ` 只需要在软件层面对数据流进行暂停或者放行即可，因此效率更高，也更适合需要频繁打开关闭的场景。
+当暂停/恢复发布指定 TRTC_VIDEO_STREAM_TYPE_BIG 后，同一房间中的其他用户将会收到 onUserVideoAvailable 回调通知。
+当暂停/恢复发布指定 TRTC_VIDEO_STREAM_TYPE_SUB 后，同一房间中的其他用户将会收到 onUserSubStreamAvailable 回调通知。
+| 参数 | 描述 |
+| --- | --- |
+| mute | true：暂停；false：恢复。 |
+| streamType | 要暂停/恢复的视频流类型（仅支持 TRTC_VIDEO_STREAM_TYPE_BIG 和 TRTC_VIDEO_STREAM_TYPE_SUB）。 |
+
+## setVideoMuteImage
+
+#### 设置本地画面被暂停期间的替代图片。
+当您调用 ` muteLocalVideo(true) ` 暂停本地画面时，您可以通过调用本接口设置一张替代图片，设置后，房间中的其他用户会看到这张替代图片，而不是黑屏画面。
+| 参数 | 描述 |
+| --- | --- |
+| fps | 设置替代图片帧率，最小值为5，最大值为10，默认5。 |
+| image | 设置替代图片，空值代表在 muteLocalVideo 之后不再发送视频流数据，默认值为空。 |
+
+## startRemoteView
+
+#### 订阅远端用户的视频流，并绑定视频渲染控件。
+调用该接口可以让 SDK 拉取指定 userId 的视频流，并渲染到参数 ` view ` 指定的渲染控件上。您可以通过 setRemoteRenderParams 设置画面的显示模式。
+-  如果您已经知道房间中有视频流的用户的 userId，可以直接调用 ` startRemoteView ` 订阅该用户的画面。
+-  如果您不知道房间中有哪些用户在发布视频，您可以在 enterRoom 之后等待来自 onUserVideoAvailable 的通知。
+调用本接口只是启动视频流的拉取，此时画面还需要加载和缓冲，当缓冲完毕后您会收到来自 onFirstVideoFrame 的通知。
+| 参数 | 描述 |
+| --- | --- |
+| streamType | 指定要观看 userId 的视频流类型。 -  高清大画面：TRTC_VIDEO_STREAM_TYPE_BIG。 -  低清小画面：TRTC_VIDEO_STREAM_TYPE_SMALL（需要远端用户通过 enableEncSmallVideoStream 开启双路编码后才有效果）。 -  辅流画面（常用于屏幕分享）：TRTC_VIDEO_STREAM_TYPE_SUB。 |
+| userId | 指定远端用户的 ID。 |
+| view | 用于承载视频画面的渲染控件。 |
+> **注意**
+> 注意几点规则需要您关注：
+> 1. SDK 支持同时观看某 userId 的大画面和辅路画面，或者同时观看某 userId 的小画面和辅路画面，但不支持同时观看大画面和小画面。
+> 2. 只有当指定的 userId 通过 enableEncSmallVideoStream 开启双路编码后，才能观看该用户的小画面。
+> 3. 当指定的 userId 的小画面不存在时，SDK 默认切换到该用户的大画面。
+
+## updateRemoteView
+
+#### 更新远端用户的视频渲染控件。
+该接口可用于更新远端视频画面的渲染控件，常被用于切换显示区域的交互场景中。
+| 参数 | 描述 |
+| --- | --- |
+| streamType | 要设置预览窗口的流类型（仅支持 TRTC_VIDEO_STREAM_TYPE_BIG 和 TRTC_VIDEO_STREAM_TYPE_SUB）。 |
+| userId | 指定远端用户的 ID。 |
+| view | 承载视频画面的控件。 |
+
+## stopRemoteView
+
+#### 停止订阅远端用户的视频流，并释放渲染控件。
+调用此接口会让 SDK 停止接收该用户的视频流，并释放该路视频流的解码和渲染资源。
+| 参数 | 描述 |
+| --- | --- |
+| streamType | 指定要观看 userId 的视频流类型。 -  高清大画面：TRTC_VIDEO_STREAM_TYPE_BIG。 -  低清小画面：TRTC_VIDEO_STREAM_TYPE_SMALL。 -  辅流画面（常用于屏幕分享）：TRTC_VIDEO_STREAM_TYPE_SUB。 |
+| userId | 指定远端用户的 ID。 |
+
+## stopAllRemoteView
+
+#### 停止订阅所有远端用户的视频流，并释放全部渲染资源。
+
+调用此接口会让 SDK 停止接收所有来自远端的视频流，并释放全部的解码和渲染资源。
+
+> **注意**
+> 如果当前有正在显示的辅路画面（屏幕分享）也会一并被停止。
+## muteRemoteVideoStream
+
+#### 暂停/恢复订阅远端用户的视频流。
+该接口仅暂停/恢复接收指定用户的视频流，但并不释放显示资源，视频画面会被冻屏在接口调用时的最后一帧。
+| 参数 | 描述 |
+| --- | --- |
+| mute | 是否暂停接收。 |
+| streamType | 要暂停/恢复的视频流类型。 -  高清大画面：TRTC_VIDEO_STREAM_TYPE_BIG。 -  低清小画面：TRTC_VIDEO_STREAM_TYPE_SMALL。 -  辅流画面（常用于屏幕分享）：TRTC_VIDEO_STREAM_TYPE_SUB。 |
+| userId | 指定远端用户的 ID。 |
+
+> **注意**
+> 该接口支持您在进入房间（enterRoom）前调用，暂停状态在退出房间（exitRoom）之后会被重置。调用该接口暂停接收指定用户的视频流后，只调用 startRemoteView 接口无法播放指定用户的视频，需要调用 muteRemoteVideoStream(false) 或 muteAllRemoteVideoStreams(false) 才能恢复。
+
+## muteAllRemoteVideoStreams
+
+#### 暂停/恢复订阅所有远端用户的视频流。
+该接口仅暂停/恢复接收所有用户的视频流，但并不释放显示资源，视频画面会被冻屏在接口调用时的最后一帧。
+| 参数 | 描述 |
+| --- | --- |
+| mute | 是否暂停接收。 |
+> **注意**
+> 该接口支持您在进入房间（enterRoom）前调用，暂停状态在退出房间（exitRoom）之后会被重置。
+> 调用该接口暂停接收所有用户的视频流后，只调用 startRemoteView 接口无法播放指定用户的视频，需要调用 muteRemoteVideoStream(false) 或 muteAllRemoteVideoStreams(false) 才能恢复。
+
+## setVideoEncoderParam
+
+#### 设置视频编码器的编码参数。
+该设置能够决定远端用户看到的画面质量，同时也能决定云端录制出的视频文件的画面质量。
+| 参数 | 描述 |
+| --- | --- |
+| param | 用于设置视频编码器的相关参数，详情请参见 TRTCVideoEncParam。 |
+> **注意**
+> 从v11.5版本开始，编码输出分辨率会按照宽8高2字节对齐，并且是向下调整，eg:输入分辨率540x960，实际编码输出分辨率536x960。
+
+## setNetworkQosParam
+
+#### 设置网络质量控制的相关参数。
+该设置决定在差网络环境下的质量调控策略，如“画质优先”或“流畅优先”等策略。
+| 参数 | 描述 |
+| --- | --- |
+| param | 用于设置网络质量控制的相关参数，详情请参见 TRTCNetworkQosParam。 |
+
+## setLocalRenderParams
+
+#### 设置本地画面的渲染参数。
+可设置的参数包括有：画面的旋转角度、填充模式以及左右镜像等。
+| 参数 | 描述 |
+| --- | --- |
+| params | 画面渲染参数，详情请参见 TRTCRenderParams。 |
+
+## setRemoteRenderParams
+
+#### 设置远端画面的渲染模式。
+可设置的参数包括有：画面的旋转角度、填充模式以及左右镜像等。
+| 参数 | 描述 |
+| --- | --- |
+| params | 画面渲染参数，详情请参见 TRTCRenderParams。 |
+| streamType | 可以设置为主路画面（TRTC_VIDEO_STREAM_TYPE_BIG）或辅路画面（TRTC_VIDEO_STREAM_TYPE_SUB）。 |
+| userId | 指定远端用户的 ID。 |
+
+## enableSmallVideoStream
+> **平台 API 名称：** Android: `enableEncSmallVideoStream` | iOS: `enableEncSmallVideoStream`
+
+#### 开启大小画面双路编码模式。
+开启双路编码模式后，当前用户的编码器会同时输出【高清大画面】和【低清小画面】两路视频流（但只有一路音频流）。
+如此以来，房间中的其他用户就可以根据自身的网络情况或屏幕大小选择订阅【高清大画面】或是【低清小画面】。
+| 参数 | 描述 |
+| --- | --- |
+| enable | 是否开启小画面编码，默认值：false。 |
+| smallVideoEncParam | 小流的视频参数。 |
+#### 返回值说明：
+0：成功；-1：当前大画面已被设置为较低画质，开启双路编码已无必要。
+
+> **注意**
+> 双路编码开启后，会消耗更多的 CPU 和 网络带宽，所以 Mac、Windows 或者高性能 Pad 可以考虑开启，不建议手机端开启。
+
+## setRemoteVideoStreamType
+
+#### 切换指定远端用户的大小画面。
+当房间中某个主播开启了双路编码之后，房间中其他用户通过 startRemoteView 订阅到的画面默认会是【高清大画面】。
+您可以通过此接口选定希望订阅的画面是大画面还是小画面，该接口在 startRemoteView 之前和之后调用均可生效。
+| 参数 | 描述 |
+| --- | --- |
+| streamType | 视频流类型，即选择看大画面还是小画面，默认为大画面。 |
+| userId | 指定远端用户的 ID。 |
+> **注意**
+> 此功能需要目标用户已经通过 enableEncSmallVideoStream 提前开启了双路编码模式，否则此调用无实际效果。
+
+## snapshotVideo
+
+#### 视频画面截图。
+您可以通过本接口截取本地的视频画面，远端用户的主路画面以及远端用户的辅路（屏幕分享）画面。
+| 参数 | 描述 |
+| --- | --- |
+| sourceType | 画面来源，可选择截取视频流画面（TRTC_SNAPSHOT_SOURCE_TYPE_STREAM）、视频渲染画面（TRTC_SNAPSHOT_SOURCE_TYPE_VIEW）或 采集画面（TRTC_SNAPSHOT_SOURCE_TYPE_CAPTURE），采集画面截图更清晰。 |
+| streamType | 视频流类型，可选择截取主路画面（TRTC_VIDEO_STREAM_TYPE_BIG，常用于摄像头）或辅路画面（TRTC_VIDEO_STREAM_TYPE_SUB，常用于屏幕分享）。 |
+| userId | 用户 ID，如指定空置表示截取本地的视频画面。 |
+> **注意**
+> Windows 平台目前仅支持截取 TRTC_SNAPSHOT_SOURCE_TYPE_STREAM 来源的视频画面。
+
+## setGravitySensorAdaptiveMode
+
+#### 设置重力感应的适配模式（11.7 及以上版本）。
+开启重力感应后，如果采集端的设备发生旋转，采集端和观众端的画面都会进行相应地渲染以确保视野中的画面始终朝上。
+只在sdk内部摄像头采集场景生效，并且只在移动端生效。
+1. 该接口仅对采集端起作用，如果只是观看房间中的画面，开启此接口是无效的
+2. 当采集端设备发生 90 度或 270 度旋转时，采集端或者观众看到的画面可能会被裁剪以保持比例的协调
+| 参数 | 描述 |
+| --- | --- |
+| mode | 重力感应模式，详情请参见 TRTC_GRAVITY_SENSOR_ADAPTIVE_MODE_DISABLE、TRTC_GRAVITY_SENSOR_ADAPTIVE_MODE_FILL_BY_CENTER_CROP 和 TRTC_GRAVITY_SENSOR_ADAPTIVE_MODE_FIT_WITH_BLACK_BORDER 默认值：TRTC_GRAVITY_SENSOR_ADAPTIVE_MODE_DISABLE。 |
+
+## startLocalAudio
+
+#### 开启本地音频的采集和发布。
+SDK 默认不开启麦克风，当用户需要发布本地音频时，需要调用该接口开启麦克风采集，并将音频编码并发布到当前的房间中。
+开启本地音频的采集和发布后，房间中的其他用户会收到 onUserAudioAvailable(userId, true) 的通知。
+| 参数 | 描述 |
+| --- | --- |
+| quality | 声音音质 - TRTC_AUDIO_QUALITY_SPEECH，流畅：单声道；音频裸码率：18kbps；适合语音通话为主的场景，例如在线会议，语音通话。 - TRTC_AUDIO_QUALITY_DEFAULT，默认：单声道；音频裸码率：50kbps；SDK 默认的音频质量，如无特殊需求推荐选择之。 - TRTC_AUDIO_QUALITY_MUSIC，高音质：双声道 + 全频带；音频裸码率：128kbps；适合需要高保真传输音乐的场景，例如在线K歌、音乐直播等。 |
+> **注意**
+> 该函数会检查麦克风的使用权限，如果当前 App 没有麦克风权限，SDK 会自动向用户申请麦克风使用权限。
+
+## stopLocalAudio
+
+#### 停止本地音频的采集和发布。
+停止本地音频的采集和发布后，房间中的其他用户会收到 onUserAudioAvailable(userId, false) 的通知。
+
+## muteLocalAudio
+
+#### 暂停/恢复发布本地的音频流。
+当您暂停发布本地音频流之后，房间中的其他用户会收到 onUserAudioAvailable(userId, false) 的通知。
+当您恢复发布本地音频流之后，房间中的其他用户会收到 onUserAudioAvailable(userId, true) 的通知。
+与 stopLocalAudio 的不同之处在于，` muteLocalAudio(true) ` 并不会释放麦克风权限，而是继续发送码率极低的静音包。
+这对于需要云端录制的场景非常适用，因为 MP4 等格式的视频文件，对于音频数据的连续性要求很高，使用 stopLocalAudio 会导致录制出的 MP4 文件不易播放。
+因此在对录制文件的质量要求较高的场景中，建议选择 ` muteLocalAudio ` 而不建议使用 stopLocalAudio。
+| 参数 | 描述 |
+| --- | --- |
+| mute | true：静音；false：恢复。 |
+
+## muteRemoteAudio
+
+#### 暂停/恢复播放远端的音频流。
+当您静音某用户的远端音频时，SDK 会停止播放指定用户的声音，同时也会停止拉取该用户的音频数据。
+| 参数 | 描述 |
+| --- | --- |
+| mute | true：静音；false：取消静音。 |
+| userId | 用于指定远端用户的 ID。 |
+> **注意**
+> 在进入房间（enterRoom）之前或之后调用本接口均生效，静音状态在退出房间（exitRoom）之后会被重置为 false。
+
+## muteAllRemoteAudio
+
+#### 暂停/恢复播放所有远端用户的音频流。
+当您静音所有用户的远端音频时，SDK 会停止播放所有来自远端的音频流，同时也会停止拉取所有用户的音频数据。
+| 参数 | 描述 |
+| --- | --- |
+| mute | true：静音；false：取消静音。 |
+> **注意**
+> 在进入房间（enterRoom）之前或之后调用本接口均生效，静音状态在退出房间（exitRoom）之后会被重置为 false。
+
+## setRemoteAudioVolume
+
+#### 设定某一个远端用户的声音播放音量。
+
+您可以通过 ` setRemoteAudioVolume(userId, 0) ` 将某一个远端用户的声音静音。
+| 参数 | 描述 |
+| --- | --- |
+| userId | 用于指定远端用户的 ID。 |
+| volume | 音量大小，取值范围为 [0, 150]，默认值：100。 |
+
+> **注意**
+> 如果将 ` volume ` 设置成 100 之后感觉音量还是太小，可以将 ` volume ` 最大设置成 150，但超过 100 的 ` volume ` 会有爆音的风险，请谨慎操作。
+## setAudioCaptureVolume
+
+#### 设定本地音频的采集音量。
+| 参数 | 描述 |
+| --- | --- |
+| volume | 音量大小，取值范围为 [0, 150]；默认值：100。 |
+
+> **注意**
+> 如果将 ` volume ` 设置成 100 之后感觉音量还是太小，可以将 ` volume ` 最大设置成 150，但超过 100 的 ` volume ` 会有爆音的风险，请谨慎操作。
+## getAudioCaptureVolume
+
+#### 获取本地音频的采集音量。
+
+#### 返回值说明：
+
+采集音量。
+
+## setAudioPlayoutVolume
+
+#### 设定远端音频的播放音量。
+
+该接口会控制 SDK 最终交给系统播放的声音音量，调节效果会影响到本地音频录制文件的音量大小，但不会影响到耳返的音量大小。
+| 参数 | 描述 |
+| --- | --- |
+| volume | 音量大小，取值范围为 [0, 150]，默认值：100。 |
+
+> **注意**
+> 如果将 volume 设置成 100 之后感觉音量还是太小，可以将 volume 最大设置成 150，但超过 100 的 volume 会有爆音的风险，请谨慎操作。
+## getAudioPlayoutVolume
+
+#### 获取远端音频的播放音量。
+
+## enableAudioVolumeEvaluation
+
+#### 启用音量大小提示。
+开启此功能后，SDK 会在 ITRTCCloudCallback 中的 onUserVoiceVolume 回调中反馈本地和远端用户的音频音量评估信息，包括音量大小、人声检测、音频频谱等。
+| 参数 | 描述 |
+| --- | --- |
+| enable | 是否启用音量提示，默认为关闭状态。 |
+| params | 音量评估等相关参数，请参见 TRTCAudioVolumeEvaluateParams。 |
+
+> **注意**
+> 如需启用音量大小提示，请在调用 startLocalAudio 之前调用该接口.
+
+## startAudioRecording
+
+#### 开始录音。
+当您调用该接口后， SDK 会将本地和远端的所有音频（包括本地音频，远端音频，背景音乐和音效等）混合并录制到一个本地文件中。
+该接口在进入房间前后调用均可生效，如果录制任务在退出房间前尚未通过 stopAudioRecording 停止，则退出房间后录制任务会自动被停止。
+本次录制的启动、完成状态会通过本地录制相关回调进行通知。参见 ITRTCCloudCallback 相关回调。
+| 参数 | 描述 |
+| --- | --- |
+| param | 录音参数，请参见 TRTCAudioRecordingParams。 |
+#### 返回值说明：
+0：成功；-1：录音已开始；-2：文件或目录创建失败；-3：后缀指定的音频格式不支持。
+
+> **注意**
+> 自 v11.5 版本，音频录制的状态结果由返回值统一调整为异步回调进行通知。参见 ITRTCCloudCallback 相关回调。
+
+## stopAudioRecording
+
+#### 停止录音。
+
+如果录制任务在退出房间前尚未通过本接口停止，则退出房间后录音任务会自动被停止。
+
+## startLocalRecording
+
+#### 开启本地媒体录制。
+开启后把直播过程中的音视频内容录制到本地的一个文件中，该功能不会产生额外费用。
+| 参数 | 描述 |
+| --- | --- |
+| params | 录制参数，请参见 TRTCLocalRecordingParams。 |
+
+## stopLocalRecording
+
+#### 停止本地媒体录制。
+
+如果录制任务在退出房间前尚未通过本接口停止，则退出房间后录音任务会自动被停止。
+
+## setRemoteAudioParallelParams
+
+#### 设置远端音频流智能并发播放策略。
+设置远端音频流智能并发播放策略，适用于上麦人数比较多的场景。
+| 参数 | 描述 |
+| --- | --- |
+| params | 音频并发参数，请参见 TRTCAudioParallelParams。 |
+
+## enable3DSpatialAudioEffect
+
+#### 启用 3D 音效。
+启用 3D 音效。注意需使用流畅音质 TRTC_AUDIO_QUALITY_SPEECH 或默认音质 TRTC_AUDIO_QUALITY_DEFAULT。
+| 参数 | 描述 |
+| --- | --- |
+| enabled | 是否启用 3D 音效，默认为关闭状态。 |
+
+## updateSelf3DSpatialPosition
+
+#### 设置 3D 音效中自身坐标及朝向信息。
+
+更新自身在世界坐标系中的位置和朝向， SDK 会根据该方法参数计算自身和远端用户之间的相对位置，进而渲染出空间音效。
+| 参数 | 描述 |
+| --- | --- |
+| axisForward | 自身坐标系前轴在世界坐标系中的单位向量，三个值依次表示前、右、上坐标值。 |
+| axisRight | 自身坐标系右轴在世界坐标系中的单位向量，三个值依次表示前、右、上坐标值。 |
+| axisUp | 自身坐标系上轴在世界坐标系中的单位向量，三个值依次表示前、右、上坐标值。 |
+| position | 自身在世界坐标系中的坐标，三个值依次表示前、右、上坐标值。 |
+
+> **注意**
+> 1. 各参数应分别传入长度为 3 的数组。
+> 2. 请适当限制调用频率，推荐两次坐标设置至少间隔 100ms。
+>
+
+## updateRemote3DSpatialPosition
+
+#### 设置 3D 音效中远端用户坐标信息。
+
+更新远端用户在世界坐标系中的位置，SDK 会根据自身和远端用户之间的相对位置，进而渲染出空间音效。
+| 参数 | 描述 |
+| --- | --- |
+| position | 该远端用户在世界坐标系中的坐标，三个值依次表示前、右、上坐标值。 |
+| userId | 指定远端用户的 ID。 |
+
+> **注意**
+> 1. 各参数应分别传入长度为 3 的数组。
+> 2. 请适当限制调用频率，推荐同一远端用户两次坐标设置至少间隔 100ms。
+## set3DSpatialReceivingRange
+
+#### 设置指定用户所发出声音的可被接收范围。
+
+设置该范围大小之后，该指定用户的声音将在该范围内可被听见，超出该范围将被衰减为 0。
+| 参数 | 描述 |
+| --- | --- |
+| range | 声音最大可被接收范围。 |
+| userId | 指定远端用户的 ID。 |
+
+## getDeviceManager
+
+#### 获取设备管理类（TXDeviceManager）。
+通过设备管理，您可以设置摄像头、麦克风和扬声器等音视频相关的硬件设备功能。
+#### 返回值说明：
+设备管理类 TXDeviceManager。
+
+## getBeautyManager
+
+#### 获取美颜管理类（TXBeautyManager）。
+通过美颜管理，您可以使用以下功能：
+-  设置“磨皮”、“美白”、“红润”等美颜特效。
+-  以下功能仅iOS/Android支持：
+-  设置“大眼”、“瘦脸”、“V脸”、“下巴”、“短脸”、“小鼻”、“亮眼”、“白牙”、“祛眼袋”、“祛皱纹”、“祛法令纹”等修脸特效。
+-  设置“发际线”、“眼间距”、“眼角”、“嘴形”、“鼻翼”、“鼻子位置”、“嘴唇厚度”、“脸型”等修脸特效。
+-  设置“眼影”、“腮红”等美妆特效。
+-  设置动态贴纸和人脸挂件等动画特效。
+#### 返回值说明：
+美颜管理类 TXBeautyManager。
+
+## setWaterMark
+> **平台 API 名称：** Android: `setWatermark` | iOS: `setWatermark`
+
+#### 添加水印。
+水印的位置是通过 xOffset, yOffset, fWidthRatio 来指定的。
+-  xOffset：水印的坐标，取值范围为 [0, 1] 的浮点数。
+-  yOffset：水印的坐标，取值范围为 [0, 1] 的浮点数。
+-  fWidthRatio：水印的大小比例，取值范围为 [0, 1] 的浮点数。
+| 参数 | 描述 |
+| --- | --- |
+| fWidthRatio | 水印显示的宽度占画面宽度比例（水印按该参数等比例缩放显示）。 |
+| isVisibleOnLocalPreview | true：本地预览显示水印；false：本地预览不显示水印，仅在win/mac下生效。 |
+| nHeight | 水印图片像素高度（源数据为文件路径时忽略该参数）。 |
+| nWidth | 水印图片像素宽度（源数据为文件路径时忽略该参数）。 |
+| srcData | 水印图片源数据（传 nullptr 表示去掉水印）。 |
+| srcType | 水印图片源数据类型。请参见 TRTCWaterMarkSrcType。 |
+| streamType | 要设置水印的流类型（TRTCVideoStreamTypeBig，TRTCVideoStreamTypeSub）。 |
+| xOffset | 水印显示的左上角 x 轴偏移。 |
+| yOffset | 水印显示的左上角 y 轴偏移。 |
+
+## getAudioEffectManager
+
+#### 获取音效管理类（TXAudioEffectManager）。
+TXAudioEffectManager 是音效管理接口，您可以通过该接口实现如下功能：
+-  背景音乐：支持在线音乐和本地音乐，支持变速、变调等特效、支持原生和伴奏并播放和循环播放。
+-  耳机耳返：麦克风捕捉的声音实时通过耳机播放，常用于音乐直播。
+-  混响效果：KTV、小房间、大会堂、低沉、洪亮等。
+-  变声特效：萝莉、大叔、重金属等。
+-  短音效：鼓掌声、欢笑声等简短的音效文件（对于小于10秒的文件，请将 isShortFile 参数设置为 true）。
+#### 返回值说明：
+音效管理类 TXAudioEffectManager。
+
+## startSystemAudioLoopback
+
+#### 开启系统声音采集（iOS 端暂未支持）。
+该接口会从电脑的声卡中采集音频数据，并将其混入到 SDK 当前的音频数据流中，从而使房间中的其他用户也能听到主播的电脑所播放出的声音。
+在线教育场景中，老师可以使用此功能让 SDK 采集教学影片中的声音，并广播给同房间中的学生。
+音乐直播场景中，主播可以使用此功能让 SDK 采集音乐播放器中的音乐，从而为自己的直播间增加背景音乐。
+| 参数 | 描述 |
+| --- | --- |
+| deviceName | 您可以指定该参数为空值（nullptr），代表让 SDK 采集整个系统的声音。 |
+
+## stopSystemAudioLoopback
+
+#### 停止系统声音采集（iOS 端暂未支持）。
+
+## setSystemAudioLoopbackVolume
+> **适用平台：** iOS, C++
+
+#### 设置系统声音的采集音量。
+| 参数 | 描述 |
+| --- | --- |
+| volume | 设置的音量大小，范围是：[0, 150]，默认值为 100。 |
+
+## startScreenCapture
+
+#### 启动屏幕分享。
+该接口支持抓取整个 Android 系统的屏幕，可以实现类似腾讯会议的全系统级的屏幕分享。
+参考文档：[实时屏幕分享(Android)](https://cloud.tencent.com/document/product/647/45751)
+Android 推荐的屏幕分享视频编码参数（TRTCVideoEncParam）：
+-  分辨率(videoResolution)：1280×720。
+-  帧率(videoFps)：10 FPS。
+-  码率(videoBitrate)：1200 kbps。
+-  分辨率自适应(enableAdjustRes)：false。
+#### [REMARK]
+| 参数 | 描述 |
+| --- | --- |
+| encParams | 编码参数，请参见 TRTCVideoEncParam。如果您指定 ` encParams ` 为 null，SDK 会自动使用之前设定的编码参数。 |
+| shareParams | 请参见 TRTCScreenShareParams，您可以通过其中的 ` floatingView ` 参数弹出悬浮窗（也可以使用 Android 系统的 WindowManager 接口自行弹出）。 |
+| streamType | 屏幕分享使用的线路，可以设置为主路（TRTC_VIDEO_STREAM_TYPE_BIG）或者辅路（TRTC_VIDEO_STREAM_TYPE_SUB）。 |
+
+## stopScreenCapture
+
+#### 停止屏幕分享。
+
+## pauseScreenCapture
+
+#### 暂停屏幕分享。
+
+> **注意**
+> 从v11.5版本开始，暂停屏幕采集会使用最后一帧按照 1 fps 帧率输出。
+## resumeScreenCapture
+
+#### 恢复屏幕分享。
+
+## getScreenCaptureSources
+> **平台 API 名称：** iOS: `getScreenCaptureSourcesWithThumbnailSize`
+> **适用平台：** iOS, C++
+
+#### 枚举可分享的屏幕和窗口（该接口仅支持 Mac OS 系统）。
+当您在对接桌面端系统的屏幕分享功能时，一般都需要展示一个选择分享目标的界面，这样用户能够使用这个界面选择是分享整个屏幕还是某个窗口。
+通过本接口，您就可以查询到当前系统中可用于分享的窗口的 ID、名称以及缩略图。我们在 Demo 中提供了一份默认的界面实现供您参考。
+| 参数 | 描述 |
+| --- | --- |
+| iconSize | 指定要获取的窗口图标大小。 |
+| thumbnailSize | 指定要获取的窗口缩略图大小，缩略图可用于绘制在窗口选择界面上。 |
+#### 返回值说明：
+窗口列表包括屏幕。
+
+## selectScreenCaptureTarget
+> **适用平台：** iOS, C++
+
+#### 选取要分享的屏幕或窗口（该接口仅支持桌面系统）。
+当您通过 getScreenCaptureSources 获取到可以分享的屏幕和窗口之后，您可以调用该接口选定期望分享的目标屏幕或目标窗口。
+在屏幕分享的过程中，您也可以随时调用该接口以切换分享目标。
+支持如下四种情况：
+-  共享整个屏幕：source 中 type 为 TRTCScreenCaptureSourceTypeScreen 的 source，captureRect 设为 { 0, 0, 0, 0 }。
+-  共享指定区域：source 中 type 为 TRTCScreenCaptureSourceTypeScreen 的 source，captureRect 设为非 nullptr，例如 { 100, 100, 300, 300 }。
+-  共享整个窗口：source 中 type 为 TRTCScreenCaptureSourceTypeWindow 的 source，captureRect 设为 { 0, 0, 0, 0 }。
+-  共享窗口区域：source 中 type 为 TRTCScreenCaptureSourceTypeWindow 的 source，captureRect 设为非 nullptr，例如 { 100, 100, 300, 300 }。
+| 参数 | 描述 |
+| --- | --- |
+| captureRect | 指定捕获的区域。 |
+| property | 指定屏幕分享目标的属性，包括捕获鼠标，高亮捕获窗口等，详情参考 TRTCScreenCaptureProperty。 |
+| source | 指定分享源。详情参考 TRTCScreenCaptureSourceInfo |
+
+> **注意**
+> 设置高亮边框颜色、宽度参数在 Mac 平台不生效。
+
+## setSubStreamEncoderParam
+
+#### 设置屏幕分享（即辅路）的视频编码参数（桌面系统和移动系统均已支持）。
+该接口可以设定远端用户所看到的屏幕分享（即辅路）的画面质量，同时也能决定云端录制出的视频文件中屏幕分享的画面质量。
+请注意如下两个接口的差异：
+- setVideoEncoderParam 用于设置主路画面（TRTC_VIDEO_STREAM_TYPE_BIG，一般用于摄像头）的视频编码参数。
+- setSubStreamEncoderParam 用于设置辅路画面（TRTC_VIDEO_STREAM_TYPE_SUB，一般用于屏幕分享）的视频编码参数。
+| 参数 | 描述 |
+| --- | --- |
+| param | 辅流编码参数，详情请参见 TRTCVideoEncParam。 |
+
+## setSubStreamMixVolume
+> **适用平台：** iOS, C++
+
+#### 设置屏幕分享时的混音音量大小（该接口仅支持桌面系统）。
+
+这个数值越高，屏幕分享音量的占比就越高，麦克风音量占比就越小，所以不推荐设置得太大，否则会导致麦克风的声音被压制。
+| 参数 | 描述 |
+| --- | --- |
+| volume | 设置的混音音量大小，范围 [0, 150]。 |
+
+## addExcludedShareWindow
+> **适用平台：** iOS, C++
+
+#### 将指定窗口加入屏幕分享的排除列表中（该接口仅支持桌面系统）。
+加入排除列表中的窗口不会被分享出去，常见的用法是将某个应用的窗口加入到排除列表中以避免隐私问题。
+支持启动屏幕分享前设置过滤窗口，也支持屏幕分享过程中动态添加过滤窗口。
+| 参数 | 描述 |
+| --- | --- |
+| windowID | 不希望分享出去的窗口 |
+> **注意**
+> 1. 该接口只有在 TRTCScreenCaptureSourceInfo 中的 type 指定为 TRTCScreenCaptureSourceTypeScreen 时生效，即只有在分享整个屏幕内容时，排除指定窗口的功能才生效。
+> 2. 使用该接口添加到排除列表中的窗口会在退出房间后被 SDK 自动清除。
+> 3. Mac 平台下请传入窗口 ID（即 CGWindowID），您可以通过 TRTCScreenCaptureSourceInfo 中的 ` sourceId ` 成员获得。
+
+## removeExcludedShareWindow
+> **适用平台：** iOS, C++
+
+#### 将指定窗口从屏幕分享的排除列表中移除（该接口仅支持桌面系统）。
+| 参数 | 描述 |
+| --- | --- |
+| windowID | 要排除的窗口 id。 |
+
+## removeAllExcludedShareWindow
+> **平台 API 名称：** iOS: `removeAllExcludedShareWindows`
+> **适用平台：** iOS, C++
+
+#### 将所有窗口从屏幕分享的排除列表中移除（该接口仅支持桌面系统）。
+
+## addIncludedShareWindow
+> **适用平台：** iOS, C++
+
+#### 将指定窗口加入屏幕分享的包含列表中（该接口仅支持桌面系统）。
+该接口只有在 TRTCScreenCaptureSourceInfo 中的 type 指定为 TRTCScreenCaptureSourceTypeWindow 时生效。即只有在分享窗口内容时，额外包含指定窗口的功能才生效。
+您在 startScreenCapture 之前和之后调用均可。
+| 参数 | 描述 |
+| --- | --- |
+| windowID | 希望被分享出去的窗口（Windows 平台下为窗口句柄： HWND） |
+> **注意**
+> 通过该方法添加到包含列表中的窗口，会在退出房间后被 SDK 自动清除。
+
+## removeIncludedShareWindow
+> **适用平台：** iOS, C++
+
+#### 将指定窗口从屏幕分享的包含列表中移除（该接口仅支持桌面系统）。
+该接口只有在 TRTCScreenCaptureSourceInfo 中的 type 指定为 TRTCScreenCaptureSourceTypeWindow 时生效。
+即只有在分享窗口内容时，额外包含指定窗口的功能才生效。
+| 参数 | 描述 |
+| --- | --- |
+| windowID | 希望被分享出去的窗口（Mac 平台：窗口 ID；Windows 平台：HWND） |
+
+## removeAllIncludedShareWindow
+> **平台 API 名称：** iOS: `removeAllIncludedShareWindows`
+> **适用平台：** iOS, C++
+
+#### 将全部窗口从屏幕分享的包含列表中移除（该接口仅支持桌面系统）。
+该接口只有在 TRTCScreenCaptureSourceInfo 中的 type 指定为 TRTCScreenCaptureSourceTypeWindow 时生效。
+即只有在分享窗口内容时，额外包含指定窗口的功能才生效。
+
+## enableCustomVideoCapture
+
+#### 启用/关闭视频自定义采集模式。
+开启该模式后，SDK 不再运行原有的视频采集流程，即不再继续从摄像头采集数据和美颜，而是只保留视频编码和发送能力。
+您需要通过 sendCustomVideoData 不断地向 SDK 塞入自己采集的视频画面。
+| 参数 | 描述 |
+| --- | --- |
+| enable | 是否启用视频自定义采集，默认值：false。 |
+| streamType | 用于指定视频流类型，TRTC_VIDEO_STREAM_TYPE_BIG：高清大画面；TRTC_VIDEO_STREAM_TYPE_SUB：辅路画面。 |
+
+## sendCustomVideoData
+
+#### 向 SDK 投送自己采集的视频帧。
+使用此接口可以向 SDK 投送自己采集的视频帧，SDK 会将视频帧进行编码并通过自身的网络模块传输出去。
+参数 TRTCVideoFrame 推荐下列填写方式（其他字段不需要填写）：
+-  pixelFormat：推荐选择 TRTCVideoPixelFormat_NV12。
+-  bufferType：推荐选择 TRTCVideoBufferType_PixelBuffer。
+-  pixelBuffer：iOS/Mac OS 平台上常用的视频数据格式。
+-  data：视频裸数据格式，bufferType 为 NSData 时使用。
+-  timestamp：时间戳，单位为毫秒（ms），请使用视频帧在采集时被记录下来的时间戳（可以在采集到一帧视频帧之后，通过调用 generateCustomPTS 获取时间戳）。
+-  width：视频图像长度，bufferType 为 NSData 时填写。
+-  height：视频图像宽度，bufferType 为 NSData 时填写。
+参考文档：[自定义采集和渲染](https://cloud.tencent.com/document/product/647/34066)。
+| 参数 | 描述 |
+| --- | --- |
+| frame | 视频数据，bufferType 推荐选择 TRTCVideoBufferType_PixelBuffer，pixelFormat 推荐选择 TRTCVideoPixelFormat_NV12，更多支持格式参考 TRTCVideoFrame。 |
+| streamType | 用于指定视频流类型，TRTCVideoStreamTypeBig：高清大画面；TRTCVideoStreamTypeSub：辅路画面。 |
+
+> **注意**
+> 1. 推荐您在采集到的一帧视频帧后，即调用 generateCustomPTS 接口获取该帧的 timestamp 数值，这样可以获得最佳的音画同步效果。
+> 2. SDK 最终编码出的视频帧率并不是由您调用本接口的频率决定的，而是由您在 setVideoEncoderParam 中所设置的 FPS 决定的。
+> 3. 请尽量保持本接口的调用间隔是均匀的，否则会导致编码器输出帧率不稳或者音画不同步等问题。
+
+## enableCustomAudioCapture
+
+#### 启用音频自定义采集模式。
+开启该模式后，SDK 不再运行原有的音频采集流程，即不再继续从麦克风采集音频数据，而是只保留音频编码和发送能力。
+您需要通过 sendCustomAudioData 不断地向 SDK 塞入自己采集的音频数据。
+| 参数 | 描述 |
+| --- | --- |
+| enable | 是否启用音频自定义采集模式，默认值：false。 |
+> **注意**
+> 由于回声抵消（AEC）需要严格的控制声音采集和播放的时间，所以开启自定义音频采集后，AEC 能力可能会失效。
+
+## sendCustomAudioData
+
+#### 向 SDK 投送自己采集的音频数据。
+参数 TRTCAudioFrame 推荐下列填写方式（其他字段不需要填写）：
+-  audioFormat：音频数据格式，仅支持 TRTCAudioFrameFormatPCM。
+-  data：音频帧 buffer。音频帧数据只支持 PCM 格式，支持 5-100 ms 帧长，推荐使用 20ms 帧长，长度计算方法：48000采样率，单声道的帧长度：` 48000 × 0.02s × 1 × 16bit = 15360bit = 1920字节 `。
+-  sampleRate：采样率，支持：16000、24000、32000、44100、48000。
+-  channel：声道数（如果是立体声，数据是交叉的），单声道：1； 双声道：2。
+-  timestamp：时间戳，单位为毫秒（ms），请使用音频帧在采集时被记录下来的时间戳（可以在采集到一帧音频帧之后，通过调用 generateCustomPTS 获取时间戳）。
+参考文档：[自定义采集和渲染](https://cloud.tencent.com/document/product/647/74692)。
+| 参数 | 描述 |
+| --- | --- |
+| frame | 音频数据 |
+> **注意**
+> 请您精准地按每帧时长的间隔调用本接口，数据投送间隔不均匀时极易触发声音卡顿。
+
+## enableMixExternalAudioFrame
+
+#### 启用/关闭自定义音轨。
+开启后，您可以通过本接口向 SDK 混入一条自定义的音轨。通过两个布尔型参数，您可以控制该音轨是否要在远端和本地播放。
+| 参数 | 描述 |
+| --- | --- |
+| enablePlayout | 控制混入的音轨是否要在本地播放，默认值：false。 |
+| enablePublish | 控制混入的音轨是否要在远端播放，默认值：false。 |
+> **注意**
+> 如果您指定参数 ` enablePublish ` 和 ` enablePlayout ` 均为 false，代表完全关闭您的自定义音轨。
+
+## mixExternalAudioFrame
+
+#### 向 SDK 混入自定义音轨。
+调用该接口之前，您需要先通过 enableMixExternalAudioFrame 开启自定义音轨，之后就可以通过本接口将自己的音轨以 PCM 格式混入到 SDK 中。
+理想情况下，我们期望您的代码能够以非常均匀的速度向 SDK 提供音轨数据。但我们也非常清楚，完美的调用间隔是一个巨大的挑战。
+所以 SDK 内部会开启一个音轨数据的缓冲区，该缓冲区的作用类似一个“蓄水池”，它能够暂存您传入的音轨数据，平抑由于接口调用间隔的抖动问题。
+本接口的返回值代表这个音轨缓冲区的大小，单位是毫秒（ms），例如：如果该接口返回 50，则代表当前的音轨缓冲区有 50ms 的音轨数据。因此只要您在 50ms 内再次调用本接口，SDK 就能保证您混入的音轨数据是连续的。
+当您调用该接口后，如果发现返回值大于 100ms，则可以等待一帧音频帧的播放时间之后再次调用；如果返回值小于 100ms，则代表缓冲区比较小，您可以再次混入一些音轨数据以确保音轨缓冲区的大小维持在“安全水位”以上。
+参数 TRTCAudioFrame 推荐下列填写方式（其他字段不需要填写）：
+-  data：音频帧 buffer。音频帧数据只支持 PCM 格式，支持 5ms - 100ms 帧长，推荐使用 20ms 帧长，长度计算方法：48000采样率, 单声道的帧长度：` 48000 × 0.02s × 1 × 16bit = 15360bit = 1920字节 `。
+-  sampleRate：采样率，支持：16000、24000、32000、44100、48000。
+-  channel：声道数（如果是立体声，数据是交叉的），单声道：1； 双声道：2。
+-  timestamp：时间戳，单位为毫秒（ms），请使用音频帧在采集时被记录下来的时间戳（可以在获得一帧音频帧之后，通过调用 generateCustomPTS 获得时间戳）。
+| 参数 | 描述 |
+| --- | --- |
+| frame | 音频数据 |
+#### 返回值说明：
+>= 0 缓冲的长度，单位：ms。< 0 错误（-1 未启用 ` mixExternalAudioFrame `）
+
+> **注意**
+> 请您精准地按每帧时长的间隔调用本接口，数据投送间隔不均匀时极易触发声音卡顿。
+
+## setMixExternalAudioVolume
+
+#### 设置推流时混入外部音频的推流音量和播放音量。
+| 参数 | 描述 |
+| --- | --- |
+| playoutVolume | 设置的播放音量大小，范围 [0, 150]，-1 表示不改变。 |
+| publishVolume | 设置的推流音量大小，范围 [0, 150]，-1 表示不改变。 |
+
+## generateCustomPTS
+
+#### 生成自定义采集时的时间戳。
+本接口仅适用于自定义采集模式，用于解决音视频帧的采集时间（capture time）和投送时间（send time）不一致所导致的音画不同步问题。
+当您通过 sendCustomVideoData 或 sendCustomAudioData 等接口进行自定义视频或音频采集时，请按照如下操作使用该接口：
+1. 首先，在采集到一帧视频或音频帧时，通过调用本接口获得当时的 PTS 时间戳。
+2. 之后可以将该视频或音频帧送入您使用的前处理模块（如第三方美颜组件，或第三方音效组件）。
+3. 在真正调用 sendCustomVideoData 或 sendCustomAudioData 进行投送时，请将该帧在采集时记录的 PTS 时间戳赋值给 TRTCVideoFrame 或 TRTCAudioFrame 中的 timestamp 字段。
+#### 返回值说明：
+时间戳（单位：ms）
+
+## setLocalVideoCustomProcessCallback
+> **平台 API 名称：** Android: `setLocalVideoProcessListener` | iOS: `setLocalVideoProcessDelegete`
+
+#### 设置第三方美颜的视频数据回调。
+设置该回调之后，SDK 会把采集到的视频帧通过您设置的 listener 回调出来，用于第三方美颜组件进行二次处理，之后 SDK 会将处理后的视频帧进行编码和发送。
+| 参数 | 描述 |
+| --- | --- |
+| bufferType | 指定回调的数据格式，目前支持： - TRTC_VIDEO_BUFFER_TYPE_TEXTURE：适用于 pixelFormat 被设置为 TRTC_VIDEO_PIXEL_FORMAT_Texture_2D 时。 - TRTC_VIDEO_BUFFER_TYPE_BYTE_BUFFER：适用于 pixelFormat 被设置为 TRTC_VIDEO_PIXEL_FORMAT_I420 时。 - TRTC_VIDEO_BUFFER_TYPE_BYTE_ARRAY：适用于 pixelFormat 被设置为 TRTC_VIDEO_PIXEL_FORMAT_I420 时。 |
+| listener | 自定义预处理回调，详见 TRTCVideoFrameListener。 |
+| pixelFormat | 指定回调的像素格式，目前支持： - TRTC_VIDEO_PIXEL_FORMAT_Texture_2D: 显存纹理方案。 - TRTC_VIDEO_PIXEL_FORMAT_I420：内存数据方案。 |
+#### 返回值说明：
+0：成功；< 0：错误（详见 [错误码](https://cloud.tencent.com/document/product/647/38307)）。
+
+## setLocalVideoRenderCallback
+> **平台 API 名称：** Android: `setLocalVideoRenderListener` | iOS: `setLocalVideoRenderDelegate`
+
+#### 设置本地视频自定义渲染回调。
+设置该回调之后，SDK 内部会跳过原来的渲染流程，并把采集到的数据回调出来，您需要自己完成画面渲染。
+-  pixelFormat 指定回调的数据格式，目前支持 Texture2D、I420 和 RGBA 三种格式。
+-  bufferType  指定 buffer 的类型，BYTE_BUFFER 适合在 jni 层使用，BYTE_ARRAY 则可用于 Java 层的直接操作。
+参考文档：[自定义采集和渲染](https://cloud.tencent.com/document/product/647/34066)。
+| 参数 | 描述 |
+| --- | --- |
+| bufferType | 指定视频帧的数据结构： - TRTC_VIDEO_BUFFER_TYPE_TEXTURE：适用于 pixelFormat 被设置为 TRTC_VIDEO_PIXEL_FORMAT_Texture_2D 时。 - TRTC_VIDEO_BUFFER_TYPE_BYTE_BUFFER：适用于 pixelFormat 被设置为 TRTC_VIDEO_PIXEL_FORMAT_I420 和 TRTC_VIDEO_PIXEL_FORMAT_RGBA 时。 - TRTC_VIDEO_BUFFER_TYPE_BYTE_ARRAY：适用于 pixelFormat 被设置为 TRTC_VIDEO_PIXEL_FORMAT_I420 和 TRTC_VIDEO_PIXEL_FORMAT_RGBA 时。 |
+| listener | 自定义视频渲染回调，每一帧视频数据回调一次。 |
+| pixelFormat | 指定视频帧的像素格式，如： - TRTC_VIDEO_PIXEL_FORMAT_Texture_2D：OpenGL 纹理格式，比较适合 GPU 进行处理，处理效率高。 - TRTC_VIDEO_PIXEL_FORMAT_I420：标准 i420 格式，比较适合 CPU 进行处理，处理效率较差。 - TRTC_VIDEO_PIXEL_FORMAT_RGBA：RGBA 格式，比较适合 CPU 进行处理，处理效率较差。 |
+#### 返回值说明：
+0：成功；< 0：错误。
+
+## setRemoteVideoRenderCallback
+> **平台 API 名称：** Android: `setRemoteVideoRenderListener` | iOS: `setRemoteVideoRenderDelegate`
+
+#### 设置远端视频自定义渲染回调。
+设置该回调之后，SDK 内部会跳过原来的渲染流程，并把采集到的数据回调出来，您需要自己完成画面渲染。
+-  您可以通过调用 ` setRemoteVideoRenderCallback(TRTCVideoPixelFormat_Unknown, TRTCVideoBufferType_Unknown, nullptr) ` 停止回调。
+-  iOS、Mac、Windows 平台目前仅支持回调 TRTCVideoPixelFormat_I420 或 TRTCVideoPixelFormat_BGRA32 像素格式的视频帧。
+-  Android 平台目前仅支持传入 TRTCVideoPixelFormat_I420, TRTCVideoPixelFormat_RGBA32 或 TRTCVideoPixelFormat_Texture_2D 像素格式的视频帧。
+| 参数 | 描述 |
+| --- | --- |
+| bufferType | 指定视频数据结构类型，目前只支持 TRTCVideoBufferType_Buffer |
+| callback | 自定义渲染回调。 |
+| pixelFormat | 指定回调的像素格式 |
+| userId | 远端用户id |
+#### 返回值说明：
+0：成功；< 0：错误（详见 [错误码](https://cloud.tencent.com/document/product/647/38308)）。
+
+## setAudioFrameCallback
+> **平台 API 名称：** Android: `setAudioFrameListener` | iOS: `setAudioFrameDelegate`
+
+#### 设置音频数据自定义回调。
+设置该回调之后，SDK 内部会把音频数据（PCM 格式）回调出来，包括：
+- onCapturedAudioFrame：本地麦克风采集到的音频数据回调
+- onLocalProcessedAudioFrame：本地采集并经过音频模块前处理后的音频数据回调
+- onRemoteUserAudioFrame：混音前的每一路远程用户的音频数据
+- onMixedPlayAudioFrame：将各路音频混合之后并最终要由系统播放出的音频数据回调
+> **注意**
+> 设置回调为空即代表停止自定义音频回调，反之，设置回调不为空则代表启动自定义音频回调。
+
+## setCapturedAudioFrameCallbackFormat
+> **平台 API 名称：** iOS: `setCapturedAudioFrameDelegateFormat`
+
+#### 设置本地麦克风采集出的音频帧回调格式。
+本接口用于设置 onCapturedAudioFrame 回调出来的 AudioFrame 的格式：
+-  sampleRate：采样率，支持：16000、32000、44100、48000。
+-  channel：声道数（如果是立体声，数据是交叉的），单声道：1； 双声道：2。
+-  samplesPerCall：采样点数，定义回调数据帧长。帧长必须为 10ms 的整数倍。
+如果希望用毫秒数计算回调帧长，则将毫秒数转换成采样点数的公式为：` 采样点数 = 毫秒数 * 采样率 / 1000 `。
+举例：48000Hz 采样率希望回调 20ms 帧长的数据，则采样点数应该填：` 960 = 20 * 48000 / 1000 `。
+| 参数 | 描述 |
+| --- | --- |
+| format | 音频数据回调格式。 |
+#### 返回值说明：
+0：成功；<0：错误。
+
+> **注意**
+> 最终回调的帧长度是以字节为单位，采样点数转换成字节数的计算公式为：` 字节数 = 采样点数 * channel * 2（位宽） `。举例：48000Hz 采样率，双声道，20ms 帧长，采样点数为 960，字节数为 ` 3840 = 960 * 2 * 2 `。
+
+## setLocalProcessedAudioFrameCallbackFormat
+> **平台 API 名称：** iOS: `setLocalProcessedAudioFrameDelegateFormat`
+
+#### 设置经过前处理后的本地音频帧回调格式。
+本接口用于设置 onLocalProcessedAudioFrame 回调出来的 AudioFrame 的格式：
+-  sampleRate：采样率，支持：16000、32000、44100、48000。
+-  channel：声道数（如果是立体声，数据是交叉的），单声道：1； 双声道：2。
+-  samplesPerCall：采样点数，定义回调数据帧长。帧长必须为 10ms 的整数倍。
+如果希望用毫秒数计算回调帧长，则将毫秒数转换成采样点数的公式为：` 采样点数 = 毫秒数 * 采样率 / 1000 `。
+举例：48000Hz 采样率希望回调20ms帧长的数据，则采样点数应该填: ` 960 = 20 * 48000 / 1000 `。
+| 参数 | 描述 |
+| --- | --- |
+| format | 音频数据回调格式。 |
+#### 返回值说明：
+0：成功；<0：错误。
+
+> **注意**
+> 最终回调的帧长度是以字节为单位，采样点数转换成字节数的计算公式为：` 字节数 = 采样点数 * channel * 2（位宽） `。 举例：48000Hz 采样率，双声道，20ms 帧长，采样点数为 960，字节数为 ` 3840 = 960 * 2 * 2 `。
+
+## setMixedPlayAudioFrameCallbackFormat
+> **平台 API 名称：** iOS: `setMixedPlayAudioFrameDelegateFormat`
+
+#### 设置最终要由系统播放出的音频帧回调格式。
+本接口用于设置 onMixedPlayAudioFrame 回调出来的 AudioFrame 的格式：
+-  sampleRate：采样率，支持：16000、32000、44100、48000。
+-  channel：声道数（如果是立体声，数据是交叉的），单声道：1； 双声道：2。
+-  samplesPerCall：采样点数，定义回调数据帧长。帧长必须为 10ms 的整数倍。
+如果希望用毫秒数计算回调帧长，则将毫秒数转换成采样点数的公式为：` 采样点数 = 毫秒数 * 采样率 / 1000 `。
+举例：48000Hz 采样率希望回调 20ms 帧长的数据，则采样点数应该填: ` 960 = 20 * 48000 / 1000 `。
+| 参数 | 描述 |
+| --- | --- |
+| format | 音频数据回调格式。 |
+#### 返回值说明：
+0：成功；<0：错误。
+
+> **注意**
+> 最终回调的帧长度是以字节为单位，采样点数转换成字节数的计算公式为：` 字节数 = 采样点数 * channel * 2（位宽） `。 举例：48000Hz 采样率，双声道，20ms 帧长，采样点数为 960，字节数为 ` 3840 = 960 * 2 * 2 `。
+
+## enableCustomAudioRendering
+
+#### 开启音频自定义播放。
+如果您需要外接一些特定的音频设备，或者希望自己掌控音频的播放逻辑，您可以通过该接口启用音频自定义播放。
+启用音频自定义播放后，SDK 将不再调用系统的音频接口播放数据，您需要通过 getCustomAudioRenderingFrame 获取 SDK 要播放的音频帧并自行播放。
+| 参数 | 描述 |
+| --- | --- |
+| enable | 是否启用音频自定义播放，默认为关闭状态。 |
+> **注意**
+> 需要您在进入房间前设置才能生效，暂不支持进入房间后再设置。
+
+## getCustomAudioRenderingFrame
+
+#### 获取可播放的音频数据。
+调用该接口之前，您需要先通过 enableCustomAudioRendering 开启音频自定义播放。
+参数 TRTCAudioFrame 推荐下列填写方式（其他字段不需要填写）：
+-  sampleRate：采样率，必填，支持 16000、24000、32000、44100、48000。
+-  channel：声道数，必填，单声道请填1，双声道请填2，双声道时数据是交叉的。
+-  data：用于获取音频数据的 buffer。需要您根据一帧音频帧的帧长度分配好 data 的内存大小。获取的 PCM 数据支持 10ms 或 20ms 两种帧长，推荐使用 20ms 的帧长。
+计算公式为：` 采样率 x 播放时长 x 声道数量 x 2（每个样点的字节数） `， 例如： 48000Hz 采样率、单声道、且播放时长为 20ms 的一帧音频帧的 buffer 大小为 ` 48000 × 0.02s × 1 × 16bit = 15360bit = 1920字节 `。
+| 参数 | 描述 |
+| --- | --- |
+| audioFrame | 音频数据帧。 |
+> **注意**
+> 1. 参数 audioFrame 中的 sampleRate、channel 需提前设置好，同时分配好所需读取帧长的 data 空间。
+> 2. SDK 内部会根据 sampleRate 和 channel 自动填充 data 数据。
+> 3. 建议由系统的音频播放线程直接驱动该函数的调用，在播放完一帧音频之后，即调用该接口获取下一帧可播放的音频数据。
+
+## sendCustomCmdMsg
+
+#### 使用 UDP 通道发送自定义消息给房间内所有用户。
+该接口可以让您借助 TRTC 的 UDP 通道，向当前房间里的其他用户广播自定义数据，以达到传输信令的目的。
+房间中的其他用户可以通过 ITRTCCloudCallback 中的 onRecvCustomCmdMsg 回调接收消息。
+| 参数 | 描述 |
+| --- | --- |
+| cmdID | 消息 ID，取值范围为 [1, 10]。 |
+| data | 待发送的消息，单个消息的最大长度被限制为 1KB。 |
+| ordered | 是否要求有序，即是否要求接收端的数据包顺序和发送端的数据包顺序一致（这会带来一定的接收延时）。 |
+| reliable | 是否可靠发送，可靠发送可以获得更高的发送成功率，但可靠发送比不可靠发送会带来更大的接收延迟。 |
+#### 返回值说明：
+true：消息已经发出；false：消息发送失败。
+
+> **注意**
+> 1. 发送消息到房间内所有用户（暂时不支持 Web/小程序端），每秒最多能发送30条消息（与 sendSEIMsg 共享限制）。
+> 2. 每个包最大为 1KB，超过则很有可能会被中间路由器或者服务器丢弃。
+> 3. 每个客户端每秒最多能发送总计 16KB 数据（与 sendSEIMsg 共享限制）。
+> 4. 请将 ` reliable ` 和 ` ordered ` 同时设置为 true 或同时设置为 false，暂不支持交叉设置。
+> 5. 强烈建议您将不同类型的消息设定为不同的 cmdID，这样可以在要求有序的情况下减小消息时延。
+> 6. 目前仅支持主播身份。
+
+## sendSEIMsg
+
+#### 使用 SEI 通道发送自定义消息给房间内所有用户。
+该接口可以让您借助 TRTC 的 SEI 通道，向当前房间里的其他用户广播自定义数据，已达到传输信令的目的。
+视频帧的头部有一个叫做 SEI 的头部数据块，该接口的原理就是利用这个被称为 SEI 的头部数据块，将您要发送的自定义信令嵌入其中，使其同视频帧一并发送出去。
+因此，与 sendCustomCmdMsg 相比，SEI 通道传输的信令具有更好的兼容性：信令可以伴随着视频帧一直传输到直播 CDN 上。
+不过，由于视频帧头部的数据块不能太大，建议您使用该接口时，尽量将信令控制在几个字节的大小。
+最常见的用法是把自定义的时间戳（timestamp）用本接口嵌入视频帧中，实现消息和画面的完美对齐（例如：教育场景下的课件和视频信号的对齐）。
+房间中的其他用户可以通过 ITRTCCloudCallback 中的 onRecvSEIMsg 回调接收消息。
+| 参数 | 描述 |
+| --- | --- |
+| data | 待发送的数据，最大支持 1KB（1000字节）的数据大小 |
+| repeatCount | 发送数据次数 |
+#### 返回值说明：
+true：消息已通过限制，等待后续视频帧发送；false：消息被限制发送
+
+> **注意**
+> 本接口有以下限制：
+> 1. 数据在接口调用完后不会被即时发送出去，而是从下一帧视频帧开始与视频帧一起发送。
+> 2. 发送消息到房间内所有用户，每秒最多能发送 40 条消息（与 sendCustomCmdMsg 共享限制）。
+> 3. 每个包最大为 1KB，若发送大量数据，会导致视频码率增大，可能导致视频画质下降甚至卡顿（与 sendCustomCmdMsg 共享限制）。
+> 4. 每个客户端每秒最多能发送总计 16KB 数据（与 sendCustomCmdMsg 共享限制）。
+> 5. 若指定多次发送（repeatCount > 1），则数据会被带在后续的连续 repeatCount 个视频帧中发送出去，同样会导致视频码率增大。接收消息 onRecvSEIMsg 回调也可能会收到多次相同的消息，需要去重。
+
+## startSpeedTest
+
+#### 开始进行网速测试（进入房间前使用）。
+| 参数 | 描述 |
+| --- | --- |
+| params | 测速选项 |
+
+> **注意**
+> 1. 测速过程将产生少量的基础服务费用，详见 [计费概述 > 基础服务](https://cloud.tencent.com/document/product/647/17157#.E5.9F.BA.E7.A1.80.E6.9C.8D.E5.8A.A1) 文档说明。
+> 2. 请在进入房间前进行网速测试，在房间中网速测试会影响正常的音视频传输效果，而且由于干扰过多，网速测试结果也不准确。
+> 
+
+> 3. 同一时间只允许一项网速测试任务运行。
+> 
+
+#### 返回值说明：
+
+接口调用结果，< 0：失败
+
+## stopSpeedTest
+
+#### 停止网络测速。
+
+## getSDKVersion
+
+#### 获取 SDK 版本信息。
+
+## setLogLevel
+
+#### 设置 Log 输出级别。
+| 参数 | 描述 |
+| --- | --- |
+| level | 参见 TRTCLogLevel，默认值：TRTC_LOG_LEVEL_NULL |
+
+## setConsoleEnabled
+
+#### 启用/禁用控制台日志打印。
+| 参数 | 描述 |
+| --- | --- |
+| enabled | 指定是否启用，默认：禁止状态。 |
+
+## setLogCompressEnabled
+
+#### 启用/禁用日志的本地压缩。
+
+开启压缩后，Log 存储体积明显减小，但需要腾讯云提供的 Python 脚本解压后才能阅读。
+
+禁用压缩后，Log 采用明文存储，可以直接用记事本打开阅读，但占用空间较大。
+| 参数 | 描述 |
+| --- | --- |
+| enabled | 指定是否启用，默认为启动状态 |
+
+## setLogDirPath
+
+#### 设置本地日志的保存路径。
+
+通过该接口您可以更改 SDK 本地日志的默认存储路径，SDK 默认的本地日志的存储位置：
+-  Windows 平台：在 C:/Users/[系统用户名]/AppData/Roaming/liteav/log，即 %appdata%/liteav/log 下。
+
+-  iOS 或 Mac 平台：在 sandbox Documents/log 下。
+
+-  Android 平台：在 /app私有目录/files/log/liteav/ 下。
+
+| 参数 | 描述 |
+| --- | --- |
+| path | 存储日志的路径 |
+
+> **注意**
+> 请务必在所有其他接口之前调用，并且保证您指定的目录是存在的，并且您的应用程序拥有对该目录的读写权限。
+## setLogCallback
+> **平台 API 名称：** Android: `setLogListener` | iOS: `setLogDelegate`
+
+#### 设置日志回调。
+
+## showDebugView
+
+#### 显示仪表盘。
+
+“仪表盘”是位于视频渲染控件之上的一个半透明的调试信息浮层，用于展示音视频信息和事件信息，便于对接和调试。
+| 参数 | 描述 |
+| --- | --- |
+| showType | 0：不显示；1：显示精简版（仅显示音视频信息）；2：显示完整版（包含音视频信息和事件信息）。 |
+
+## callExperimentalAPI
+
+#### 调用实验性接口。
+
+## enablePayloadPrivateEncryption
+
+#### 开启或关闭媒体流私有加密。
+在安全要求较高的场景下，TRTC 建议您在加入房间前，调用 ` enablePayloadPrivateEncryption ` 方法开启媒体流私有加密。
+用户退出房间后，SDK 会自动关闭私有加密。如需重新开启私有加密，您需要在用户再次加入房间前调用该方法。
+| 参数 | 描述 |
+| --- | --- |
+| config | 配置媒体流私有加密的算法和密钥，参见 TRTCPayloadPrivateEncryptionConfig。 |
+| enabled | 是否开启媒体流私有加密。 |
+#### 返回值说明：
+接口调用结果，0: 方法调用成功， -1: 传入参数无效， -2: 功能已过期。若需解锁：请前往购买 [TRTC 旗舰版（国内站）/ 专业版（国际站）套餐](https://buy.cloud.tencent.com/trtc?tab=uikit&type=call&pkg=top)，并[联系我们](https://console.cloud.tencent.com/workorder/category?from=connect-us)审核后使用。
+
+> **注意**
+> TRTC 已经内置对媒体流进行加密后再传输，启用媒体流私有加密后将使用您传入的密匙与初始向量进行再次加密。
+
+## callbackQueue
+> **平台 API 名称：** Android: `setListenerHandler` | iOS: `delegateQueue`
+> **适用平台：** Android, iOS
+
+#### 设置驱动 TRTCCloudListener 事件回调的队列。
+如果您不指定自己的 ` listenerHandler ` 默认会采用 MainQueue 作为驱动 TRTCCloudListener 事件回调的队列。
+也就是当您不设置 ` listenerHandler ` 属性时，TRTCCloudListener 中的所有回调函数都是由 MainQueue 来驱动的。
+| 参数 | 描述 |
+| --- | --- |
+| listenerHandler | 事件回调句柄 |
+
+> **注意**
+> 如果您指定了自己的 ` listenerHandler `，请不要在 TRTCCloudListener 回调函数中操作 UI，否则会引发线程安全问题。
+
+## setPerspectiveCorrectionPoints
+> **适用平台：** Android, iOS
+
+#### 视频画面透视校正坐标设置。
+
+您可以通过本接口指定渲染画面透视校正的坐标区域。
+| 参数 | 描述 |
+| --- | --- |
+| dstPoints | 期望校正到的目标坐标区域4个顶点坐标，需按照左上、左下、右上、右下的顺序传入，所有的坐标需要根据画面宽高做 [0,1] 区间的归一化；传 null 则停止透视校正。 |
+| srcPoints | 原始画面坐标区域4个顶点坐标，需按照左上、左下、右上、右下的顺序传入，所有的坐标需要根据画面宽高做 [0,1] 区间的归一化; 传 null 则停止透视校正。 |
+| userId | 用户 ID，如指定空值表示校正本地的视频画面。 |
+
+## setAudioRoute
+> **适用平台：** Android, iOS
+
+#### 设置音频路由。
+设置“音频路由”，即设置声音是从手机的扬声器还是从听筒中播放出来，因此该接口仅适用于手机等移动端设备。
+手机有两个扬声器：一个是位于手机顶部的听筒，一个是位于手机底部的立体声扬声器。
+设置音频路由为听筒时，声音比较小，只有将耳朵凑近才能听清楚，隐私性较好，适合用于接听电话。
+设置音频路由为扬声器时，声音比较大，不用将手机贴脸也能听清，因此可以实现“免提”的功能。
+| 参数 | 描述 |
+| --- | --- |
+| route | 音频路由，即声音由哪里输出（扬声器、听筒），默认值：TRTCAudioModeSpeakerphone。 |
+
+## TRTCViewMargin
+> **适用平台：** Android, iOS
+
+#### 设置仪表盘的边距。
+用于调整仪表盘在视频渲染控件中的位置，必须在 showDebugView 之前调用才能生效。
+| 参数 | 描述 |
+| --- | --- |
+| margin | 仪表盘内边距，注意这里是基于 parentView 的百分比，` margin ` 的取值范围是 [0, 1]。 |
+| userId | 用户 ID。 |
+
+## startScreenCaptureInApp
+> **适用平台：** iOS
+
+#### 开始应用内的屏幕分享（仅支持 iOS 13.0 及以上系统）。
+
+该接口会抓取当前应用内的实时屏幕内容并将其分享给同房间中的其他用户，适用于 13.0 以上的 iOS 系统。
+
+如果您希望抓取整个 iOS 系统的屏幕内容（而不受当前应用的限制），推荐使用 startScreenCaptureByReplaykit。
+
+iPhone 推荐的屏幕分享视频编码参数（TRTCVideoEncParam）：
+-  分辨率(videoResolution): 1280 x 720。
+
+-  帧率(videoFps): 10 FPS。
+
+-  码率(videoBitrate): 1600 kbps。
+
+-  分辨率自适应(enableAdjustRes): NO。
+
+| 参数 | 描述 |
+| --- | --- |
+| encParams | 设置屏幕分享时的视频编码参数，推荐采用上述推荐配置。 如果您指定 encParams 为 nil，SDK 会使用您在调用 startScreenCapture 接口之前所设置的视频编码参数。 |
+| streamType | 屏幕分享使用的线路，可以设置为主路（TRTCVideoStreamTypeBig）或者辅路（TRTCVideoStreamTypeSub）。 |
+
+## startScreenCaptureByReplaykit
+> **适用平台：** iOS
+
+#### 开始全系统的屏幕分享（仅支持 iOS 11.0 及以上系统）。
+
+该接口支持抓取整个 iOS 系统的屏幕，可以实现类似腾讯会议的全系统级的屏幕分享。
+
+但对接步骤要比 startScreenCaptureInApp 略繁琐一些，需要为您的应用实现一个 Replaykit 扩展模块。
+
+参考文档：[实时屏幕分享(iOS)](https://cloud.tencent.com/document/product/647/45750)
+
+iPhone 推荐的屏幕分享视频编码参数（TRTCVideoEncParam）：
+-  分辨率(videoResolution)：1280 x 720。
+
+-  帧率(videoFps)：10 FPS。
+
+-  码率(videoBitrate)：1600 kbps。
+
+-  分辨率自适应(enableAdjustRes)：NO。
+
+| 参数 | 描述 |
+| --- | --- |
+| appGroup | 用于指定您的应用与录屏进程共享的 Application Group Identifier，您可以指定该参数为 nil，但推荐您按照文档指示进行设置，从而获得更好的可靠性。 |
+| encParams | 设置屏幕分享时的视频编码参数，推荐采用上述推荐配置。如果您指定 encParams 为 nil，SDK 会使用您在调用 startScreenCapture 接口之前所设置的视频编码参数。 |
+| streamType | 屏幕分享使用的线路，可以设置为主路（TRTCVideoStreamTypeBig）或者辅路（TRTCVideoStreamTypeSub）。 |
+
+--------------------------------------------------------------------------------
+title: TRTC SDK 统计数据参考 (Android/iOS/C++)
+description: 音视频质量统计数据结构, 包含码率、帧率、分辨率、丢包率、延迟等指标。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/statistics.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 C++ 接口为基准。Android (TRTCStatistics)、iOS (TRTCStatistics)、C++ (ITRTCStatistics) 的接口名称和参数语义完全一致，仅函数签名格式不同。
+> - Android: Java 风格（如 `enterRoom(TRTCParams param, int scene)`）
+> - iOS: ObjC 风格（如 `enterRoom:appScene:`）
+> - C++: 标准 C++ 风格（如 `enterRoom(const TRTCParams& params, TRTCAppScene scene)`）
+
+# 腾讯云实时音视频(TRTC SDK) TRTCStatistics 统计信息 文档
+
+## 概述
+本文档是 实时音视频(TRTC SDK) TRTCStatistics 统计信息 的跨平台 API 参考，适用于 Android/iOS/C++ 平台。
+
+## TRTCStatistics
+## TRTCLocalStatistics
+
+#### 本地的音视频统计指标。
+| 枚举类型 | 描述 |
+| --- | --- |
+| audioBitrate | 【字段含义】本地音频的码率，即每秒钟新产生音频数据的多少，单位 Kbps。 |
+| audioCaptureState | 【字段含义】音频设备采集状态（用于检测音频外设的健康度）。 0：采集设备状态正常；1：检测到长时间静音；2：检测到破音；3：检测到声音异常间断。 |
+| audioSampleRate | 【字段含义】本地音频的采样率，单位 Hz。 |
+| frameRate | 【字段含义】本地视频的帧率，即每秒钟会有多少视频帧，单位：FPS。 |
+| height | 【字段含义】本地视频的高度，单位 px。 |
+| streamType | 【字段含义】视频流类型（高清大画面\\|低清小画面\\|辅流画面）。 |
+| videoBitrate | 【字段含义】本地视频的码率，即每秒钟新产生视频数据的多少，单位 Kbps。 |
+| width | 【字段含义】本地视频的宽度，单位 px。 |
+
+## TRTCRemoteStatistics
+
+#### 远端的音视频统计指标。
+| 枚举类型 | 描述 |
+| --- | --- |
+| audioBitrate | 【字段含义】本地音频的码率，单位 Kbps |
+| audioBlockRate | 【字段含义】音频播放卡顿率，单位 (%) 音频播放卡顿率（audioBlockRate） = 音频播放的累计卡顿时长（audioTotalBlockTime） / 音频播放的总时长 |
+| audioPacketLoss | 【字段含义】音频流的总丢包率（％）。 audioPacketLoss 代表音频流历经“主播>云端>观众”这样一条完整的传输链路后，最终在观众端统计到的丢包率。 audioPacketLoss 越小越好，丢包率为0即表示该路音频流的所有数据均已经完整地到达了观众端。 如果出现了 downLoss == 0 但 audioPacketLoss != 0 的情况，说明该路音频流在“云端=>观众”这一段链路上没有出现丢包，但是在` 主播>云端 `这一段链路上出现了不可恢复的丢包。 |
+| audioSampleRate | 【字段含义】本地音频的采样率，单位 Hz。 |
+| audioTotalBlockTime | 【字段含义】音频播放的累计卡顿时长，单位 ms |
+| finalLoss | 【字段含义】该路音视频流的总丢包率（％）。已废弃，不推荐使用；建议使用 audioPacketLoss、videoPacketLoss 替代。 |
+| frameRate | 【字段含义】远端视频的帧率，单位：FPS。 |
+| height | 【字段含义】远端视频的高度，单位 px。 |
+| jitterBufferDelay | 【字段含义】播放延迟，单位 ms 为了避免网络抖动和网络包乱序导致的声音和画面卡顿，TRTC 会在播放端管理一个播放缓冲区，用于对接收到的网络数据包进行整理，该缓冲区的大小会根据当前的网络质量进行自适应调整，该缓冲区的大小折算成以毫秒为单位的时间长度，也就是 jitterBufferDelay。 |
+| point2PointDelay | 【字段含义】端到端延迟，单位 ms point2PointDelay 代表 “主播=>云端=>观众” 的延迟，更准确地说，它代表了“采集=>编码=>网络传输=>接收=>缓冲=>解码=>播放” 全链路的延迟。 point2PointDelay 需要本地和远端的 SDK 均为 8.5 及以上的版本才生效，若远端用户为 8.5 以前的版本，此数值会一直为0，代表无意义。 |
+| remoteNetworkRTT | 【字段含义】该用户从 SDK 到云端的往返延时，单位 ms 该数值代表从 SDK 发送一个网络包到云端，再从云端回送一个网络包到 SDK 的总计耗时，也就是一个网络包经历 “SDK=>云端=>SDK” 的总耗时。 该数值越小越好：如果 remoteNetworkRTT < 50ms，意味着较低的音视频通话延迟；如果 remoteNetworkRTT > 200ms，则意味着较高的音视频通话延迟。 需要特别解释的是，remoteNetworkRTT 代表 “SDK=>云端=>SDK” 的总耗时，所以不需要区分 remoteNetworkUpRTT 和 remoteNetworkDownRTT |
+| remoteNetworkUplinkLoss | 【字段含义】该用户从 SDK 到云端的上行丢包率，单位 (%) 该数值越小越好，如果 remoteNetworkUplinkLoss 为 0%，则意味着上行链路的网络质量很好，上传到云端的数据包基本不发生丢失。 如果 remoteNetworkUplinkLoss 为 30%，则意味着 SDK 向云端发送的音视频数据包中，会有 30% 丢失在传输链路中。 |
+| streamType | 【字段含义】视频流类型（高清大画面\\|低清小画面\\|辅流画面）。 |
+| userId | 【字段含义】用户 ID |
+| videoBitrate | 【字段含义】远端视频的码率，单位 Kbps。 |
+| videoBlockRate | 【字段含义】视频播放卡顿率，单位 (%) 视频播放卡顿率（videoBlockRate） = 视频播放的累计卡顿时长（videoTotalBlockTime） / 视频播放的总时长。 |
+| videoPacketLoss | 【字段含义】该路视频流的总丢包率（％）。 videoPacketLoss 代表该路视频流历经“主播>云端>观众”这样一条完整的传输链路后，最终在观众端统计到的丢包率。 videoPacketLoss 越小越好，丢包率为0即表示该路视频流的所有数据均已经完整地到达了观众端。 如果出现了 downLoss == 0 但 videoPacketLoss != 0 的情况，说明该路视频流在“云端>观众”这一段链路上没有出现丢包，但是在“主播>云端”这一段链路上出现了不可恢复的丢包。 |
+| videoTotalBlockTime | 【字段含义】视频播放的累计卡顿时长，单位 ms |
+| width | 【字段含义】远端视频的宽度，单位 px。 |
+
+## TRTCStatistics
+
+#### 网络和性能的汇总统计指标。
+| 枚举类型 | 描述 |
+| --- | --- |
+| appCpu | 【字段含义】当前应用的 CPU 使用率，单位 (%)，Android 8.0 以上不支持。 |
+| appMemoryUsageInMB | 【字段含义】当前应用的内存占用，单位 (MB)。 |
+| downLoss | 【字段含义】从云端到 SDK 的下行丢包率，单位 (%) 该数值越小越好，如果 downLoss 为 0%，则意味着下行链路的网络质量很好，从云端接收的数据包基本不发生丢失。 如果 downLoss 为 30%，则意味着云端向 SDK 传输的音视频数据包中，会有 30% 丢失在传输链路中。 |
+| gatewayRtt | 【字段含义】从 SDK 到本地路由器的往返时延，单位 ms 该数值代表从 SDK 发送一个网络包到本地路由器网关，再从网关回送一个网络包到 SDK 的总计耗时，也就是一个网络包经历 【SDK>网关>SDK【 的总耗时。 该数值越小越好：如果 gatewayRtt < 50ms，意味着较低的音视频通话延迟；如果 gatewayRtt > 200ms，则意味着较高的音视频通话延迟。 当网络类型为蜂窝网时，该值无效。 |
+| localStatisticsArray | 【字段含义】本地的音视频统计信息 由于本地可能有三路音视频流（即高清大画面，低清小画面，以及辅流画面），因此本地的音视频统计信息是一个数组。 |
+| localStatisticsArraySize | 【字段含义】数组 localStatisticsArray 的大小 |
+| receivedBytes | 【字段含义】总接收字节数（包含信令数据和音视频数据），单位：字节数（Bytes）。 |
+| remoteStatisticsArray | 【字段含义】远端的音视频统计信息 因为同时可能有多个远端用户，而且每个远端用户同时可能有多路音视频流（即高清大画面，低清小画面，以及辅流画面），因此远端的音视频统计信息是一个数组。 |
+| remoteStatisticsArraySize | 【字段含义】数组 remoteStatisticsArray 的大小。 |
+| rtt | 【字段含义】从 SDK 到云端的往返延时，单位 ms 该数值代表从 SDK 发送一个网络包到云端，再从云端回送一个网络包到 SDK 的总计耗时，也就是一个网络包经历 “SDK=>云端=>SDK” 的总耗时。 该数值越小越好：如果 rtt < 50ms，意味着较低的音视频通话延迟；如果 rtt > 200ms，则意味着较高的音视频通话延迟。 需要特别解释的是，rtt 代表 “SDK=>云端=>SDK” 的总耗时，所以不需要区分 upRtt 和 downRtt。 |
+| sentBytes | 【字段含义】总发送字节数（包含信令数据和音视频数据），单位：字节数（Bytes）。 |
+| systemCpu | 【字段含义】当前系统的 CPU 使用率，单位 (%)，Android 8.0 以上不支持。 |
+| systemMemoryInMB | 【字段含义】当前系统的内存，单位 (MB)。 |
+| systemMemoryUsageInMB | 【字段含义】当前系统内存占用，单位 (MB)，iOS和MAC 不支持(MB)。 |
+| upLoss | 【字段含义】从 SDK 到云端的上行丢包率，单位 (%) 该数值越小越好，如果 upLoss 为 0%，则意味着上行链路的网络质量很好，上传到云端的数据包基本不发生丢失。 如果 upLoss 为 30%，则意味着 SDK 向云端发送的音视频数据包中，会有 30% 丢失在传输链路中。 |
+
+--------------------------------------------------------------------------------
+title: TRTC SDK 类型定义参考 (Android/iOS/C++)
+description: SDK 关键数据结构, 包括进房参数、视频编码配置、网络 QoS 策略等。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/type-definitions.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 C++ 接口为基准。Android (TRTCCloudDef)、iOS (TXLiveSDKTypeDef)、C++ (TRTCTypeDef) 的接口名称和参数语义完全一致，仅函数签名格式不同。
+> - Android: Java 风格（如 `enterRoom(TRTCParams param, int scene)`）
+> - iOS: ObjC 风格（如 `enterRoom:appScene:`）
+> - C++: 标准 C++ 风格（如 `enterRoom(const TRTCParams& params, TRTCAppScene scene)`）
+
+# 腾讯云实时音视频(TRTC SDK) TRTC 类型定义 文档
+
+## 概述
+本文档是 实时音视频(TRTC SDK) TRTC 类型定义 的跨平台 API 参考，适用于 Android/iOS/C++ 平台。
+
+## TRTCTypeDef
+## 枚举类型
+
+## TRTCVideoResolution
+
+#### 视频分辨率。
+此处仅定义横屏分辨率（如 640 × 360），如需使用竖屏分辨率（如360 × 640），需要同时指定 TRTCVideoResolutionMode 为 Portrait。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_VIDEO_RESOLUTION_120_120 | 1 | 宽高比 1:1；分辨率 120x120；建议码率（VideoCall）80kbps; 建议码率（LIVE）120kbps。 |
+| TRTC_VIDEO_RESOLUTION_160_160 | 3 | 宽高比 1:1 分辨率 160x160；建议码率（VideoCall）100kbps; 建议码率（LIVE）150kbps。 |
+| TRTC_VIDEO_RESOLUTION_270_270 | 5 | 宽高比 1:1；分辨率 270x270；建议码率（VideoCall）200kbps; 建议码率（LIVE）300kbps。 |
+| TRTC_VIDEO_RESOLUTION_480_480 | 7 | 宽高比 1:1；分辨率 480x480；建议码率（VideoCall）350kbps; 建议码率（LIVE）500kbps。 |
+| TRTC_VIDEO_RESOLUTION_160_120 | 50 | 宽高比4:3；分辨率 160x120；建议码率（VideoCall）100kbps; 建议码率（LIVE）150kbps。 |
+| TRTC_VIDEO_RESOLUTION_240_180 | 52 | 宽高比 4:3；分辨率 240x180；建议码率（VideoCall）150kbps; 建议码率（LIVE）250kbps。 |
+| TRTC_VIDEO_RESOLUTION_280_210 | 54 | 宽高比 4:3；分辨率 280x210；建议码率（VideoCall）200kbps; 建议码率（LIVE）300kbps。 |
+| TRTC_VIDEO_RESOLUTION_320_240 | 56 | 宽高比 4:3；分辨率 320x240；建议码率（VideoCall）250kbps; 建议码率（LIVE）375kbps。 |
+| TRTC_VIDEO_RESOLUTION_400_300 | 58 | 宽高比 4:3；分辨率 400x300；建议码率（VideoCall）300kbps; 建议码率（LIVE）450kbps。 |
+| TRTC_VIDEO_RESOLUTION_480_360 | 60 | 宽高比 4:3；分辨率 480x360；建议码率（VideoCall）400kbps; 建议码率（LIVE）600kbps。 |
+| TRTC_VIDEO_RESOLUTION_640_480 | 62 | 宽高比 4:3；分辨率 640x480；建议码率（VideoCall）600kbps; 建议码率（LIVE）900kbps。 |
+| TRTC_VIDEO_RESOLUTION_960_720 | 64 | 宽高比 4:3；分辨率 960x720；建议码率（VideoCall）1000kbps; 建议码率（LIVE）1500kbps。 |
+| TRTC_VIDEO_RESOLUTION_160_90 | 100 | 宽高比 16:9；分辨率 160x90；建议码率（VideoCall）150kbps; 建议码率（LIVE）250kbps。 |
+| TRTC_VIDEO_RESOLUTION_256_144 | 102 | 宽高比 16:9；分辨率 256x144；建议码率（VideoCall）200kbps; 建议码率（LIVE）300kbps。 |
+| TRTC_VIDEO_RESOLUTION_320_180 | 104 | 宽高比 16:9；分辨率 320x180；建议码率（VideoCall）250kbps; 建议码率（LIVE）400kbps。 |
+| TRTC_VIDEO_RESOLUTION_480_270 | 106 | 宽高比 16:9；分辨率 480x270；建议码率（VideoCall）350kbps; 建议码率（LIVE）550kbps。 |
+| TRTC_VIDEO_RESOLUTION_640_360 | 108 | 宽高比 16:9；分辨率 640x360；建议码率（VideoCall）500kbps; 建议码率（LIVE）900kbps。 |
+| TRTC_VIDEO_RESOLUTION_960_540 | 110 | 宽高比 16:9；分辨率 960x540；建议码率（VideoCall）850kbps; 建议码率（LIVE）1300kbps。 |
+| TRTC_VIDEO_RESOLUTION_1280_720 | 112 | 宽高比 16:9；分辨率 1280x720；建议码率（VideoCall）1200kbps; 建议码率（LIVE）1800kbps。 |
+| TRTC_VIDEO_RESOLUTION_1920_1080 | 114 | 宽高比 16:9；分辨率 1920x1080；建议码率（VideoCall）2000kbps; 建议码率（LIVE）3000kbps。 |
+
+## TRTCVideoResolutionMode
+
+#### 视频宽高比模式。
+TRTCVideoResolution 中仅定义了横屏分辨率（如 640 × 360），如需使用竖屏分辨率（如360 × 640），需要同时指定 ` TRTCVideoResolutionMode ` 为 Portrait。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_VIDEO_RESOLUTION_MODE_LANDSCAPE | 0 | 横屏分辨率，例如：` TRTCVideoResolution_640_360 + TRTCVideoResolutionModeLandscape = 640 × 360 `。 |
+| TRTC_VIDEO_RESOLUTION_MODE_PORTRAIT | 1 | 竖屏分辨率，例如：` TRTCVideoResolution_640_360 + TRTCVideoResolutionModePortrait  = 360 × 640 `。 |
+
+## TRTCVideoStreamType
+
+#### 视频流类型。
+TRTC 内部有三种不同的视频流，分别是：
+-  高清大画面：一般用来传输摄像头的视频数据。
+-  低清小画面：小画面和大画面的内容相互，但是分辨率和码率都比大画面低，因此清晰度也更低。
+-  辅流画面：一般用于屏幕分享，同一时间在同一个房间中只允许一个用户发布辅流视频，其他用户必须要等该用户关闭之后才能发布自己的辅流。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_VIDEO_STREAM_TYPE_BIG | 0 | 高清大画面，一般用来传输摄像头的视频数据。 |
+| TRTC_VIDEO_STREAM_TYPE_SMALL | 1 | 低清小画面：小画面和大画面的内容相互，但是分辨率和码率都比大画面低，因此清晰度也更低。 |
+| TRTC_VIDEO_STREAM_TYPE_SUB | 2 | 辅流画面：一般用于屏幕分享，同一时间在同一个房间中只允许一个用户发布辅流视频，其他用户必须要等该用户关闭之后才能发布自己的辅流。 |
+
+> **注意**
+> 不支持单独开启低清小画面，小画面必须依附于大画面而存在，SDK 会自动设定低清小画面的分辨率和码率。
+
+## TRTCVideoFillMode
+
+#### 视频画面填充模式。
+如果视频显示区域的宽高比不等于视频内容的宽高比时，需要指定画面的填充模式。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_VIDEO_RENDER_MODE_FILL | 0 | 填充模式：即将画面内容居中等比缩放以充满整个显示区域，超出显示区域的部分将会被裁剪掉，此模式下画面可能不完整。 |
+| TRTC_VIDEO_RENDER_MODE_FIT | 1 | 适应模式：即按画面长边进行缩放以适应显示区域，短边部分会被填充为黑色，此模式下图像完整但可能留有黑边。 |
+| TRTC_VIDEO_RENDER_MODE_SCALE_FILL | 2 | 缩放填充模式：即无论画面的宽高比，都会被拉伸或压缩以完全填充显示区域，此模式下画面宽高比可能会被改变，导致渲染画面变形 |
+
+## TRTCVideoRotation
+
+#### 视频画面旋转方向。
+TRTC 提供了对本地和远程画面的旋转角度设置 API，下列的旋转角度都是指顺时针方向的。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_VIDEO_ROTATION_0 | 0 | 不旋转。 |
+| TRTC_VIDEO_ROTATION_90 | 1 | 顺时针旋转90度。 |
+| TRTC_VIDEO_ROTATION_180 | 2 | 顺时针旋转180度。 |
+| TRTC_VIDEO_ROTATION_270 | 3 | 顺时针旋转270度。 |
+
+## TRTCBeautyStyle
+
+#### 美颜（磨皮）算法。
+TRTC 内置多种不同的磨皮算法，您可以选择最适合您产品定位的方案。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_BEAUTY_STYLE_SMOOTH | 0 | 光滑，算法比较激进，磨皮效果比较明显，适用于秀场直播。 |
+| TRTC_BEAUTY_STYLE_NATURE | 1 | 自然，算法更多地保留了面部细节，磨皮效果更加自然，适用于绝大多数直播场景。 |
+| TRTC_BEAUTY_STYLE_PITU | 2 | 优图，由优图实验室提供，磨皮效果介于光滑和自然之间，比光滑保留更多皮肤细节，比自然磨皮程度更高。 |
+
+## TRTCVideoPixelFormat
+
+#### 视频像素格式。
+TRTC 提供针对视频的自定义采集和自定义渲染功能：
+-  在自定义采集功能中，您可以用下列枚举值描述您采集的视频像素格式。
+-  在自定义渲染功能中，您可以指定您期望 SDK 回调出的视频像素格式。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_VIDEO_PIXEL_FORMAT_UNKNOWN | 0 | 未定义的格式。 |
+| TRTC_VIDEO_PIXEL_FORMAT_I420 | 1 | YUV420P(I420) 格式。 |
+| TRTC_VIDEO_PIXEL_FORMAT_Texture_2D | 2 | OpenGL 2D 纹理格式。 |
+| TRTC_VIDEO_PIXEL_FORMAT_TEXTURE_EXTERNAL_OES | 3 | OES 外部纹理格式（适用于 Android 平台）。 |
+| TRTC_VIDEO_PIXEL_FORMAT_NV21 | 4 | NV21 格式。 |
+| TRTC_VIDEO_PIXEL_FORMAT_RGBA | 5 | RGBA 格式。 |
+
+## TRTCVideoBufferType
+
+#### 视频数据传递方式。
+在自定义采集和自定义渲染功能，您需要用到下列枚举值来指定您希望以什么方式传递视频数据：
+-  方案一：使用内存 Buffer 传递视频数据，该方案在 iOS 效率尚可，但在 Android 系统上效率较差，Windows 暂时仅支持内存 Buffer 的传递方式。
+-  方案二：使用 Texture 纹理传递视频数据，该方案在 iOS 和 Android 系统下均有较高的效率，Windows 暂不支持，需要您有一定的 OpenGL 编程基础。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_VIDEO_BUFFER_TYPE_UNKNOWN | 0 | 未定义的传递方式。 |
+| TRTC_VIDEO_BUFFER_TYPE_BYTE_BUFFER | 1 | 使用内存 Buffer 传递视频数据，iOS：PixelBuffer；Android：用于 JNI 层的 Direct Buffer；Win：内存数据块。 |
+| TRTC_VIDEO_BUFFER_TYPE_BYTE_ARRAY | 2 | 使用内存 Buffer 传递视频数据，iOS：经过一次额外整理后更加紧凑的 NSData 类型的内存块；Android：用于 JAVA 层的 byte[]。 该传递的方式的性能是几种方案中效率较差的一种。 |
+| TRTC_VIDEO_BUFFER_TYPE_TEXTURE | 3 | 使用 OpengGL 纹理传递视频数据。 |
+
+## TRTCVideoMirrorType
+
+#### 视频的镜像类型。
+视频的镜像是指对视频内容进行左右翻转，尤其是对本地的摄像头预览视频，开启镜像后能给主播带来熟悉的“照镜子”体验。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_VIDEO_MIRROR_TYPE_AUTO | 0 | 自动模式：如果正使用前置摄像头则开启镜像，如果是后置摄像头则不开启镜像（仅适用于移动设备）。 |
+| TRTC_VIDEO_MIRROR_TYPE_ENABLE | 1 | 强制开启镜像，不论当前使用的是前置摄像头还是后置摄像头。 |
+| TRTC_VIDEO_MIRROR_TYPE_DISABLE | 2 | 强制关闭镜像，不论当前使用的是前置摄像头还是后置摄像头。 |
+
+## TRTCSnapshotSourceType
+
+#### 本地视频截图的数据源。
+SDK 支持从如下两种数据源中截取图片并保存成本地文件：
+-  视频流：从视频流中截取原生的视频内容，截取的内容不受渲染控件的显示控制。
+-  渲染层：从渲染控件中截取显示的视频内容，可以做到用户所见即所得的效果，但如果显示区域过小，截取出的图片也会很小。
+-  采集层：从采集控件中截取采集到的视频内容，可以截取采集出来的高清截图。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_SNAPSHOT_SOURCE_TYPE_STREAM | 0 | 从视频流中截取原生的视频内容，截取的内容不受渲染控件的显示控制。 |
+| TRTC_SNAPSHOT_SOURCE_TYPE_VIEW | 1 | 从渲染控件中截取显示的视频内容，可以做到用户所见即所得的效果，但如果显示区域过小，截取出的图片也会很小。 |
+| TRTC_SNAPSHOT_SOURCE_TYPE_CAPTURE | 2 | 从采集控件中截取采集到的视频内容，可以截取采集出来的高清截图。 |
+
+## TRTCAppScene
+
+#### 应用场景。
+TRTC 针对常见的音视频应用场景都进行了定向优化，以满足各种垂直场景下的差异化要求，主要场景可以分为如下两类：
+-  直播（LIVE）场景：包括 LIVE 和 VoiceChatRoom，前者是音频+视频，后者是纯音频。
+直播场景下，用户被分成“主播”和“观众”两种角色，单个房间中同时最多支持10万人在线，适合于观众人数众多的直播场景。
+-  实时（RTC）场景：包括 VideoCall 和 AudioCall，前者是音频+视频，后者是纯音频。
+实时场景下，用户没有角色的差异，但单个房间中同时最多支持 300 人在线，适合于小范围实时通信的场景。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_APP_SCENE_VIDEOCALL | 0 | 视频通话场景，支持720P、1080P高清画质，单个房间最多支持300人同时在线，最高支持50人同时发言。 适用于[1对1视频通话]、[300人视频会议]、[在线问诊]、[教育小班课]、[远程面试]等业务场景。 |
+| TRTC_APP_SCENE_LIVE | 1 | 视频互动直播，支持平滑上下麦，切换过程无需等待，主播延时小于300ms；支持十万级别观众同时播放，播放延时低至1000ms。 适用于[低延时互动直播]、[大班课]、[主播PK]、[视频相亲]、[在线互动课堂]、[远程培训]、[超大型会议]等业务场景。 **注意** 此场景下，您必须通过 TRTCParams 中的 role 字段指定当前用户的角色。 |
+| TRTC_APP_SCENE_AUDIOCALL | 2 | 语音通话场景，默认采用 SPEECH 音质，单个房间最多支持300人同时在线，最高支持50人同时发言。 适用于 [1对1语音通话]、[300人语音会议]、[语音聊天]、[语音会议]、[在线狼人杀] 等业务场景。 |
+| TRTC_APP_SCENE_VOICE_CHATROOM | 3 | 语音互动直播，支持平滑上下麦，切换过程无需等待，主播延时小于 300ms；支持十万级别观众同时播放，播放延时低至 1000ms。 适用于 [语音俱乐部]、[在线K歌房]、[音乐直播间]、[FM电台] 等业务场景。 **注意** 此场景下，您必须通过 TRTCParams 中的 role 字段指定当前用户的角色。 |
+
+## TRTCRoleType
+
+#### 角色。
+仅适用于直播类场景（即 TRTC_APP_SCENE_LIVE 和 TRTC_APP_SCENE_VOICE_CHATROOM），把用户区分成两种不同的身份：
+-  主播：可以随时发布自己的音视频流，但人数有限制，同一个房间中最多只允许 50 个主播同时发布自己的音视频流。
+-  观众：只能观看其他用户的音视频流，要发布音视频流，需要先通过 switchRole 切换成主播，同一个房间中最多能容纳10万观众。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTCRoleAnchor | 20 | 主播：可以随时发布自己的音视频流，但人数有限制，同一个房间中最多只允许 50 个主播同时发布自己的音视频流。 |
+| TRTCRoleAudience | 21 | 观众：只能观看其他用户的音视频流，要发布音视频流，需要先通过 switchRole 切换成主播，同一个房间中最多能容纳10万观众。 |
+
+## TRTCQosControlMode
+
+#### 流控模式（已废弃）。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| VIDEO_QOS_CONTROL_CLIENT | 0 | 本地控制，用于 SDK 开发内部调试，客户请勿使用。 |
+| VIDEO_QOS_CONTROL_SERVER | 1 | 云端控制，默认模式，推荐选择。 |
+
+## TRTCVideoQosPreference
+
+#### 画质偏好。
+TRTC 在弱网络环境下有两种调控模式：“优先保证画面清晰”或“优先保证画面流畅”，两种模式均会优先保障声音数据的传输。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_VIDEO_QOS_PREFERENCE_SMOOTH | 1 | 流畅优先：即当前网络不足以传输既清晰又流畅的画面时，优先保证画面的流畅性，代价就是画面会比较模糊且伴随有较多的马赛克。 |
+| TRTC_VIDEO_QOS_PREFERENCE_CLEAR | 2 | 清晰优先（默认值）：即当前网络不足以传输既清晰又流畅的画面时，优先保证画面的清晰度，代价就是画面会比较卡顿。 |
+
+## TRTCQuality
+
+#### 网络质量。
+TRTC 会每隔两秒对当前的网络质量进行评估，评估结果为六个等级：Excellent 表示最好，Down 表示最差。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_QUALITY_UNKNOWN | 0 | 未定义。 |
+| TRTC_QUALITY_Excellent | 1 | 当前网络非常好。 |
+| TRTC_QUALITY_Good | 2 | 当前网络比较好。 |
+| TRTC_QUALITY_Poor | 3 | 当前网络一般。 |
+| TRTC_QUALITY_Bad | 4 | 当前网络较差。 |
+| TRTC_QUALITY_Vbad | 5 | 当前网络很差。 |
+| TRTC_QUALITY_Down | 6 | 当前网络不满足 TRTC 的最低要求。 |
+
+## TRTCAVStatusType
+
+#### 音视频状态类型。
+该枚举类型用于音频状态变化回调接口（onRemoteAudioStatusUpdated）与视频状态变化回调接口（onRemoteVideoStatusUpdated），用于指定当前的音频或视频状态。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTCAVStatusStopped | 0 | 停止播放。 |
+| TRTCAVStatusPlaying | 1 | 正在播放。 |
+| TRTCAVStatusLoading | 2 | 正在加载。 |
+
+## TRTCAVStatusChangeReason
+
+#### 音视频状态变化原因类型。
+该枚举类型用于音频状态变化回调接口（onRemoteAudioStatusUpdated）与视频状态变化回调接口（onRemoteVideoStatusUpdated），用于指定当前的音频或视频状态变化原因。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTCAVStatusChangeReasonInternal | 0 | 缺省值。 |
+| TRTCAVStatusChangeReasonBufferingBegin | 1 | 网络缓冲。 |
+| TRTCAVStatusChangeReasonBufferingEnd | 2 | 结束缓冲。 |
+| TRTCAVStatusChangeReasonLocalStarted | 3 | 本地启动音频或视频流播放。 |
+| TRTCAVStatusChangeReasonLocalStopped | 4 | 本地停止音频或视频流播放。 |
+| TRTCAVStatusChangeReasonRemoteStarted | 5 | 远端音频或视频流开始（或继续）。 |
+| TRTCAVStatusChangeReasonRemoteStopped | 6 | 远端音频或视频流停止（或中断）。 |
+
+## TRTCAudioQuality
+
+#### 声音音质。
+TRTC 提供了三种精心校调好的模式，用来满足各种垂直场景下对音质的差异化追求：
+-  人声模式（Speech）：适用于以人声沟通为主的应用场景，该模式下音频传输的抗性较强，TRTC 会通过各种人声处理技术保障在弱网络环境下的流畅度最佳。
+-  音乐模式（Music）：适用于对声乐要求很苛刻的场景，该模式下音频传输的数据量很大，TRTC 会通过各项技术确保音乐信号在各频段均能获得高保真的细节还原度。
+-  默认模式（Default）：介于 Speech 和 Music 之间的档位，对音乐的还原度比人声模式要好，但传输数据量比音乐模式要低很多，对各种场景均有不错的适应性。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_AUDIO_QUALITY_SPEECH | 1 | 人声模式：单声道；编码码率：18kbps；具备几个模式中最强的网络抗性，适合语音通话为主的场景，例如在线会议，语音通话等。 |
+| TRTC_AUDIO_QUALITY_DEFAULT | 2 | 默认模式：单声道；编码码率：50kbps；介于 Speech 和 Music 之间的档位，SDK 默认档位，推荐选择。 |
+| TRTC_AUDIO_QUALITY_MUSIC | 3 | 音乐模式：全频带立体声；编码码率：128kbps；适合需要高保真传输音乐的场景，例如在线K歌、音乐直播等。 |
+
+## TRTCAudioRoute
+
+#### 音频路由（即声音的播放模式）。
+音频路由，即声音是从手机的扬声器还是从听筒中播放出来，因此该接口仅适用于手机等移动端设备。
+手机有两个扬声器：一个是位于手机顶部的听筒，一个是位于手机底部的立体声扬声器。
+-  设置音频路由为听筒时，声音比较小，只有将耳朵凑近才能听清楚，隐私性较好，适合用于接听电话。
+-  设置音频路由为扬声器时，声音比较大，不用将手机贴脸也能听清，因此可以实现“免提”的功能。
+-  音频路由为有线耳机。
+-  音频路由为蓝牙耳机。
+-  音频路由为USB专业声卡设备。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_AUDIO_ROUTE_UNKNOWN | -1 | Unknown：默认的路由设备。 |
+| TRTC_AUDIO_ROUTE_SPEAKER | 0 | Speakerphone：使用扬声器播放（即“免提”），扬声器位于手机底部，声音偏大，适合外放音乐。 |
+| TRTC_AUDIO_ROUTE_EARPIECE | 1 | Earpiece：使用听筒播放，听筒位于手机顶部，声音偏小，适合需要保护隐私的通话场景。 |
+| TRTC_AUDIO_ROUTE_WIRED_HEADSET | 2 | WiredHeadset：使用有线耳机播放。 |
+| TRTC_AUDIO_ROUTE_BLUETOOTH_HEADSET | 3 | BluetoothHeadset：使用蓝牙耳机播放。 |
+| TRTC_AUDIO_ROUTE_SOUND_CARD | 4 | SoundCard：使用 USB 声卡播放。 |
+
+## TRTCAudioFrameFormat
+> **适用平台：** Android, C++
+
+#### 音频帧的内容格式。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTCAudioFrameFormatNone | 0 | None |
+| TRTCAudioFrameFormatPCM | Not Defined | PCM 格式的音频数据。 |
+
+## TRTCAudioFrameOperationMode
+
+#### 音频回调数据读写模式。
+TRTC 提供了两种音频回调数据的操作模式。
+-  读写模式（ReadWrite）：可以获取并修改回调的音频数据，默认模式。
+-  只读模式（ReadOnly）：仅从回调中获取音频数据。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_AUDIO_FRAME_OPERATION_MODE_READWRITE | 0 | 读写模式：可以获取并修改回调的音频数据。 |
+| TRTC_AUDIO_FRAME_OPERATION_MODE_READONLY | 1 | 只读模式：仅从回调中获取音频数据。 |
+
+## TRTCLogLevel
+
+#### Log 级别。
+不同的日志等级定义了不同的详实程度和日志数量，推荐一般情况下将日志等级设置为：TRTCLogLevelInfo。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_LOG_LEVEL_VERBOSE | 0 | 输出所有级别的 Log。 |
+| TRTC_LOG_LEVEL_DEBUG | 1 | 输出 DEBUG，INFO，WARNING，ERROR 和 FATAL 级别的 Log。 |
+| TRTC_LOG_LEVEL_INFO | 2 | 输出 INFO，WARNING，ERROR 和 FATAL 级别的 Log。 |
+| TRTC_LOG_LEVEL_WARN | 3 | 输出WARNING，ERROR 和 FATAL 级别的 Log。 |
+| TRTC_LOG_LEVEL_ERROR | 4 | 输出ERROR 和 FATAL 级别的 Log。 |
+| TRTC_LOG_LEVEL_FATAL | 5 | 仅输出 FATAL 级别的 Log。 |
+| TRTC_LOG_LEVEL_NULL | 6 | 不输出任何 SDK Log。 |
+
+## TRTCScreenCaptureSourceType
+> **适用平台：** iOS, C++
+
+#### 屏幕分享的目标类型（仅适用于桌面端）。
+
+## TRTCTranscodingConfigMode
+
+#### 云端混流的排版模式。
+TRTC 的云端混流服务能够将房间中的多路音视频流混合成一路，因此您需要指定画面的排版方案，我们提供了如下几种排版模式。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTCTranscodingConfigMode_Unknown | 0 | 未定义。 |
+| TRTCTranscodingConfigMode_Manual | 1 | 全手动排版模式。 该模式下，您需要指定每一路画面的精确排版位置。该模式的自由度最高，但易用性也最差： -  您需要填写 TRTCTranscodingConfig 中的所有参数，包括每一路画面（TRTCMixUser）的位置坐标。 -  您需要监听 ITRTCCloudCallback 中的 onUserVideoAvailable 和 onUserAudioAvailable 事件回调，并根据当前房间中各个麦上用户的音视频状态不断地调整 ` mixUsers ` 参数。 |
+| TRTCTranscodingConfigMode_Template_PureAudio | 2 | 纯音频模式。 该模式适用于语音通话（AudioCall）和语音聊天室（VoiceChatRoom）等纯音频的应用场景。 -  您只需要在进入房间后，通过 setMixTranscodingConfig 接口设置一次，之后 SDK 就会自动把房间内所有上麦用户的声音混流到当前用户的直播流上。 -  您无需设置 TRTCTranscodingConfig 中的 ` mixUsers ` 参数，只需设置 ` audioSampleRate `、` audioBitrate ` 和 ` audioChannels ` 等参数即可。 |
+| TRTCTranscodingConfigMode_Template_PresetLayout | 3 | 预排版模式。 最受欢迎的排版模式，因为该模式支持您通过占位符提前对各路画面的位置进行设定，之后 SDK 会自动根据房间中画面的路数动态进行适配调整。 此模式下，您依然需要设置 mixUsers 参数，但可以将 userId 设置为“占位符”，可选的占位符有： -  "$PLACE_HOLDER_REMOTE$"     :  指代远程用户的画面，可以设置多个。 -  "$PLACE_HOLDER_LOCAL_MAIN$" ： 指代本地摄像头画面，只允许设置一个。 -  "$PLACE_HOLDER_LOCAL_SUB$"  :  指代本地屏幕分享画面，只允许设置一个。 此模式下，您不需要监听 ITRTCCloudCallback 中的 onUserVideoAvailable 和 onUserAudioAvailable 回调进行实时调整，只需要在进房成功后调用一次 setMixTranscodingConfig 即可，之后 SDK 会自动将真实的 userId 补位到您设置的占位符上。 |
+| TRTCTranscodingConfigMode_Template_ScreenSharing | 4 | 屏幕分享模式。 适用于在线教育场景等以屏幕分享为主的应用场景，仅支持 Windows 和 Mac 两个平台的 SDK。 该模式下，SDK 会先根据您通过 videoWidth 和 videoHeight 参数设置的目标分辨率构建一张画布， -  当老师未开启屏幕分享时，SDK 会将老师的摄像头画面等比例拉伸绘制到该画布上； -  当老师开启屏幕分享之后，SDK 会将屏幕分享画面绘制到同样的画布上。 此种排版模式的目的是为了确保混流模块的输出分辨率一致，避免课程回放和网页观看的花屏问题（网页播放器不支持可变分辨率）。 同时，连麦学生的声音也会被默认混合到老师的音视频流中。 由于教学模式下的视频内容以屏幕分享为主，因此同时传输摄像头画面和屏幕分享画面是非常浪费带宽的。 推荐的做法是直接将摄像头画面通过 setLocalVideoRenderCallback 接口自定义绘制到当前屏幕上。 在该模式下，您无需设置 TRTCTranscodingConfig 中的 ` mixUsers ` 参数，SDK 不会混合学生的画面，以免干扰屏幕分享的效果。 您可以将 TRTCTranscodingConfig 中的 width x height 设为 0px × 0px，SDK 会自动根据用户当前屏幕的宽高比计算出一个合适的分辨率： -  如果老师当前屏幕宽度 <= 1920px，SDK 会使用老师当前屏幕的实际分辨率。 -  如果老师当前屏幕宽度 >  1920px，SDK 会根据当前屏幕宽高比，选择 1920x1080(16:9)、1920x1200(16:10)、1920x1440(4:3) 三种分辨率中的一种。 |
+
+## TRTCRecordType
+
+#### 媒体录制类型。
+该枚举类型用于本地媒体录制接口 startLocalRecording，用于指定是录制音视频文件还是纯音频文件。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTCLocalRecordType_Audio | 0 | 仅录制音频。 |
+| TRTCLocalRecordType_Video | 1 | 仅录制视频。 |
+| TRTCLocalRecordType_Both | 2 | 同时录制音频和视频。 |
+
+## TRTCMixInputType
+
+#### 混流输入类型。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_MixInputType_Undefined | 0 | 默认值，考虑到针对老版本的兼容性，如果您指定了 inputType 为 Undefined，SDK 会根据另一个参数 pureAudio 的数值决定混流输入类型。 |
+| TRTC_MixInputType_AudioVideo | 1 | 混入音频和视频。 |
+| TRTC_MixInputType_PureVideo | 2 | 只混入视频。 |
+| TRTC_MixInputType_PureAudio | 3 | 只混入音频。 |
+| TRTC_MixInputType_Watermark | 4 | 混入水印，此时您无需指定 userId 字段，但需要指定 image 字段，推荐使用 png 格式的图片。 |
+
+## TRTCWaterMarkSrcType
+> **适用平台：** C++
+
+#### 水印图片的源类型。
+
+## TRTCAudioRecordingContent
+
+#### 音频录制内容类型。
+该枚举类型用于音频录制接口 startAudioRecording，用于指定录制音频的内容。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_AudioRecordingContent_All | 0 | 录制本地和远端所有音频。 |
+| TRTC_AudioRecordingContent_Local | 1 | 仅录制本地音频。 |
+| TRTC_AudioRecordingContent_Remote | 2 | 仅录制远端音频。 |
+
+## TRTCPublishMode
+
+#### 媒体流发布模式。
+该枚举类型用于媒体流发布接口 startPublishMediaStream TRTC 的媒体流发布服务能够将房间中的多路音视频流混合成一路发布至 CDN 或者回推到房间内，也可以将您当前的这路音视频发布到腾讯或者第三方 CDN 因此您需要指定对应媒体流的发布模式，我们提供了如下几种模式。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_PublishMode_Unknown | 0 | 未定义。 |
+| TRTC_PublishBigStream_ToCdn | 1 | 您可以通过设置该参数将您房间内的主路流（TRTC_VIDEO_STREAM_TYPE_BIG）发布到腾讯或者第三方直播 CDN 服务商（仅支持标准 RTMP 协议）。 |
+| TRTC_PublishSubStream_ToCdn | 2 | 您可以通过设置该参数将您房间内的辅路流（TRTC_VIDEO_STREAM_TYPE_SUB）发布到腾讯或者第三方直播 CDN 服务商（仅支持标准 RTMP 协议）。 |
+| TRTC_PublishMixStream_ToCdn | 3 | 您可以通过设置该参数，配合编码输出参数 (TRTCStreamEncoderParam) 和混流转码参数 (TRTCStreamMixingConfig)，将您指定的多路音视频流进行转码并发布到腾讯或者第三方直播 CDN 服务商（仅支持标准 RTMP 协议）。 |
+| TRTC_PublishMixStream_ToRoom | 4 | 您可以通过设置该参数，配合媒体流编码输出参数 (TRTCStreamEncoderParam) 和混流转码参数 (TRTCStreamMixingConfig)，将您指定的多路音视频流进行转码并发布到您指定的房间中。 -  通过 TRTCPublishTarget 中的 TRTCUser 进行指定回推房间的机器人信息。 |
+
+## TRTCEncryptionAlgorithm
+
+#### 加密算法。
+该枚举类型用于媒体流私有加密算法选择。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_EncryptionAlgorithm_Aes_128_Gcm | 0 | AES GCM 128。 |
+| TRTC_EncryptionAlgorithm_Aes_256_Gcm | 1 | AES GCM 256。 |
+
+## TRTCSpeedTestScene
+
+#### 测速场景。
+该枚举类型用于测速场景选择。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_SpeedTestScene_Delay_Testing | 1 | 延迟测试。 |
+| TRTC_SpeedTestScene_Delay_Bandwidth_Testing | 2 | 延迟与带宽测试。 |
+| TRTC_SpeedTestScene_Online_Chorus_Testing | 3 | 在线合唱测试。 |
+
+## TRTCGravitySensorAdaptiveMode
+
+#### 设置重力感应的适配模式（仅适用于移动端）。
+v11.7版本开始支持，只在sdk内部摄像头采集场景生效
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_GRAVITY_SENSOR_ADAPTIVE_MODE_DISABLE | 0 | 关闭重力感应，根据当前采集分辨率与设置的编码分辨率决策，如果两者不一致，则通过旋转90度，保证最大画幅。 |
+| TRTC_GRAVITY_SENSOR_ADAPTIVE_MODE_FILL_BY_CENTER_CROP | 1 | 开启重力感应，始终保证远端画面图像为正，中间过程需要处理分辨率不一致时，采用居中裁剪模式。 |
+| TRTC_GRAVITY_SENSOR_ADAPTIVE_MODE_FIT_WITH_BLACK_BORDER | 2 | 开启重力感应，始终保证远端画面图像为正，中间过程需要处理分辨率不一致时，采用叠加黑边模式。 |
+
+## TRTCParams
+
+#### 进房参数。
+作为 TRTC SDK 的进房参数，只有该参数填写正确，才能顺利进入 roomId 或者 strRoomId 所指定的音视频房间。
+由于历史原因，TRTC 支持数字和字符串两种类型的房间号，分别是 roomId 和 strRoomId。
+请注意：不要混用 roomId 和 strRoomId，因为它们之间是不互通的，例如数字 123 和字符串 “123” 在 TRTC 看来是两个完全不同的房间。
+
+## TRTCVideoEncParam
+
+#### 视频编码参数。
+该设置决定远端用户看到的画面质量，同时也决定了云端录制出的视频文件的画面质量。
+
+## TRTCNetworkQosParam
+
+#### 网络流控（Qos）参数集。
+网络流控相关参数，该设置决定 SDK 在弱网络环境下的调控策略（例如：“清晰优先”或“流畅优先”）。
+
+## TRTCRenderParams
+
+#### 视频画面的渲染参数。
+您可以通过设置此参数来控制画面的旋转角度、填充模式和左右镜像模式。
+
+## TRTCQualityInfo
+
+#### 网络质量。
+
+表征网络质量的好坏，您可以通过该数值在用户界面上展示每个用户的网络质量。
+
+## TRTCVolumeInfo
+
+#### 音量大小。
+表征语音音量的评估值，您可以通过该数值在用户界面上展示每个用户的音量大小。
+
+## TRTCSpeedTestParams
+
+#### 测速参数。
+您可以在用户进入房间前通过 startSpeedTest 接口测试网速（注意：请不要在通话中调用）。
+
+## TRTCSpeedTestResult
+
+#### 网络测速结果。
+您可以在用户进入房间前通过 startSpeedTest 接口进行测速（注意：请不要在通话中调用）。
+
+## TRTCTexture
+> **适用平台：** Android, C++
+
+#### 视频纹理数据。
+
+## TRTCVideoFrame
+
+#### 视频帧信息。
+TRTCVideoFrame 用来描述一帧视频画面的裸数据，也就是编码前或者解码后的视频画面数据。
+
+## TRTCAudioFrame
+
+#### 音频帧数据。
+
+## TRTCMixUser
+
+#### 云端混流中各路画面的描述信息。
+TRTCMixUser 用于指定云端混流中每一路视频画面的位置、大小、图层以及流类型等信息。
+
+## TRTCTranscodingConfig
+
+#### 云端混流的排版布局和转码参数。
+用于指定混流时各路画面的排版位置信息和云端转码的编码参数。
+
+## TRTCPublishCDNParam
+
+#### 向非腾讯云 CDN 上发布音视频流时需设置的转推参数。
+TRTC 的后台服务支持通过标准 RTMP 协议，将其中的音视频流发布到第三方直播 CDN 服务商。
+如果您使用腾讯云直播 CDN 服务，可无需关注此参数，直接使用 startPublish 接口即可。
+
+## TRTCAudioRecordingParams
+
+#### 本地音频文件的录制参数。
+该参数用于在音频录制接口 startAudioRecording 中指定录制参数。
+
+## TRTCLocalRecordingParams
+
+#### 本地媒体文件的录制参数。
+该参数用于在本地媒体文件的录制接口 startLocalRecording 中指定录制相关参数。
+接口 startLocalRecording 是接口 startAudioRecording 的能力加强版本，前者可以录制视频文件，后者只能录制音频文件。
+
+## TRTCAudioEffectParam
+
+#### 音效参数（已废弃）。
+TRTC 中的“音效”特指一些短暂的音频文件，通常仅有几秒钟的播放时间，例如“鼓掌声”、“欢笑声”等。
+该参数用于在早期版本的音效播放接口 playAudioEffect 中指定音效文件（即短音频文件）的路径和播放次数等。
+在 7.3 版本以后，音效接口已被新的接口 startPlayMusic 所取代。
+您在指定 startPlayMusic 的参数 TXAudioMusicParam 时，如果将 ` isShortFile ` 设置为 true，即为“音效”文件。
+
+## TRTCSwitchRoomConfig
+
+#### 房间切换参数。
+该参数用于切换房间接口switchRoom，可以让用户从一个房间快速切换到另一个房间。
+
+## TRTCAudioFrameDelegateFormat
+
+#### 音频自定义回调的格式参数。
+该参数用于在音频自定义回调相关的接口中，设置 SDK 回调出来的音频数据的相关格式（包括采样率、声道数等）。
+
+## TRTCScreenCaptureSourceInfo
+> **适用平台：** iOS, C++
+
+#### 屏幕分享的目标信息（仅适用于桌面系统）。
+在用户进行屏幕分享时，可以选择抓取整个桌面，也可以仅抓取某个程序的窗口。
+TRTCScreenCaptureSourceInfo 用于描述待分享目标的信息，包括 ID、名称、缩略图等，该结构体中的字段信息均是只读的。
+
+## TRTCScreenCaptureProperty
+> **适用平台：** C++
+
+#### 屏幕分享的进阶控制参数。
+
+该参数用于屏幕分享相关的接口selectScreenCaptureTarget，用于在指定分享目标时设定一系列进阶控制参数。
+
+例如：是否采集鼠标、是否要采集子窗口、是否要在被分享目标周围绘制一个边框等。
+
+## TRTCAudioParallelParams
+
+#### 远端音频流智能并发播放策略的参数。
+该参数用于设置远端音频流智能并发播放策略。
+
+## TRTCUser
+
+#### 媒体流发布相关配置的用户信息。
+您可以通过设置该参数，配合媒体流目标发布参数 (TRTCPublishTarget) 和混流转码参数 (TRTCStreamMixingConfig)，将您指定的多路音视频流进行转码并发布到您填写的目标发布地址中
+
+## TRTCPublishCdnUrl
+
+#### 向腾讯或者第三方 CDN 上发布音视频流时需设置的 url 配置。
+该配置用于媒体流发布接口 startPublishMediaStream 中的目标推流配置 (TRTCPublishTarget)
+
+## TRTCPublishTarget
+
+#### 目标推流配置。
+该配置用于媒体流发布接口 startPublishMediaStream。
+
+## TRTCVideoLayout
+
+#### 转码视频布局。
+该配置用于媒体流发布接口（startPublishMediaStream）中的转码配置（TRTCStreamMixingConfig）。
+用于指定转码流中每一路视频画面的位置、大小、图层以及流类型等信息。
+
+## TRTCWatermark
+
+#### 水印布局。
+该配置用于媒体流发布接口 (startPublishMediaStream) 中的转码配置 (TRTCStreamMixingConfig)
+
+## TRTCStreamEncoderParam
+
+#### 媒体流编码输出参数。
+【字段含义】该配置用于媒体流发布接口（startPublishMediaStream）。
+【特别说明】当您的发布目标（TRTCPublishTarget）中的 mode 配置为 TRTCPublishMixStreamToCdn 或者 TRTCPublishMixStreamToRoom 时，该参数为必填。
+【特别说明】当您使用转推服务（mode 为 TRTCPublishBigStreamToCdn 或者 TRTCPublishSubStreamToCdn）时，为了更好的转推稳定性以及更好的 CDN 播放兼容性，也建议您填写该配置的具体参数。
+
+## TRTCStreamMixingConfig
+
+#### 媒体流转码配置参数。
+该配置用于媒体流发布接口（startPublishMediaStream）。
+用于指定转码时各路画面的排版位置信息和输入的音频信息。
+
+## TRTCPayloadPrivateEncryptionConfig
+
+#### 媒体流私有加密配置。
+该配置用于设置媒体流私有加密的算法和密钥。
+
+## TRTCAudioVolumeEvaluateParams
+
+#### 音量评估等相关参数设置。
+该设置用于开启人声检测、声音频谱计算。
+
+## TRTCAudioSampleRate
+> **适用平台：** Android, iOS
+
+#### 音频采样率。
+
+音频采样率用来衡量声音的保真程度，采样率越高保真程度越好，如果您的应用场景有音乐的存在，推荐使用 ` TRTCAudioSampleRate48000 `。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTCAudioSampleRate16000 | 16000 | 16k 采样率。 |
+| TRTCAudioSampleRate32000 | 32000 | 32k 采样率。 |
+| TRTCAudioSampleRate44100 | 44100 | 44.1k 采样率。 |
+| TRTCAudioSampleRate48000 | 48000 | 48k采样率 |
+
+## TRTCReverbType
+> **适用平台：** Android, iOS
+
+#### 声音混响模式。
+该枚举值应用于设定直播场景中的混响模式，常用于秀场直播中。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_REVERB_TYPE_0 | 0 | 关闭混响。 |
+| TRTC_REVERB_TYPE_1 | 1 | KTV。 |
+| TRTC_REVERB_TYPE_2 | 2 | 小房间。 |
+| TRTC_REVERB_TYPE_3 | 3 | 大会堂。 |
+| TRTC_REVERB_TYPE_4 | 4 | 低沉。 |
+| TRTC_REVERB_TYPE_5 | 5 | 洪亮。 |
+| TRTC_REVERB_TYPE_6 | 6 | 金属声。 |
+| TRTC_REVERB_TYPE_7 | 7 | 磁性。 |
+
+## TRTCVoiceChangerType
+> **适用平台：** Android, iOS
+
+#### 变声类型。
+该枚举值应用于设定直播场景中的变声模式，常用于秀场直播中。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_VOICE_CHANGER_TYPE_0 | 0 | 关闭变声。 |
+| TRTC_VOICE_CHANGER_TYPE_1 | 1 | 熊孩子。 |
+| TRTC_VOICE_CHANGER_TYPE_2 | 2 | 萝莉。 |
+| TRTC_VOICE_CHANGER_TYPE_3 | 3 | 大叔。 |
+| TRTC_VOICE_CHANGER_TYPE_4 | 4 | 重金属。 |
+| TRTC_VOICE_CHANGER_TYPE_5 | 5 | 感冒。 |
+| TRTC_VOICE_CHANGER_TYPE_6 | 6 | 外国人。 |
+| TRTC_VOICE_CHANGER_TYPE_7 | 7 | 困兽。 |
+| TRTC_VOICE_CHANGER_TYPE_8 | 8 | 死肥仔。 |
+| TRTC_VOICE_CHANGER_TYPE_9 | 9 | 强电流。 |
+| TRTC_VOICE_CHANGER_TYPE_10 | 10 | 重机械。 |
+| TRTC_VOICE_CHANGER_TYPE_11 | 11 | 空灵。 |
+
+## TRTCSystemVolumeType
+> **适用平台：** Android, iOS
+
+#### 系统音量类型（仅适用于移动设备）。
+现代智能手机中一般都具备两套系统音量类型，即“通话音量”和“媒体音量”。
+-  通话音量：手机专门为接打电话所设计的音量类型，自带回声抵消（AEC）功能，并且支持通过蓝牙耳机上的麦克风进行拾音，缺点是音质比较一般。当您通过手机侧面的音量按键下调手机音量时，如果无法将其调至零（也就是无法彻底静音），说明您的手机当前处于通话音量。
+-  媒体音量：手机专门为音乐场景所设计的音量类型，无法使用系统的 AEC 功能，并且不支持通过蓝牙耳机的麦克风进行拾音，但具备更好的音乐播放效果。当您通过手机侧面的音量按键下调手机音量时，如果能够将手机音量调至彻底静音，说明您的手机当前处于媒体音量。
+SDK 目前提供了三种系统音量类型的控制模式：自动切换模式、全程通话音量模式、全程媒体音量模式。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTCSystemVolumeTypeAuto | 0 | 自动切换模式： 也被称为“麦上通话，麦下媒体”，即主播上麦时使用通话音量，观众不上麦则使用媒体音量，适合在线直播场景。 如果您在 enterRoom 时选择的场景为 TRTC_APP_SCENE_LIVE 或 TRTC_APP_SCENE_VOICE_CHATROOM，SDK 会自动使用该模式。 |
+| TRTCSystemVolumeTypeMedia | 1 | 全程媒体音量： 通话全程使用媒体音量，并不是非常常用的音量类型，适用于对音质要求比较苛刻的音乐场景中。 如果您的用户大都使用外接设备（例如外接声卡）为主，可以使用该模式，否则请慎用。 |
+| TRTCSystemVolumeTypeVOIP | 2 | 全程通话音量： 该方案的优势在于用户在上下麦时音频模块无需切换工作模式，可以做到无缝上下麦，适合于用户需要频繁上下麦的应用场景。 如果您在 enterRoom 时选择的场景为 TRTCAppSceneVideoCall 或 TRTCAppSceneAudioCall，SDK 会自动使用该模式。 |
+
+## TRTCAudioCapabilityType
+> **适用平台：** Android
+
+#### 系统支持的音频能力类型（仅适用于Android设备）。
+
+SDK 目前提供了两种系统音频能力类型是否支持的查询：低延时合唱能力、低延时耳返能力。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTCAudioCapabilityLowLatencyChorus | 1 | 低延时合唱能力。 |
+| TRTCAudioCapabilityLowLatencyEarMonitor | 2 | 低延时耳返能力。 |
+
+## TRTCGSensorMode
+> **适用平台：** Android, iOS
+
+#### 重力感应开关（仅适用于移动端）。
+@deprecated 从v11.7版本开始，推荐使用新重力感应枚举 TRTCGravitySensorAdaptiveMode。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_GSENSOR_MODE_DISABLE | 0 | 不适配重力感应，该模式是桌面平台上的默认值，该模式下，当前用户发布出去的视频画面不受重力感应方向变化的影响。 |
+| TRTC_GSENSOR_MODE_UIAUTOLAYOUT | 1 | 适配重力感应，该模式是移动平台上的默认值，该模式下，当前用户发布出去的视频画面会跟随设备的重力感应方向进行相应的调整，同时本地预览画面保持方向不变。 SDK 目前支持的一种适配模式是：当手机或 Pad 上下颠倒时，为了保证远端用户看到的画面方向正常，SDK 会自动将发布出去的画面上下旋转180度。如果您的 APP 的界面层开启了重力感应自适应，推荐使用 UIFixLayout 模式。 |
+| TRTC_GSENSOR_MODE_UIFIXLAYOUT | 2 | 适配重力感应 该模式下，当前用户发布出去的视频画面会跟随设备的重力感应方向进行相应的调整，同时本地预览画面也会进行相应的旋转适配。 目前支持的一种特性是：当手机或 Pad 上下颠倒时，为了保证远端用户看到的画面方向正常，SDK 会自动将发布出去的画面上下旋转180度。 如果您的 APP 的界面层不支持重力感应自适应，并且希望 SDK 的视频画面能够适配重力感应方向，推荐使用 UIFixLayout 模式。 @deprecated 从v11.5版本开始，不再支持 TRTCGSensorMode_UIFixLayout，只支持上面两种模式。 |
+
+## TRTCDebugViewLevel
+> **适用平台：** Android
+
+#### 用于渲染控件上展示的调试信息。
+| 枚举 | 取值 | 描述 |
+| --- | --- | --- |
+| TRTC_DEBUG_VIEW_LEVEL_GONE | 0 | 不在渲染控件上展示调试信息。 |
+| TRTC_DEBUG_VIEW_LEVEL_STATUS | 1 | 在渲染控件上展示音视频统计信息。 |
+| TRTC_DEBUG_VIEW_LEVEL_ALL | 2 | 在渲染控件上展示音视频统计信息和关键历史事件。 |
+
+## TRTCScreenShareParams
+> **适用平台：** Android
+
+#### 屏幕分享参数（仅适用于 Android 平台）。
+
+该参数用于在屏幕分享接口 startScreenCapture 中指定屏幕分享时的悬浮窗等相关信息。

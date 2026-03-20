@@ -1,0 +1,2557 @@
+--------------------------------------------------------------------------------
+title: TUICallEngine + TUICallKit Web/小程序 API 参考
+description: 完整 API 参考, 涵盖单人/多人通话发起、接听/挂断、通话类型切换等能力, 适用于 Web 和微信小程序。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/callkit/callkit-api-reference.md
+--------------------------------------------------------------------------------
+
+> 以下内容以 **React** 为基准展示。React, Vue, Android SDK, Android SDK, iOS SDK, iOS SDK, Flutter SDK, Flutter SDK, Flutter SDK 各平台的步骤和概念一致，仅代码实现不同。每个代码块后附有其他平台的对应代码。
+
+## 重要提醒
+**文档内容说明：**  
+ - 文档涉及到 `TUICallEngine` API 和 `TUICallKit` 含 UI 组件 API 两部分
+ - `TUICallEngine` API 文档请参考 **Part One**
+ - `TUICallKit`含 UI 组件 API 文档请参考 **Part Two**
+
+## Part One
+**TUICallEngine API 文档**
+- TUICallEngine API 涉及到 web 和 小程序。
+- 当用户查询 `TUICallEngine` API 时，必须先查阅 TUICallEngine 的官方 API 文档，然后再给出 API 的正确用法示例, 禁止自己推测 API 的用法。
+- 以下是各平台 API 的文档链接，请直接访问文档链接获取 API 用法：
+- [TUICallEngine Web API 列表文档](https://cloud.tencent.com/document/product/647/78757)
+- [TUICallEngine Web API 使用示例文档](https://web.sdk.qcloud.com/component/trtccalling/doc/TUICallEngine/web/zh-cn/TUICallEngine.html)
+- [TUICallEngine 小程序 API 文档](https://cloud.tencent.com/document/product/647/78761)
+
+## Part Two
+TUICallKit 是音视频通话组件的**含 UI 接口**，使用 TUICallKit API，您可以通过简单接口快速实现一个类微信的音视频通话场景；更详细的接入步骤，详见：快速接入 TUICallKit。
+
+> **说明：**
+> - 为提供更优质的音视频通信能力， TUICallKit npm 包 [@trtc/calls-uikit-react](https://www.npmjs.com/package/@trtc/calls-uikit-react)、[@trtc/calls-uikit-vue](https://www.npmjs.com/package/@trtc/calls-uikit-vue)、[@trtc/calls-uikit-vue2](https://www.npmjs.com/package/@trtc/calls-uikit-vue2)、[@trtc/calls-uikit-vue2.6](https://www.npmjs.com/package/@trtc/calls-uikit-vue2.6) 在 4.0.0 版本进行了重大升级。
+
+## API 概览
+| API | 描述 |
+| --- | --- |
+| [<TUICallKit />](https://cloud.tencent.com/document/product/647/81015#TUICallKit) | TUICallKit 通话 UI 组件。 |
+| [init](https://cloud.tencent.com/document/product/647/81015#init) | 初始化 TUICallKit 组件实例。 |
+| [calls](https://cloud.tencent.com/document/product/647/81015#calls) | 发起单人或多人通话。 |
+| [join](https://cloud.tencent.com/document/product/647/81015#join) | 主动加入通话。 |
+| [setCallingBell](https://cloud.tencent.com/document/product/647/81015#setCallingBell) | 设置自定义来电铃音。 |
+| [setSelfInfo](https://cloud.tencent.com/document/product/647/81015#setSelfInfo) | 设置用户昵称和头像。 |
+| [enableMuteMode](https://cloud.tencent.com/document/product/647/81015#enableMuteMode) | 开启/关闭来电铃声。 |
+| [enableFloatWindow](https://cloud.tencent.com/document/product/647/81015#enableFloatWindow) | 开启/关闭悬浮窗功能。 |
+| [enableVirtualBackground](https://cloud.tencent.com/document/product/647/81015#enableVirtualBackground) | 开启/关闭模糊背景的功能按钮。 |
+| [setLanguage](https://cloud.tencent.com/document/product/647/81015#setLanguage) | 设置 TUICallKit 组件通话语言。 |
+| [hideFeatureButton](https://cloud.tencent.com/document/product/647/81015#hideFeatureButton) | 隐藏按钮。 |
+| [setLocalViewBackgroundImage](https://cloud.tencent.com/document/product/647/81015#setLocalViewBackgroundImage) | 设置本地用户通话界面背景图。 |
+| [setRemoteViewBackgroundImage](https://cloud.tencent.com/document/product/647/81015#setRemoteViewBackgroundImage) | 设置远端用户通话界面背景图。 |
+| [setLayoutMode](https://cloud.tencent.com/document/product/647/81015#setLayoutMode) | 设置通话界面布局模式。 |
+| [setCameraDefaultState](https://cloud.tencent.com/document/product/647/81015#setCameraDefaultState) | 设置摄像头是否默认打开。 |
+| [destroyed](https://cloud.tencent.com/document/product/647/81015#destroyed) | 销毁 TUICallKit 组件实例。 |
+| [getTUICallEngineInstance](https://cloud.tencent.com/document/product/647/81015#getTUICallEngineInstance) | 获取 TUICallEngine 实例。 |
+
+## <`TUICallKit />` 组件
+
+### 属性概览
+| 属性 | 描述 | 类型 | 是否必填 | 默认值 | 支持 vue | 支持 react |
+| --- | --- | --- | --- | --- | --- | --- |
+| allowedMinimized | 是否允许悬浮窗 | boolean | 否 | false | √ | √ |
+| allowedFullScreen | 是否允许通话界面全屏 | boolean | 否 | true | √ | √ |
+| [videoDisplayMode](https://cloud.tencent.com/document/product/647/81015#videoDisplayMode) | 通话界面显示模式 | VideoDisplayMode | 否 | VideoDisplayMode.COVER | √ | √ |
+| [videoResolution](https://cloud.tencent.com/document/product/647/81015#videoResolution) | 通话分辨率 | VideoResolution | 否 | VideoResolution.RESOLUTION_480P | √ | √ |
+| beforeCalling | 拨打电话前与收到通话邀请前会执行此函数 | function(type, error) | 否 | - | √ | √ |
+| afterCalling | 结束通话后会执行此函数 | function() | 否 | - | √ | √ |
+| onMinimized | 组件切换最小化状态时会执行此函数，[STATUS 值说明](https://cloud.tencent.com/document/product/647/81015#STATUS) | function(oldStatus, newStatus) | 否 | - | √ | √ |
+| kickedOut | 组件抛出的事件，当前登录用户被踢出登录时会触发该事件，通话也会自动结束 | function() | 否 | - | √ | × |
+| statusChanged | 组件抛出的事件，当通话状态发生变化时，会触发该事件，通话状态种类详见，[STATUS 值说明](https://cloud.tencent.com/document/product/647/81015#STATUS) | function({oldStatus, newStatus}) | 否 | - | √ | × |
+
+### 示例代码
+
+【React】
+``` bash
+import { TUICallKit, VideoDisplayMode, VideoResolution } from "@trtc/calls-uikit-react";
+
+<TUICallKit
+    videoDisplayMode={VideoDisplayMode.CONTAIN}
+    videoResolution={VideoResolution.RESOLUTION_1080P}
+    beforeCalling={handleBeforeCalling} 
+    afterCalling={handleAfterCalling} 
+/>
+
+function handleBeforeCalling(type: string, error: any) {
+  console.log("[TUICallkit Demo] handleBeforeCalling:", type, error);
+}
+function handleAfterCalling() {
+  console.log("[TUICallkit Demo] handleAfterCalling");
+}
+```
+
+**Vue:**
+``` bash
+import { TUICallKit, VideoDisplayMode, VideoResolution } from "@trtc/calls-uikit-react";
+
+<TUICallKit
+    videoDisplayMode={VideoDisplayMode.CONTAIN}
+    videoResolution={VideoResolution.RESOLUTION_1080P}
+    beforeCalling={handleBeforeCalling} 
+    afterCalling={handleAfterCalling} 
+/>
+
+function handleBeforeCalling(type: string, error: any) {
+  console.log("[TUICallkit Demo] handleBeforeCalling:", type, error);
+}
+function handleAfterCalling() {
+  console.log("[TUICallkit Demo] handleAfterCalling");
+}
+```
+
+**Android SDK:**
+
+``` java
+void onError(int code, String message);
+```
+
+**Android SDK:**
+``` java
+fun createInstance(context: Context): TUICallKit
+```
+
+**iOS SDK:**
+
+``` objectivec
+- (void)onError:(int)code message:(NSString * _Nullable)message;
+```
+
+**iOS SDK:**
+``` objectivec
+- (instancetype)createInstance;
+```
+
+**Flutter SDK:**
+``` java
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onError: (int code, String message) {
+
+    },
+    onUserInviting: (String userId) {
+
+    },
+    onCallReceived: (String callId, String callerId, List<String> calleeIdList,
+        TUICallMediaType mediaType, CallObserverExtraInfo info) {
+
+    },
+    onCallNotConnected: (String callId, TUICallMediaType mediaType, CallEndReason reason,
+        String userId, CallObserverExtraInfo info) {
+      
+    },
+    onCallBegin: (String callId, TUICallMediaType mediaType, CallObserverExtraInfo info) {
+
+    },
+    onCallEnd: (String callId, TUICallMediaType mediaType, CallEndReason reason,
+        String userId, double totalTime, CallObserverExtraInfo info) {
+
+    },
+    onCallMediaTypeChanged: (TUICallMediaType oldCallMediaType, TUICallMediaType newCallMediaType) {
+
+    },
+    onUserReject: (String userId) {
+
+    },
+    onUserNoResponse: (String userId) {
+
+    },
+    onUserLineBusy: (String onUserLineBusy) {
+
+    },
+    onUserJoin: (String userId) {
+
+    },
+    onUserLeave: (String userId) {
+
+    },
+    onUserVideoAvailable: (String userId, bool isVideoAvailable) {
+
+    },
+    onUserAudioAvailable: (String userId, bool isAudioAvailable) {
+
+    },
+    onUserNetworkQualityChanged: (List<TUINetworkQualityInfo> networkQualityList) {
+
+    },
+    onUserVoiceVolumeChanged: (Map<String, int> volumeMap) {
+
+    },
+    onKickedOffline: () {
+
+    },
+    onUserSigExpired: () {
+
+    }
+));
+```
+
+**Flutter SDK:**
+``` cpp
+Future<TUIResult> login(int sdkAppId, String userId, String userSig)
+```
+
+【Vue3】
+``` bash
+<template>
+   <TUICallKit
+    :allowedMinimized="true"
+    :allowedFullScreen="true"
+    :videoDisplayMode="VideoDisplayMode.CONTAIN"
+    :videoResolution="VideoResolution.RESOLUTION_1080P"
+    :beforeCalling="beforeCalling"
+    :afterCalling="afterCalling"
+    :onMinimized="onMinimized"
+    :kickedOut="handleKickedOut"
+    :statusChanged="handleStatusChanged"
+  />
+</template>
+
+<script lang="ts" setup>
+import { TUICallKit, TUICallKitAPI, VideoDisplayMode, VideoResolution, STATUS } from "@trtc/calls-uikit-vue";
+
+function beforeCalling(type: string, error: any) {
+  console.log("[TUICallkit Demo] beforeCalling:", type, error);
+}
+function afterCalling() {
+  console.log("[TUICallkit Demo] afterCalling");
+}
+function onMinimized(oldStatus: string, newStatus: string) {
+  console.log("[TUICallkit Demo] onMinimized: " + oldStatus + " -> " + newStatus);
+}
+function kickedOut() {
+  console.log("[TUICallkit Demo] kickedOut");
+}
+function statusChanged(args: { oldStatus: string; newStatus: string; }) {
+  const { oldStatus, newStatus } = args;
+  if (newStatus === STATUS.CALLING_C2C_VIDEO) {
+    console.log(`[TUICallkit Demo] statusChanged: ${oldStatus} -> ${newStatus}`);
+  }
+}
+</script>
+
+```
+
+**Vue:**
+``` bash
+<template>
+   <TUICallKit
+    :allowedMinimized="true"
+    :allowedFullScreen="true"
+    :videoDisplayMode="VideoDisplayMode.CONTAIN"
+    :videoResolution="VideoResolution.RESOLUTION_1080P"
+    :beforeCalling="beforeCalling"
+    :afterCalling="afterCalling"
+    :onMinimized="onMinimized"
+    :kickedOut="handleKickedOut"
+    :statusChanged="handleStatusChanged"
+  />
+</template>
+
+<script lang="ts" setup>
+import { TUICallKit, TUICallKitAPI, VideoDisplayMode, VideoResolution, STATUS } from "@trtc/calls-uikit-vue";
+
+function beforeCalling(type: string, error: any) {
+  console.log("[TUICallkit Demo] beforeCalling:", type, error);
+}
+function afterCalling() {
+  console.log("[TUICallkit Demo] afterCalling");
+}
+function onMinimized(oldStatus: string, newStatus: string) {
+  console.log("[TUICallkit Demo] onMinimized: " + oldStatus + " -> " + newStatus);
+}
+function kickedOut() {
+  console.log("[TUICallkit Demo] kickedOut");
+}
+function statusChanged(args: { oldStatus: string; newStatus: string; }) {
+  const { oldStatus, newStatus } = args;
+  if (newStatus === STATUS.CALLING_C2C_VIDEO) {
+    console.log(`[TUICallkit Demo] statusChanged: ${oldStatus} -> ${newStatus}`);
+  }
+}
+</script>
+
+```
+
+**Android SDK:**
+``` java
+void onCallReceived(String callId, String callerId, List<String> calleeIdList, 
+                    TUICallDefine.MediaType mediaType, TUICallDefine.CallObserverExtraInfo info);
+```
+
+**Android SDK:**
+``` java
+TUICallKit createInstance(Context context)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onCallReceived:(NSString *)callId callerId:(NSString *)callerId calleeIdList:(NSArray<NSString *> *)calleeIdList mediaType:(TUICallMediaType)mediaType info:(TUICallObserverExtraInfo *)info;
+```
+
+**iOS SDK:**
+``` swift
+public static func createInstance() -> TUICallKit
+```
+
+**Flutter SDK:**
+
+``` java
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onError: (int code, String message) {
+      // TODO    
+    }
+));
+```
+
+**Flutter SDK:**
+``` cpp
+Future<void> logout()
+```
+
+【Vue2.7】
+``` javascript
+<template>
+   <TUICallKit
+    :allowedMinimized="true"
+    :allowedFullScreen="true"
+    :videoDisplayMode="VideoDisplayMode.CONTAIN"
+    :videoResolution="VideoResolution.RESOLUTION_1080P"
+    :beforeCalling="beforeCalling"
+    :afterCalling="afterCalling"
+    :onMinimized="onMinimized"
+    :kickedOut="handleKickedOut"
+    :statusChanged="handleStatusChanged"
+  />
+</template>
+
+<script lang="ts" setup>
+import { TUICallKit, TUICallKitAPI, VideoDisplayMode, VideoResolution, STATUS } from "@trtc/calls-uikit-vue2";
+
+function beforeCalling(type: string, error: any) {
+  console.log("[TUICallkit Demo] beforeCalling:", type, error);
+}
+function afterCalling() {
+  console.log("[TUICallkit Demo] afterCalling");
+}
+function onMinimized(oldStatus: string, newStatus: string) {
+  console.log("[TUICallkit Demo] onMinimized: " + oldStatus + " -> " + newStatus);
+}
+function kickedOut() {
+  console.log("[TUICallkit Demo] kickedOut");
+}
+function statusChanged(args: { oldStatus: string; newStatus: string; }) {
+  const { oldStatus, newStatus } = args;
+  if (newStatus === STATUS.CALLING_C2C_VIDEO) {
+    console.log(`[TUICallkit Demo] statusChanged: ${oldStatus} -> ${newStatus}`);
+  }
+}
+</script>
+```
+
+**Vue:**
+``` javascript
+<template>
+   <TUICallKit
+    :allowedMinimized="true"
+    :allowedFullScreen="true"
+    :videoDisplayMode="VideoDisplayMode.CONTAIN"
+    :videoResolution="VideoResolution.RESOLUTION_1080P"
+    :beforeCalling="beforeCalling"
+    :afterCalling="afterCalling"
+    :onMinimized="onMinimized"
+    :kickedOut="handleKickedOut"
+    :statusChanged="handleStatusChanged"
+  />
+</template>
+
+<script lang="ts" setup>
+import { TUICallKit, TUICallKitAPI, VideoDisplayMode, VideoResolution, STATUS } from "@trtc/calls-uikit-vue2";
+
+function beforeCalling(type: string, error: any) {
+  console.log("[TUICallkit Demo] beforeCalling:", type, error);
+}
+function afterCalling() {
+  console.log("[TUICallkit Demo] afterCalling");
+}
+function onMinimized(oldStatus: string, newStatus: string) {
+  console.log("[TUICallkit Demo] onMinimized: " + oldStatus + " -> " + newStatus);
+}
+function kickedOut() {
+  console.log("[TUICallkit Demo] kickedOut");
+}
+function statusChanged(args: { oldStatus: string; newStatus: string; }) {
+  const { oldStatus, newStatus } = args;
+  if (newStatus === STATUS.CALLING_C2C_VIDEO) {
+    console.log(`[TUICallkit Demo] statusChanged: ${oldStatus} -> ${newStatus}`);
+  }
+}
+</script>
+```
+
+**Android SDK:**
+``` java
+void onCallBegin(String callId, TUICallDefine.MediaType mediaType, TUICallDefine.CallObserverExtraInfo info);
+```
+
+**Android SDK:**
+``` java
+fun setSelfInfo(nickname: String?, avatar: String?, callback: TUICommonDefine.Callback?)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onCallBegin:(NSString *)callId mediaType:(TUICallMediaType)mediaType info:(TUICallObserverExtraInfo *)info;
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)setSelfInfo:(NSString * _Nullable)nickname avatar:(NSString * _Nullable)avatar succ:(TUICallSucc)succ fail:(TUICallFail)fail;
+```
+
+**Flutter SDK:**
+``` java
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserInviting: (String userId) {
+      // TODO
+    }
+));
+```
+
+**Flutter SDK:**
+``` cpp
+Future<TUIResult> setSelfInfo(String nickname, String avatar)
+```
+
+【Vue2.6】
+``` javascript
+<template>
+   <TUICallKit
+    :allowedMinimized="true"
+    :allowedFullScreen="true"
+    :videoDisplayMode="VideoDisplayMode.CONTAIN"
+    :videoResolution="VideoResolution.RESOLUTION_1080P"
+    :beforeCalling="beforeCalling"
+    :afterCalling="afterCalling"
+    :onMinimized="onMinimized"
+    :kickedOut="handleKickedOut"
+    :statusChanged="handleStatusChanged"
+  />
+</template>
+
+<script lang="ts" setup>
+import { TUICallKit, TUICallKitAPI, VideoDisplayMode, VideoResolution, STATUS } from "@trtc/calls-uikit-vue2.6";
+
+function beforeCalling(type: string, error: any) {
+  console.log("[TUICallkit Demo] beforeCalling:", type, error);
+}
+function afterCalling() {
+  console.log("[TUICallkit Demo] afterCalling");
+}
+function onMinimized(oldStatus: string, newStatus: string) {
+  console.log("[TUICallkit Demo] onMinimized: " + oldStatus + " -> " + newStatus);
+}
+function kickedOut() {
+  console.log("[TUICallkit Demo] kickedOut");
+}
+function statusChanged(args: { oldStatus: string; newStatus: string; }) {
+  const { oldStatus, newStatus } = args;
+  if (newStatus === STATUS.CALLING_C2C_VIDEO) {
+    console.log(`[TUICallkit Demo] statusChanged: ${oldStatus} -> ${newStatus}`);
+  }
+}
+</script>
+```
+
+**Vue:**
+``` javascript
+<template>
+   <TUICallKit
+    :allowedMinimized="true"
+    :allowedFullScreen="true"
+    :videoDisplayMode="VideoDisplayMode.CONTAIN"
+    :videoResolution="VideoResolution.RESOLUTION_1080P"
+    :beforeCalling="beforeCalling"
+    :afterCalling="afterCalling"
+    :onMinimized="onMinimized"
+    :kickedOut="handleKickedOut"
+    :statusChanged="handleStatusChanged"
+  />
+</template>
+
+<script lang="ts" setup>
+import { TUICallKit, TUICallKitAPI, VideoDisplayMode, VideoResolution, STATUS } from "@trtc/calls-uikit-vue2.6";
+
+function beforeCalling(type: string, error: any) {
+  console.log("[TUICallkit Demo] beforeCalling:", type, error);
+}
+function afterCalling() {
+  console.log("[TUICallkit Demo] afterCalling");
+}
+function onMinimized(oldStatus: string, newStatus: string) {
+  console.log("[TUICallkit Demo] onMinimized: " + oldStatus + " -> " + newStatus);
+}
+function kickedOut() {
+  console.log("[TUICallkit Demo] kickedOut");
+}
+function statusChanged(args: { oldStatus: string; newStatus: string; }) {
+  const { oldStatus, newStatus } = args;
+  if (newStatus === STATUS.CALLING_C2C_VIDEO) {
+    console.log(`[TUICallkit Demo] statusChanged: ${oldStatus} -> ${newStatus}`);
+  }
+}
+</script>
+```
+
+**Android SDK:**
+``` java
+void onCallEnd(String callId, TUICallDefine.MediaType mediaType, TUICallDefine.CallEndReason reason, 
+               String userId, long totalTime, TUICallDefine.CallObserverExtraInfo info);
+```
+
+**Android SDK:**
+``` java
+void setSelfInfo(String nickname, String avatar, TUICommonDefine.Callback callback)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onCallEnd:(NSString *)callId mediaType:(TUICallMediaType)mediaType reason:(TUICallEndReason)reason userId:(NSString *)userId totalTime:(float)totalTime info:(TUICallObserverExtraInfo *)info;
+```
+
+**iOS SDK:**
+``` swift
+public func setSelfInfo(nickname: String, avatar: String, succ:@escaping TUICallSucc, fail: @escaping TUICallFail)
+```
+
+**Flutter SDK:**
+``` java
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onCallReceived: (String callId, String callerId, List<String> calleeIdList, TUICallMediaType mediaType, CallObserverExtraInfo info) {
+      // TODO
+    }
+));
+```
+
+**Flutter SDK:**
+``` java
+Future<TUIResult> calls(List<String> userIdList, TUICallMediaType mediaType, TUICallParams params)
+```
+
+## TUICallKitAPI API 详情
+
+【React】
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-react"; 
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-react"; 
+```
+
+**Android SDK:**
+
+   ``` java
+   void onCallNotConnected(String callId, TUICallDefine.MediaType mediaType, TUICallDefine.CallEndReason reason, 
+                           String userId, TUICallDefine.CallObserverExtraInfo info)
+   ```
+
+**Android SDK:**
+``` java
+ fun calls(
+     userIdList: List<String?>?, mediaType: TUICallDefine.MediaType?, 
+     params: TUICallDefine.CallParams?, callback: TUICommonDefine.Callback?
+)
+```
+
+**iOS SDK:**
+
+   ``` objectivec
+   - (void)onCallNotConnected:(NSString *)callId mediaType:(TUICallMediaType)mediaType reason:(TUICallEndReason)reaso userId:(NSString *)userId info:(TUICallObserverExtraInfo *)info
+   ```
+
+**iOS SDK:**
+``` swift
+func calls(userIdList: [String], callMediaType: TUICallMediaType, params: TUICallParams,
+                      succ: @escaping TUICallSucc, fail: @escaping TUICallFail)
+
+```
+
+**Flutter SDK:**
+``` java
+TUICallEngine.instance.addObserver(TUICallObserver(
+  onCallNotConnected: (String callId, TUICallMediaType mediaType, CallEndReason reason,
+    String userId, CallObserverExtraInfo info) {
+    // TODO
+  }
+));
+```
+
+**Flutter SDK:**
+``` java
+Future<void> join(String callId)
+```
+
+【Vue3】
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-vue"; 
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-vue"; 
+```
+
+**Android SDK:**
+``` java
+void onUserReject(String userId);
+```
+
+**Android SDK:**
+``` java
+ void calls(List<String> userIdList, TUICallDefine.MediaType mediaType,
+            TUICallDefine.CallParams params, TUICommonDefine.Callback callback)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserReject:(NSString *)userId;
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)calls:(NSArray<NSString *> *)userIdList callMediaType:(TUICallMediaType)callMediaType params:(TUICallParams *)params succ:(TUICallSucc)succ fail:(TUICallFail)fail; 
+```
+
+**Flutter SDK:**
+``` java
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onCallBegin: (String callId, TUICallMediaType mediaType, CallObserverExtraInfo info) {
+    // TODO
+  }
+));
+```
+
+**Flutter SDK:**
+``` javascript
+Future<void> enableMuteMode(bool enable)
+```
+
+【Vue2.7】
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-vue2"; 
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-vue2"; 
+```
+
+**Android SDK:**
+``` java
+void onUserNoResponse(String userId);
+```
+
+**Android SDK:**
+``` java
+ fun join(callId: String?, callback: TUICommonDefine.Callback?) 
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserNoResponse:(NSString *)userId;
+```
+
+**iOS SDK:**
+``` java
+func join(callId: String)
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onCallEnd: (String callId, TUICallMediaType mediaType, CallEndReason reason,
+        String userId, double totalTime, CallObserverExtraInfo info) {
+    // TODO
+  }
+));
+```
+
+**Flutter SDK:**
+``` javascript
+Future<void> enableFloatWindow(bool enable)
+```
+
+【Vue2.6】
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-vue2.6";
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-vue2.6";
+```
+
+**Android SDK:**
+``` java
+void onUserInviting(String userId);
+```
+
+**Android SDK:**
+``` java
+void join(String callId, TUICommonDefine.Callback callback)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserLineBusy:(NSString *)userId;
+```
+
+**iOS SDK:**
+``` java
+- (void)join:(NSString *)callId;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserReject: (String userId) {  
+      //您的回调处理逻辑    
+    }
+));
+```
+
+**Flutter SDK:**
+``` javascript
+Future<void> setCallingBell(String assetName)
+```
+
+### init
+
+初始化 TUICallKit。
+``` javascript
+try {
+  await TUICallKitAPI.init({ SDKAppID, userID, userSig });
+  // If you already have a tim instance in your project, you need to pass it in here.
+  // await TUICallKitAPI.init({ tim, SDKAppID, userID, userSig}); 
+  console.log("[TUICallKit] init succeeds.");
+} catch (error: any) {
+  console.error(`[TUICallKit] init failed. Reason: ${error}`);
+}
+```
+
+**Vue:**
+``` javascript
+try {
+  await TUICallKitAPI.init({ SDKAppID, userID, userSig });
+  // If you already have a tim instance in your project, you need to pass it in here.
+  // await TUICallKitAPI.init({ tim, SDKAppID, userID, userSig}); 
+  console.log("[TUICallKit] init succeeds.");
+} catch (error: any) {
+  console.error(`[TUICallKit] init failed. Reason: ${error}`);
+}
+```
+
+**Android SDK:**
+``` java
+void onUserLineBusy(String userId);
+```
+
+**Android SDK:**
+``` java
+fun setCallingBell(filePath: String?)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserInviting:(NSString *)userId;
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)setCallingBell:(NSString *)filePath;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserNoResponse: (String userId) { 
+      //您的回调处理逻辑    
+    }
+));
+```
+
+**Flutter SDK:**
+``` javascript
+Future<void> enableVirtualBackground(bool enable)
+```
+
+参数如下表所示：
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| SDKAppID | Number | 是 | 应用的 SDKAppID，您可以在实时音视频控制台中找到您的 SDKAppID。具体详见：开通服务 |
+| userID | String | 是 | 即用户名，只允许包含英文字母（a-z 和 A-Z）、数字（0-9）、连词符（-）和下划线（_）。 **注意：**不支持同一个 userID 在两台不同的设备上同时进入同一个房间通话，否则会相互干扰。 |
+| userSig | String | 是 | 使用 SecretKey 对 SDKAppID、UserID 等信息进行加密，就可以得到 userSig。 它是一个鉴权用的票据，用于腾讯云识别当前用户是否能够使用 TRTC 的服务，获取方式请参见 [UserSig](https://cloud.tencent.com/document/product/647/17275) |
+| tim | TencentCloudChat | 否 | tim 是 [TencentCloudChat](https://www.npmjs.com/package/@tencentcloud/chat) SDK 的实例 |
+
+### calls
+
+发起单人或多人通话。
+``` javascript
+try {
+  await TUICallKitAPI.calls({ 
+    userIDList: ['jack', 'tom'], 
+    type: CallMediaType.VIDEO_CALL 
+  });
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the groupCall API. Reason:${error}`);
+}
+```
+
+**Vue:**
+``` javascript
+try {
+  await TUICallKitAPI.calls({ 
+    userIDList: ['jack', 'tom'], 
+    type: CallMediaType.VIDEO_CALL 
+  });
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the groupCall API. Reason:${error}`);
+}
+```
+
+**Android SDK:**
+``` java
+void onUserJoin(String userId);
+```
+
+**Android SDK:**
+``` java
+void setCallingBell(String filePath);
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserJoin:(NSString *)userId;
+```
+
+**iOS SDK:**
+``` swift
+public func setCallingBell(filePath: String)
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserLineBusy: (String onUserLineBusy) { 
+      //您的回调处理逻辑    
+    },
+));
+```
+
+**Flutter SDK:**
+
+``` cpp
+Future<void> call(String userId, TUICallMediaType callMediaType, [TUICallParams? params])
+
+```
+
+参数如下表所示：
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| userIDList | Array<String> | 是 | 被呼叫的用户列表 |
+| type | [CallMediaType](https://cloud.tencent.com/document/product/647/81015#TUICallType) | 是 | 通话的媒体类型，参数值说明参见 [CallMediaType 通话类型](https://cloud.tencent.com/document/product/647/81015#TUICallType) 兼容旧版本：语音通话(type = 1)、视频通话(type = 2) |
+| chatGroupID | String | 是 | 与 chat 结合使用时， chat 群组的群 ID |
+| roomID | Number | 否 | 数字房间号，范围 [1, 2147483647] |
+| strRoomID | String | 否 | 字符串房间号。**v3.3.1+ 支持** 1. roomID 与 strRoomID 是互斥的，若您选用 strRoomID，则 roomID 需要填写为 0。若两者都填，SDK 将优先选用 roomID。 2. 不要混用 roomID 和 strRoomID，因为它们之间是不互通的，例如数字 123 和字符串 "123" 是两个完全不同的房间。 |
+| timeout | Number | 否 | 通话超时时间，默认：30s，单位：秒。设置范围：10s ~ 600s。如果传入0，默认30s。 |
+| userData | String | 否 | 发起通话时自定义扩展字段，被呼叫用户在 ON_CALL_RECEIVED 事件中有该参数 |
+| [offlinePushInfo](https://cloud.tencent.com/document/product/647/81015#offlinePushInfo) | Object | 否 | 自定义离线消息推送参数 |
+
+### join
+
+加入群组中已有的音视频通话。
+``` javascript
+try {
+  await TUICallKitAPI.join({callId: xx});
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the join API. Reason: ${error}`);
+}
+```
+
+**Vue:**
+``` javascript
+try {
+  await TUICallKitAPI.join({callId: xx});
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the join API. Reason: ${error}`);
+}
+```
+
+**Android SDK:**
+``` java
+void onUserLeave(String userId);
+```
+
+**Android SDK:**
+``` java
+fun enableMuteMode(enable: Boolean)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserLeave:(NSString *)userId;
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)enableMuteMode:(BOOL)enable;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserJoin: (String userId) {
+      //您的回调处理逻辑    
+    }
+));
+```
+
+**Flutter SDK:**
+
+``` javascript
+Future<void> groupCall(String groupId, List<String> userIdList, TUICallMediaType callMediaType,[TUICallParams? params])
+```
+
+参数列表：
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| callId | string | 是 | 此次通话的唯一 ID。 |
+
+### setLanguage
+
+设置语言，目前支持：中文、英文、日文。
+``` javascript
+TUICallKitAPI.setLanguage("zh-cn"); // "en" | "zh-cn" | "ja_JP"
+```
+
+**Vue:**
+``` javascript
+TUICallKitAPI.setLanguage("zh-cn"); // "en" | "zh-cn" | "ja_JP"
+```
+
+**Android SDK:**
+``` java
+void onUserVideoAvailable(String userId, boolean isVideoAvailable);
+```
+
+**Android SDK:**
+``` java
+void enableMuteMode(boolean enable);
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserVideoAvailable:(NSString *)userId isVideoAvailable:(BOOL)isVideoAvailable;
+```
+
+**iOS SDK:**
+``` swift
+public func enableMuteMode(enable: Bool)
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserLeave: (String userId) { 
+      //您的回调处理逻辑       
+    }
+));
+```
+
+**Flutter SDK:**
+
+``` javascript
+Future<void> joinInGroupCall(TUIRoomId roomId, String groupId, TUICallMediaType callMediaType)
+```
+
+参数如下表所示：
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| lang | String | 是 | 语言类型`en`、`zh-cn` 和 `ja_JP`。 |
+
+### setSelfInfo
+
+设置当前用户昵称和头像。
+
+> **注意：**
+> 
+
+> **通话中使用该接口修改用户信息，UI 不会立即更新，需要等到下次通话才能看到变化**。
+> 
+
+``` javascript
+try {
+  await TUICallKitAPI.setSelfInfo({ nickName: "xxx", avatar: "" });
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the setSelfInfo API. Reason: ${error}`;
+}
+```
+
+**Vue:**
+
+``` javascript
+try {
+  await TUICallKitAPI.setSelfInfo({ nickName: "xxx", avatar: "" });
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the setSelfInfo API. Reason: ${error}`;
+}
+```
+
+**Android SDK:**
+``` java
+void onUserAudioAvailable(String userId, boolean isAudioAvailable);
+```
+
+**Android SDK:**
+``` java
+fun enableFloatWindow(enable: Boolean)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserAudioAvailable:(NSString *)userId isAudioAvailable:(BOOL)isAudioAvailable;
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)enableFloatWindow:(BOOL)enable;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserVideoAvailable: (String userId, bool isVideoAvailable) { 
+      //您的回调处理逻辑       
+    }
+));
+```
+
+参数如下表所示：
+| **参数** | **类型** | **是否必填** | **含义** |
+| --- | --- | --- | --- |
+| nickName | String | 是 | 自己的昵称 |
+| avatar | String | 是 | 自己头像地址 |
+
+### setCallingBell
+- 自定义用户的来电铃音。
+
+- 仅限传入本地 MP3 格式的文件地址，需要确保该文件目录是应用可以访问的。
+
+- 使用 import 方式引入铃声文件。
+
+- 如需恢复默认铃声，`filePath` 传空即可。
+
+   ``` javascript
+   try {
+     await TUICallKitAPI.setCallingBell(filePath?: string)
+   } catch (error: any) {
+     console.error(`[TUICallKit] Failed to call the setCallingBell API. Reason: ${error}`);
+   }
+   ```
+
+**Vue:**
+
+   ``` javascript
+   try {
+     await TUICallKitAPI.setCallingBell(filePath?: string)
+   } catch (error: any) {
+     console.error(`[TUICallKit] Failed to call the setCallingBell API. Reason: ${error}`);
+   }
+   ```
+
+**Android SDK:**
+``` java
+void onUserVoiceVolumeChanged(Map<String, Integer> volumeMap);
+```
+
+**Android SDK:**
+``` java
+void enableFloatWindow(boolean enable);
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserVoiceVolumeChanged:(NSDictionary <NSString *, NSNumber *> *)volumeMap;
+```
+
+**iOS SDK:**
+``` swift
+public func enableFloatWindow(enable: Bool)
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserAudioAvailable: (String userId, bool isAudioAvailable) {  
+      //您的回调处理逻辑       
+    }
+));
+```
+
+   参数如下表所示：
+
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| filePath | String | 是 | 铃声文件地址 |
+
+### enableFloatWindow
+
+开启/关闭悬浮窗功能。默认为 false，通话界面左上角的悬浮窗按钮隐藏，设置为 true 后显示。
+``` javascript
+try {
+  await TUICallKitAPI.enableFloatWindow(enable: Boolean)
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the enableFloatWindow API. Reason: ${error}`);
+}
+```
+
+**Vue:**
+``` javascript
+try {
+  await TUICallKitAPI.enableFloatWindow(enable: Boolean)
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the enableFloatWindow API. Reason: ${error}`);
+}
+```
+
+**Android SDK:**
+``` java
+void onUserNetworkQualityChanged(List<TUICallDefine.NetworkQualityInfo> networkQualityList);
+```
+
+**Android SDK:**
+``` java
+fun enableIncomingBanner(enable: Boolean)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserNetworkQualityChanged:(NSArray<TUINetworkQualityInfo *> *)networkQualityList;
+```
+
+**iOS SDK:**
+``` swift
+public func enableIncomingBanner(enable: Bool)
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserVoiceVolumeChanged: (Map<String, int> volumeMap) {  
+      //您的回调处理逻辑    
+    }
+));
+```
+
+### enableMuteMode
+
+开启/关闭来电铃声。开启后，收到通话请求时，不会播放来电铃声。
+``` javascript
+try {
+  await TUICallKitAPI.enableMuteMode(enable: boolean)
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the enableMuteMode API. Reason: ${error}`);
+}
+```
+
+**Vue:**
+``` javascript
+try {
+  await TUICallKitAPI.enableMuteMode(enable: boolean)
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the enableMuteMode API. Reason: ${error}`);
+}
+```
+
+**Android SDK:**
+``` java
+void onKickedOffline();
+```
+
+**Android SDK:**
+``` java
+void enableIncomingBanner(boolean enable);
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onKickedOffline;
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)call:(NSString *)userId callMediaType:(TUICallMediaType)callMediaType;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserNetworkQualityChanged: (List<TUINetworkQualityInfo> networkQualityList) {
+      //您的回调处理逻辑    
+    }
+));
+
+//TUINetworkQualityInfo的定义如下：
+class TUINetworkQualityInfo {    
+    String userId;  
+    TUINetworkQuality quality;  
+    TUINetworkQualityInfo({required this.userId, required this.quality});
+}
+// TUINetworkQuality的定义如下：
+enum TUINetworkQuality {  
+  unknown,  
+  excellent,
+  good,  
+  poor,  
+  bad,  
+  vBad,  
+  down
+}
+```
+
+参数如下表所示：
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| enable | Boolean | 是 | 开启/关闭来电铃声。默认 false。 |
+
+### enableVirtualBackground
+
+开启/关闭模糊背景功能。如果想设置图片背景模糊参见 [Web](https://cloud.tencent.com/document/product/647/106071)。通过调用接口，您可以在 UI 上显示模糊背景的功能按钮，点击按钮可直接启用模糊背景功能。
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-react";
+const enable = true;
+TUICallKitAPI.enableVirtualBackground(enable);
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-react";
+const enable = true;
+TUICallKitAPI.enableVirtualBackground(enable);
+```
+
+**Android SDK:**
+``` java
+void onUserSigExpired();
+```
+
+**Android SDK:**
+``` java
+fun setScreenOrientation(orientation: Int) 
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserSigExpired;
+```
+
+**iOS SDK:**
+``` swift
+public func call(userId: String, callMediaType: TUICallMediaType)
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onKickedOffline: () { 
+      //您的回调处理逻辑    
+    }
+));
+```
+
+参数列表：
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| enable | boolean | 是 | - enable = true 显示模糊背景按钮 - enable = false 不显示模糊背景按钮 |
+
+### destroyed
+
+销毁 TUICallKit 实例。
+
+该方法不会自动退出`tim`，需要手动退出`tim.logout();`。
+``` javascript
+try {
+  await TUICallKitAPI.destroyed();
+} catch (error: any) {
+  alert(`[TUICallKit] Failed to call the destroyed API. Reason: ${error}`);
+}
+```
+
+**Vue:**
+``` javascript
+try {
+  await TUICallKitAPI.destroyed();
+} catch (error: any) {
+  alert(`[TUICallKit] Failed to call the destroyed API. Reason: ${error}`);
+}
+```
+
+**Android SDK:**
+
+   ``` java
+   void onCallCancelled(String userId);
+   ```
+
+**Android SDK:**
+``` java
+void setScreenOrientation(int orientation);
+```
+
+**iOS SDK:**
+
+   ``` objectivec
+   - (void)onCallCancelled:(NSString *)userId;
+   ```
+
+**iOS SDK:**
+``` objectivec
+- (void)call:(NSString *)userId callMediaType:(TUICallMediaType)callMediaType params:(TUICallParams *)params succ:(TUICallSucc __nullable)succ fail:(TUICallFail __nullable)fail;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserSigExpired: () {  
+      //您的回调处理逻辑    
+    }  
+));
+```
+
+### hideFeatureButton
+
+隐藏功能按钮，目前仅支持 摄像头，麦克风和切换前后置按钮。
+
+【Vue】
+``` javascript
+import { TUICallKitAPI, FeatureButton } from "@trtc/calls-uikit-vue";
+
+TUICallKitAPI.hideFeatureButton(FeatureButton.Camera);
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI, FeatureButton } from "@trtc/calls-uikit-vue";
+
+TUICallKitAPI.hideFeatureButton(FeatureButton.Camera);
+```
+
+**Android SDK:**
+``` java
+void onCallMediaTypeChanged(TUICallDefine.MediaType oldCallMediaType,TUICallDefine.MediaType newCallMediaType);
+```
+
+**Android SDK:**
+``` java
+fun enableVirtualBackground(enable: Boolean)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onCallMediaTypeChanged:(TUICallMediaType)oldCallMediaType newCallMediaType:(TUICallMediaType)newCallMediaType;
+```
+
+**iOS SDK:**
+``` swift
+public func call(userId: String, callMediaType: TUICallMediaType, params: TUICallParams,
+                     succ: @escaping TUICallSucc, fail: @escaping TUICallFail)
+```
+
+**Flutter SDK:**
+
+   ``` cpp
+   TUICallEngine.instance.addObserver(TUICallObserver(
+       onCallCancelled: (String userId) {  
+         //您的回调处理逻辑    
+       }
+   ));
+   ```
+
+【React】
+``` javascript
+import { TUICallKitAPI, FeatureButton } from "@trtc/calls-uikit-react";
+
+TUICallKitAPI.hideFeatureButton(FeatureButton.Camera);
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI, FeatureButton } from "@trtc/calls-uikit-react";
+
+TUICallKitAPI.hideFeatureButton(FeatureButton.Camera);
+```
+
+**Android SDK:**
+``` java
+fun call(userId: String, mediaType: TUICallDefine.MediaType)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)groupCall:(NSString *)groupId userIdList:(NSArray<NSString *> *)userIdList callMediaType:(TUICallMediaType)callMediaType;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onCallMediaTypeChanged: (TUICallMediaType oldCallMediaType, TUICallMediaType newCallMediaType) { 
+      //您的回调处理逻辑    
+    }
+));
+```
+
+参数列表：
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| buttonName | [FeatureButton](https://cloud.tencent.com/document/product/647/81015#FeatureButton) | 是 | 按钮名称 |
+
+### setLocalViewBackgroundImage
+
+设置本地用户通话背景。
+``` typescript
+TUICallKitAPI.setLocalViewBackgroundImage('');
+```
+
+**Vue:**
+``` typescript
+TUICallKitAPI.setLocalViewBackgroundImage('');
+```
+
+**Android SDK:**
+``` java
+ void call(String userId, TUICallDefine.MediaType mediaType)
+```
+
+**iOS SDK:**
+``` swift
+public func groupCall(groupId: String, userIdList: [String], callMediaType: TUICallMediaType)
+```
+
+参数列表：
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| url | string | 是 | 图片地址（支持本地路径和网络地址） |
+
+### setRemoteViewBackgroundImage
+
+设置远端用户通话背景。
+``` javascript
+const userId = 'xxx';
+const url = '';
+TUICallKitAPI.setRemoteViewBackgroundImage(userId, url);
+```
+
+**Vue:**
+``` javascript
+const userId = 'xxx';
+const url = '';
+TUICallKitAPI.setRemoteViewBackgroundImage(userId, url);
+```
+
+**Android SDK:**
+``` java
+fun call(
+    userId: String, mediaType: TUICallDefine.MediaType,
+    params: CallParams?, callback: TUICommonDefine.Callback?
+)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)groupCall:(NSString *)groupId userIdList:(NSArray<NSString *> *)userIdList callMediaType:(TUICallMediaType)callMediaType params:(TUICallParams *)params succ:(TUICallSucc __nullable)succ fail:(TUICallFail __nullable)fail;
+```
+
+参数列表：
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| userId | string | 是 | 远端用户 userId，设置为 '*' 表示对所有远端用户生效 |
+| url | string | 是 | 图片地址（支持本地路径和网络地址） |
+
+### setLayoutMode
+
+设置通话界面布局模式。
+
+【Vue】
+``` javascript
+import { TUICallKitAPI, LayoutMode } from "@trtc/calls-uikit-vue";
+TUICallKitAPI.setLayoutMode(LayoutMode.LocalInLargeView);
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI, LayoutMode } from "@trtc/calls-uikit-vue";
+TUICallKitAPI.setLayoutMode(LayoutMode.LocalInLargeView);
+```
+
+**Android SDK:**
+``` java
+ void call(String userId, TUICallDefine.MediaType mediaType, 
+           TUICallDefine.CallParams params, TUICommonDefine.Callback callback)
+```
+
+**iOS SDK:**
+``` swift
+public func groupCall(groupId: String, userIdList: [String], callMediaType: TUICallMediaType, params: TUICallParams, succ: @escaping TUICallSucc, fail: @escaping TUICallFail)
+```
+
+【React】
+``` javascript
+import { TUICallKitAPI, LayoutMode } from "@trtc/calls-uikit-react";
+TUICallKitAPI.setLayoutMode(LayoutMode.LocalInLargeView);
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI, LayoutMode } from "@trtc/calls-uikit-react";
+TUICallKitAPI.setLayoutMode(LayoutMode.LocalInLargeView);
+```
+
+**Android SDK:**
+``` java
+fun groupCall(groupId: String, userIdList: List<String?>?, mediaType: TUICallDefine.MediaType)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)joinInGroupCall:(TUIRoomId *)roomId groupId:(NSString *)groupId callMediaType:(TUICallMediaType)callMediaType;
+```
+
+参数列表：
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| layoutMode | [LayoutMode](https://cloud.tencent.com/document/product/647/81015#LayoutMode) | 是 | 用户流的布局模式 |
+
+### setCameraDefaultState
+
+设置摄像头是否默认打开。
+``` javascript
+TUICallKitAPI.setCameraDefaultState(true);
+```
+
+**Vue:**
+``` javascript
+TUICallKitAPI.setCameraDefaultState(true);
+```
+
+**Android SDK:**
+``` java
+void groupCall(String groupId, List<String> userIdList, TUICallDefine.MediaType mediaType);
+```
+
+**iOS SDK:**
+``` swift
+public func joinInGroupCall(roomId: TUIRoomId, groupId: String, callMediaType: TUICallMediaType)
+```
+
+参数列表：
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| isOpen | boolean | 是 | 是否开启摄像头 |
+
+### getTUICallEngineInstance
+
+获取 TUICallEngine 实例。
+``` javascript
+TUICallKitAPI.getTUICallEngineInstance();
+```
+
+**Vue:**
+``` javascript
+TUICallKitAPI.getTUICallEngineInstance();
+```
+
+**Android SDK:**
+``` java
+fun groupCall(
+    groupId: String, userIdList: List<String?>?, mediaType: TUICallDefine.MediaType, 
+    params: CallParams?, callback: TUICommonDefine.Callback?
+)
+```
+
+## TUICallKit 类型定义
+
+### videoDisplayMode
+
+画面显示模式 `videoDisplayMode` 属性有三个值：
+- `VideoDisplayMode.CONTAIN`
+
+- `VideoDisplayMode.COVER`
+
+- `VideoDisplayMode.FILL`，默认值是`VideoDisplayMode.COVER`。
+
+| 属性 | 值 | 描述 |
+| --- | --- | --- |
+| videoDisplayMode | VideoDisplayMode.CONTAIN | - 优先保证视频内容全部显示。 - 视频尺寸等比缩放，直至视频窗口的一边与视窗边框对齐。 - 如果视频尺寸与显示视窗尺寸不一致，在保持长宽比的前提下，将视频进行缩放后填满视窗，缩放后的视频四周会有一圈黑边。 |
+| VideoDisplayMode.COVER | - 优先保证视窗被填满。 - 视频尺寸等比缩放，直至整个视窗被视频填满。 - 如果视频长宽与显示窗口不同，则视频流会按照显示视窗的比例进行周边裁剪或图像拉伸后填满视窗。 |  |
+| VideoDisplayMode.FILL | - 保证视窗被填满的同时保证视频内容全部显示，但是不保证视频尺寸比例不变。 - 视频的宽高会被拉伸至和视窗尺寸一致。 |  |
+
+### videoResolution
+
+分辨率 `videoResolution` 有三个值：
+- `VideoResolution.RESOLUTION_480P`
+
+- `VideoResolution.RESOLUTION_720P`
+
+- `VideoResolution.RESOLUTION_1080P`，默认值是`VideoResolution.RESOLUTION_480P`。
+
+   **分辨率说明：**
+
+| 视频 Profile | 分辨率（宽 × 高） | 帧率（fps） | 码率（kbps） |
+| --- | --- | --- | --- |
+| 480p | 640 × 480 | 15 | 900 |
+| 720p | 1280 × 720 | 15 | 1500 |
+| 1080p | 1920 × 1080 | 15 | 2000 |
+
+   **常见问题：**
+
+- iOS 13&14不支持编码高于 720p 的视频，建议在这两个系统版本限制最高采集 720P。参见 [iOS Safari 已知问题 case 12](https://web.sdk.qcloud.com/trtc/webrtc/doc/zh-cn/tutorial-02-info-webrtc-issues.html#h2-4)。
+
+- Firefox 不支持自定义视频帧率（默认为 30fps）。
+
+- 受系统性能占用，摄像头采集能力和浏览器限制等因素的影响，视频分辨率、帧率、码率的实际值不一定能够完全匹配设定值，在这种情况下，浏览器会自动调整 Profile 尽可能匹配设定值。
+
+### STATUS
+| 属性值 | 描述 |
+| --- | --- |
+| STATUS.IDLE | 闲置状态 |
+| STATUS.BE_INVITED | 收到通话邀请 |
+| STATUS.DIALING_C2C | 正在 1v1 呼叫 |
+| STATUS.DIALING_GROUP | 正在群组呼叫 |
+| STATUS.CALLING_C2C_AUDIO | 正在 1v1 语音通话 |
+| STATUS.CALLING_C2C_VIDEO | 正在 1v1 视频通话 |
+| STATUS.CALLING_GROUP_AUDIO | 正在群组语音通话 |
+| STATUS.CALLING_GROUP_VIDEO | 正在群组视频通话 |
+
+### **CallMediaType**
+| CallMediaType 类型 | 描述 |
+| --- | --- |
+| CallMediaType.AUDIO | 语音通话 |
+| CallMediaType.VIDEO | 视频通话 |
+
+### **offlinePushInfo**
+| 参数 | 类型 | 是否必填 | 含义 |
+| --- | --- | --- | --- |
+| offlinePushInfo.title | String | 否 | 离线推送标题（选填） |
+| offlinePushInfo.description | String | 否 | 离线推送内容（选填） |
+| offlinePushInfo.androidOPPOChannelID | String | 否 | 离线推送设置 OPPO 手机 8.0 系统及以上的渠道 ID（选填） |
+| offlinePushInfo.extension | String | 否 | 离线推送透传内容，可以用于设置 Android [Notification 模式](https://cloud.tencent.com/document/product/647/81015#Android Notification) 和 [VoIP 模式](https://cloud.tencent.com/document/product/647/81015#Android VoIP)。**默认：**Notification 模式，会是系统的通知；VoIP 模式是需要传字段。 |
+| offlinePushInfo.ignoreIOSBadge | Boolean | 否 | 离线推送忽略 badge 计数（仅对 iOS 生效）， 如果设置为 true，在 iOS 接收端，这条消息不会使 App 的应用图标未读计数增加。 |
+| offlinePushInfo.iOSSound | String | 否 | 离线推送声音设置（仅对 iOS 生效）。 |
+| offlinePushInfo.androidSound | String | 否 | 离线推送声音设置（仅对 Android 生效）。 |
+| offlinePushInfo.androidVIVOClassification | Number | 否 | VIVO 推送消息分类。 |
+| offlinePushInfo.androidXiaoMiChannelID | String | 否 | 小米手机 8.0 系统及以上的渠道 ID。 |
+| offlinePushInfo.androidFCMChannelID | String | 否 | FCM 通道手机 8.0 系统及以上的渠道 ID。 |
+| offlinePushInfo.androidHuaWeiCategory | String | 否 | 华为推送消息分类。 |
+| offlinePushInfo.isDisablePush | Boolean | 否 | 是否关闭推送（默认开启推送）。 |
+| offlinePushInfo.iOSPushType | Number | 否 | iOS 离线推送类型。0-普通推送；1-VoIP推送。默认：0。 |
+
+#### Android Notification 模式
+``` javascript
+const extension = {
+  timPushFeatures: {        
+    fcmPushType: 0, // 0, VoIP; 1, notification
+  }
+};
+offlinePushInfo.extension = JSON.stringify(extension);
+```
+
+**Vue:**
+``` javascript
+const extension = {
+  timPushFeatures: {        
+    fcmPushType: 0, // 0, VoIP; 1, notification
+  }
+};
+offlinePushInfo.extension = JSON.stringify(extension);
+```
+
+**Android SDK:**
+``` java
+void groupCall(String groupId, List<String> userIdList, TUICallDefine.MediaType mediaType, 
+               TUICallDefine.CallParams params, TUICommonDefine.Callback callback);
+```
+
+#### Android VoIP 模式
+``` javascript
+const extension = {
+  timPushFeatures: {        
+    fcmPushType: 0, // 0, data; 1, notification
+    fcmNotificationType: 1, // 0, TIMPush implementation； 1, business implementation after transparent transmission 
+  }
+};
+offlinePushInfo.extension = JSON.stringify(extension);
+```
+
+**Vue:**
+``` javascript
+const extension = {
+  timPushFeatures: {        
+    fcmPushType: 0, // 0, data; 1, notification
+    fcmNotificationType: 1, // 0, TIMPush implementation； 1, business implementation after transparent transmission 
+  }
+};
+offlinePushInfo.extension = JSON.stringify(extension);
+```
+
+**Android SDK:**
+``` java
+fun joinInGroupCall(roomId: RoomId?, groupId: String?, mediaType: TUICallDefine.MediaType?) 
+```
+
+### FeatureButton
+| FeatureButton 类型 | 描述 |
+| --- | --- |
+| FeatureButton.Camera | 摄像头按钮 |
+| FeatureButton.Microphone | 麦克风按钮 |
+| FeatureButton.SwitchCamera | 切换前后置摄像头按钮 |
+| FeatureButton.InviteUser | 邀请他人按钮 |
+
+### LayoutMode
+| LayoutMode 类型 | 描述 |
+| --- | --- |
+| LayoutMode.LocalInLargeView | 本地用户在大窗显示 |
+| LayoutMode.RemoteInLargeView | 远端用户在大窗显示 |
+
+---
+
+--------------------------------------------------------------------------------
+title: 集成 TUICallKit 音视频通话 (Android/iOS/Flutter/React/Vue)
+description: 多端接入总览：来电、接听、挂断、音视频切换与通话 UI 集成。关键词：TUICallKit、TUICallEngine、@trtc/calls-uikit。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/callkit/integration.md
+--------------------------------------------------------------------------------
+
+**适用平台：Android, iOS, Flutter, React, Vue**
+
+本文将介绍如何快速接入 TUICallKit 组件。您可以在 10 分钟内完成以下关键步骤，最终获得一个功能完备的音视频通话界面。
+
+## 快速接入
+### 步骤1：导入组件
+
+在 [GitHub](https://github.com/Tencent-RTC/TUIKit_Android) 中克隆或下载代码，然后将 `TUIKit_Android` 目录下的 `atomic_x` 和 `call` 目录下的 `tuicallkit-kt` 子目录复制到您当前工程的 app 同级目录中，如下图所示。
+
+### 步骤2：工程配置
+1. 在工程根目录下找到`settings.gradle.kts`（或 `settings.gradle )`文件，增加如下代码，导入`tuicallkit-kt`、`atomic_x` 组件到项目中。
+
+   
+
+【setting.gradle.kts】
+``` java
+include(":tuicallkit-kt")
+include(":atomic_x")
+```
+
+【settings.gradle】
+``` java
+include ':tuicallkit-kt'
+include ':atomic_x'
+```
+
+2. 在 app 目录下找到 `build.gradle.kts(或build.gradle)` 文件，在`dependencies` 中增加如下代码，声明当前 app 对组件的依赖。
+
+   
+
+【build.gradle.kts】
+``` java
+dependencies {
+    api(project(":tuicallkit-kt"))
+}
+```
+
+【build.gradle】
+``` java
+dependencies {
+    api project(':tuicallkit-kt')
+}
+```
+   
+
+   > **说明：**
+   > 
+
+   > TUICallKit 工程内部已经默认依赖：`TRTC SDK`、`IM SDK`、`tuicallengine` 以及公共库 `tuicore`，不需要开发者单独配置。如需进行版本升级，则修改`tuicallkit-kt/build.gradle`文件中的版本号即可。
+   > 
+
+3. 由于 SDK 内部使用了 Java 反射特性，需要将部分类加入不混淆名单。请在 app 目录下的 `proguard-rules.pro` 文件末尾添加如下代码。添加完后，点击右上角的 **Sync Now**，同步代码。
+
+   ``` java
+   -keep class com.tencent.** { *; }
+   ```
+4. 在 app 目录下找到`AndroidManifest.xml` 文件，在 application 节点中添加 `tools:replace="android:allowBackup"`，覆盖组件内的设置，使用自己的设置。
+
+   ``` java
+     // app/src/main/AndroidManifest.xml
+      <application
+       android:name=".BaseApplication"
+       android:allowBackup="false"
+       android:icon="@drawable/app_ic_launcher"
+       android:label="@string/app_name"
+       android:largeHeap="true"
+       android:theme="@style/AppTheme"
+       tools:replace="android:allowBackup">
+   ```   
+
+   > **说明：**
+   > 
+
+   > 如果您集成 tuicallkit-kt 后报如下错误：
+   > 
+   
+
+   > 原因是 AGP 8.0+ 要求 Gradle 运行时使用 Java 17 或更高版本。您可以在 Android Studio 中点击 Tools -> SDK Manager -> Build, Execution,Deployment -> Build Tools -> Gradle 配置 Gradle JDK 版本为 17 解决该问题
+   > 
+   
+
+### 步骤3：登录
+
+在您的项目中添加如下代码，调用 `login` 方法实现 TUI 组件的登录。这一步骤至关重要，只有在成功登录之后，您才能正常使用 TUICallKit 提供的各项功能。
+
+【Android（Kotlin）】
+``` java
+import com.tencent.qcloud.tuicore.TUILogin
+import com.tencent.qcloud.tuicore.interfaces.TUICallback
+import com.tencent.qcloud.tuikit.tuicallkit.debug.GenerateTestUserSig
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        val userId = "denny"         // 请替换为您的UserId
+        val sdkAppId = 0             // 请替换为在控制台得到的SDKAppID
+        val secretKey = "****"       // 请替换为在控制台得到的SecretKey
+        val userSig = GenerateTestUserSig.genTestUserSig(userId, sdkAppId, secretKey) 
+        TUILogin.login(this, sdkAppId, userId, userSig, object : TUICallback() {
+            override fun onSuccess() {
+            }
+            override fun onError(errorCode: Int, errorMessage: String) {
+            }
+         }) 
+    }
+}
+```
+
+【Android（Java）】
+``` java
+import com.tencent.qcloud.tuicore.TUILogin;
+import com.tencent.qcloud.tuicore.interfaces.TUICallback;
+import com.tencent.qcloud.tuikit.tuicallkit.debug.GenerateTestUserSig;
+
+public class MainActivity extends AppCompatActivity {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        String userId = "denny";     // 请替换为您的UserId
+        int sdkAppId = 0;            // 请替换为第一步在控制台得到的SDKAppID
+        String secretKey = "****";   // 请替换为第一步在控制台得到的SecretKey
+        String userSig = GenerateTestUserSig.genTestUserSig(userId, sdkAppId, secretKey);
+        TUILogin.login(this, sdkAppId, userId, userSig, new TUICallback() {
+            @Override
+            public void onSuccess() {
+            }
+            
+            @Override
+            public void onError(int errorCode, String errorMessage) {
+            }
+        });
+    }
+}
+
+```
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| userId | String | 只允许包含大小写英文字母(a-z A-Z)、数字(0-9)及下划线和连词符。 |
+| sdkAppId | int | 在 [实时音视频 TRTC 控制台](https://console.cloud.tencent.com/trtc) 创建的音视频应用的唯一标识 SDKAppID。 |
+| secretKey | String | 在 [实时音视频 TRTC 控制台](https://console.cloud.tencent.com/trtc) 创建的音视频应用的 SDKSecretKey。 |
+| userSig | String | 一种安全保护签名，用于对用户进行登录鉴权认证，确认用户是否真实，阻止恶意攻击者盗用您的云服务使用权。 |
+
+> **说明：**
+> - **开发环境**：如果您在本地开发调试阶段，可以采用本地 [GenerateTestUserSig.genTestUserSig](https://github.com/Tencent-RTC/TUIKit_Android/blob/main/application/debug/src/main/java/com/tencent/qcloud/tuikit/debug/GenerateTestUserSig.java) 函数生成 userSig。该方法中 secretKey 很容易被反编译逆向破解，一旦您的密钥泄露，攻击者就可以盗用您的腾讯云流量。
+> - **生产环境**：如果您的项目要发布上线，请采用 服务端生成 UserSig 的方式。
+
+### 步骤4：设置昵称和头像[可选]
+
+首次登录的用户没有头像和昵称信息，您可以通过 `setSelfInfo` 接口设置头像和昵称：
+
+【Android（Kotlin）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+
+val name = "mike" // 目标用户的昵称。
+val avatar = "https:/****/user_avatar.png" // 目标用户的头像。
+TUICallKit.createInstance(applicationContext).setSelfInfo(name, avatar, 
+    object : CompletionHandler {
+         override fun onSuccess() {
+             // 设置成功
+         }
+         override fun onFailure(code: Int, desc: String) {
+             // 设置失败
+         }
+     })
+```
+
+【Android（Java）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+
+String name = "mike"; // 目标用户的昵称。
+String avatar = "https:/****/user_avatar.png"; // 目标用户的头像。
+TUICallKit.createInstance(applicationContext).setSelfInfo(name, avatar, 
+    new CompletionHandler() {
+        @Override
+        public void onSuccess() {
+            // 设置成功
+        }
+
+        @Override
+        public void onFailure(int code, String desc) {
+            // 设置失败
+        }
+    });
+```
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| nickname | String | 目标用户的昵称。 |
+| avatar | String | 目标用户的头像。 |
+| completion | CompletionHandler | 异步操作的结果回调。 |
+
+### 步骤5：发起通话
+
+拨打方可以通过调用 `calls` 函数，并指定通话类型和被叫方的 userID，来发起语音或视频通话。`calls` 接口同时支持一对一通话和多人通话。当 userIDList 中包含一个 userID 时，为一对一通话；当 userIDList 包含多个 userID 时，则为多人通话。
+
+【Kotlin】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+import io.trtc.tuikit.atomicxcore.api.call.CallMediaType
+import io.trtc.tuikit.atomicxcore.api.call.CallParams
+
+val userIdList = mutableListOf<String>()
+userIdList.add("mike")
+val mediaType = CallMediaType.Audio
+val callParams = CallParams()
+TUICallKit.createInstance(context).calls(userIdList, mediaType, params, object : CompletionHandler {
+    override fun onFailure(code: Int, desc: String) {
+       // 失败回调
+    }
+    override fun onSuccess() {
+       // 成功回调
+    }
+})
+```
+
+【Java】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+import io.trtc.tuikit.atomicxcore.api.call.CallMediaType;
+import io.trtc.tuikit.atomicxcore.api.call.CallParams;
+
+List<String> userIdList = new ArrayList<>();
+userIdList.add("mike");
+CallMediaType mediaType = CallMediaType.Audio;
+CallParams params = new CallParams();
+TUICallKit.createInstance(this).calls(userIdList, mediaType, params, new CompletionHandler() {
+    @Override
+    public void onFailure(int code, String desc) {
+        // 失败回调
+    }
+    @Override
+    public void onSuccess() {
+        // 成功回调
+    }
+});
+
+```
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| userIdList | List<String> | 目标用户的 userId 列表。 |
+| mediaType | CallMediaType | 通话的媒体类型，例如视频通话、语音通话。 - Audio : 语音通话。 - Video : 视频通话。 |
+| params | CallParams | 通话扩展参数，例如房间号、通话邀请超时时间等。 - roomId : 此次通话的房间 ID。 - timeout : 发起通话等待的最长时间，超过该时间通话结束。 - userData : 发起通话时自定义扩展字段。 - chatGroupId : 与 chat 结合使用，Chat 群组的群 ID 。 |
+| completion | CompletionHandler | 异步操作的结果回调。 |
+
+### 步骤6：接听通话
+
+接听端完成登录后，拨打端发起通话，接收端就可以收到通话邀请，同时伴随铃声和振动。
+
+> 以下内容以 **Android** 为基准展示。Android, iOS, Flutter, React, Vue 各平台的步骤和概念一致，仅代码实现不同。每个代码块后附有其他平台的对应代码。
+
+## 准备工作
+
+### **环境要求**
+- **Android 版本要求**：Android 5.0（SDK API Level 21）及以上版本。
+
+- **Gradle 版本要求：**Gradle 4.2.1 及以上的版本。
+
+- **设备需满足**：Android 5.0 及以上的手机设备。
+
+### **开通服务**
+
+在使用腾讯云提供的音视频服务前，您需要前往控制台，为应用开通音视频服务。具体步骤参见 开通服务。开通服务后，请记录`SDKAppID` 和`SDKSecretKey`，在后续的步骤（登录）中会用到。
+
+## 更多功能
+
+### AI 转录与翻译
+
+您可以通过调用 `enableAITranscriber` 开启/关闭 AI 转录与翻译功能。
+
+> **注意：**
+> 1. 该功能默认为开启状态（enable = true）。如需关闭，请在发起通话前调用 `enableAITranscriber`(enable: false)。
+> 2. AI 实时转录与翻译为增值服务。体验版赠送免费额度，可直接体验。如需开通正式版，请在 [实时音视频控制台](https://console.cloud.tencent.com/trtc) 开通套餐包，详见 [计费说明](https://cloud.tencent.com/document/product/647/111976)。
+
+【Kotlin】
+``` swift
+TUICallKit.createInstance(context).enableAITranscriber(true)
+```
+
+**iOS:**
+
+   ``` bash
+   target 'xxxx' do
+     ...
+     pod 'TUICallKit_Swift/Professional'
+   end
+   ```
+
+**Flutter:**
+
+``` java
+import 'package:tencent_calls_uikit/tencent_calls_uikit.dart';
+......
+
+void _enableFloatWindow() {
+    TUICallKit.instance.enableFloatWindow(true);
+}
+```
+
+**React:**
+
+```bash
+pnpm create vite@latest
+# skip some settings
+cd ${your-vue-project-name}
+pnpm install
+```
+
+**Vue:**
+
+```bash
+pnpm create vite@latest
+# skip some settings
+cd ${your-vue-project-name}
+pnpm install
+```
+
+【Java】
+``` objectivec
+TUICallKit.createInstance(context).enableAITranscriber(true);
+```
+
+**iOS:**
+
+   ``` bash
+   pod install
+   ```
+
+**Flutter:**
+
+``` java
+import 'package:tencent_calls_uikit/tencent_calls_uikit.dart';
+......
+
+void _enableFloatWindow() {
+    TUICallKit.instance.enableIncomingBanner(true);
+}
+```
+
+**React:**
+
+```bash
+npm install @trtc/calls-uikit-react@latest --legacy-peer-deps
+```
+
+**Vue:**
+
+```vue
+<template>
+  <div>
+    <span> caller's ID: </span>
+    <input type="text" v-model="callerUserID"> 
+    <button @click="init"> step1. init </button> <br>
+    <span> callee's ID: </span>
+    <input type="text" v-model="calleeUserID">
+    <button @click="call"> step2. call </button>
+    <Teleport to="body">
+      <TUICallKit style="
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) !important;
+        z-index: 1000;"
+      />
+    </Teleport>
+  </div>
+</template>
+<script setup>
+import { ref } from 'vue';
+import { TUICallKit, TUICallKitAPI, CallMediaType } from "@trtc/calls-uikit-vue";
+
+const callerUserID = ref('');
+const calleeUserID = ref('');
+const SDKAppID = 0;  // TODO: Replace with your SDKAppID (Notice: SDKAppID is of type number）
+const userSig = ''; // TODO: Replace with your userSig
+
+// init TUICallKit
+const init = async () => {
+  await TUICallKitAPI.init({
+    userID: callerUserID.value, 
+    userSig, 
+    SDKAppID,
+  });
+}
+
+// Start a video call
+const call = async () => {
+  await TUICallKitAPI.calls({
+    userIDList: [calleeUserID.value],
+    type: CallMediaType.VIDEO,
+  }); 
+};
+</script>
+```
+
+**详情：**默认为 true，通话界面上显示 AI 翻译相关页面，设置为 false 后关闭。
+
+### 开启悬浮窗功能
+
+您可以通过调用 `enableFloatWindow` 开启/关闭悬浮窗功能，在初始化 TUICallKit 组件时启用该功能，默认状态为关闭（false）。可通过点击通话界面左上角的悬浮窗按钮，将通话界面缩小为悬浮窗形式。
+
+【Kotlin】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+
+TUICallKit.createInstance(this).enableFloatWindow(true)
+```
+
+**iOS:**
+``` swift
+import TUICore
+import TUICallKit_Swift
+
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+    let userID = "denny"       // 请替换为您的 UserId
+    let sdkAppID: Int32 = 0    // 请替换为第一步在控制台得到的 SDKAppID
+    let secretKey = "****"     // 请替换为第一步在控制台得到的 SecretKey
+
+    let userSig = GenerateTestUserSig.genTestUserSig(userID: userID, sdkAppID: sdkAppID, secretKey: secretKey)
+
+    TUILogin.login(sdkAppID, userID: userID, userSig: userSig) {
+      print("login success")
+    } fail: { code, message in
+      print("login failed, code: \(code), error: \(message ?? "nil")")
+    }
+
+    return true
+}
+```
+
+**Flutter:**
+
+``` java
+
+import 'package:tencent_calls_uikit/tencent_calls_uikit.dart';
+......
+
+void _call() {
+    List<String> participantIds = ['vince','mike'];
+    CallMediaType mediaType = CallMediaType.audio;
+    CallParams callParams = CallParams();    
+    TUICallKit.instance.calls(participantIds, mediaType, callParams);
+}
+```
+
+**React:**
+
+```tsx
+import { useState } from 'react';
+import { TUICallKit, TUICallKitAPI, CallMediaType } from "@trtc/calls-uikit-react";
+
+return (
+  <>
+    <span> caller's ID: </span>
+    <input type="text" placeholder='input caller userID' value={callerUserID} onChange={(event) => setCallerUserID(event.target.value)} />
+    <button onClick={init}> step1. init </button> <br />
+    <span> callee's ID: </span>
+    <input type="text" placeholder='input callee userID' value={calleeUserID} onChange={(event) => setCalleeUserID(event.target.value)} />
+    <button onClick={call}> step2. call </button>
+    <TUICallKit
+      style={{ 
+        position: 'fixed', 
+        top: '50%', 
+        left: '50%', 
+        transform: 'translate(-50%, -50%)',
+        width: '960px',
+        minHeight: '640px',
+        zIndex: 1000
+      }}
+    />
+  </>
+);
+
+const [callerUserID, setCallerUserID] = useState('');
+const [calleeUserID, setCalleeUserID] = useState('');
+const SDKAppID = 0;  // TODO: Replace with your SDKAppID (Notice: SDKAppID is of type number）
+const userSig = ''; // TODO: Replace with your userSig
+
+// init TUICallKit
+const init = async () => {
+  await TUICallKitAPI.init({
+    userID: callerUserID,
+    userSig,
+    SDKAppID,
+  });
+}
+// Start a video call
+const call = async () => {
+  await TUICallKitAPI.calls({
+    userIDList: [calleeUserID],
+    type: CallMediaType.VIDEO,
+  }); 
+};
+</script>
+```
+
+【Java】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+
+TUICallKit.createInstance(this).enableFloatWindow(true);
+```
+
+**iOS:**
+``` objectivec
+#import <TUICore/TUILogin.h>
+#import <TUICallKit_Swift/TUICallKit_Swift-Swift.h>
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    NSString *userID = @"denny";     // 请替换为您的 UserId
+    int sdkAppID = 0;                // 请替换为第一步在控制台得到的 SDKAppID
+    NSString *secretKey = @"****";   // 请替换为第一步在控制台得到的 SecretKey
+
+    NSString *userSig = [GenerateTestUserSig genTestUserSigWithUserID:userID sdkAppID:sdkAppID secretKey:secretKey];
+
+    [TUILogin login:sdkAppID
+             userID:userID
+            userSig:userSig
+               succ:^{
+        NSLog(@"login success");
+    } fail:^(int code, NSString * _Nullable msg) {
+        NSLog(@"login failed, code: %d, error: %@", code, msg);
+    }];
+    
+    return YES;
+}
+```
+
+**Flutter:**
+
+``` java
+import 'package:tencent_calls_uikit/tencent_calls_uikit.dart';
+
+void join() {
+    String callId = "123456";
+    TUICallKit.instance.join(callId);
+}
+```
+
+**详情：**默认为 false，通话界面左上角的悬浮窗按钮隐藏，设置为 true 后显示。
+
+### 开启来电横幅
+
+您可以通过调用 `enableIncomingBanner` 开启/关闭来电横幅显示，该功能默认为关闭状态（false）。当被叫端收到来电时，默认展示全屏通话等待界面。启用此功能后，将首先显示一个横幅通知，然后根据需要切换到全屏通话界面。请注意，显示来电横幅需要授予悬浮窗权限，具体的显示策略将根据权限设置及应用当前是否在前台或后台运行来决定，具体策略可参考：被叫端来电显示策略。
+
+【Android（Kotlin）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+
+TUICallKit.createInstance(context).enableIncomingBanner(true)
+```
+
+**iOS:**
+``` swift
+import TUICallKit_Swift
+import RTCRoomEngine
+
+// 发起1对1语音通话(假设 userId 为 mike)
+TUICallKit.createInstance().calls(userIdList: ["mike"], callMediaType: .audio, params: nil) {
+
+} fail: { code, message in
+ 
+}
+```
+
+**Flutter:**
+
+   
+``` java
+import 'package:tencent_calls_uikit/tencent_calls_uikit.dart';
+......
+
+void _setCallingBell() {
+    TUICallKit.instance.enableMuteMode(true);
+}
+```
+
+【Android（Java）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+
+TUICallKit.createInstance(context).enableIncomingBanner(true);
+```
+
+**iOS:**
+``` objectivec
+#import <TUICallKit_Swift/TUICallKit_Swift-Swift.h>
+#import <RTCRoomEngine/TUICallEngine.h>
+
+// 发起1对1语音通话(假设 userId 为 mike)
+[[TUICallKit createInstance] calls:@[@"mike"] callMediaType:TUICallMediaTypeAudio params:NULL succ:^{
+} fail:^(int code, NSString * _Nullable errMsg) {
+}];
+```
+
+**详情：**默认为 false，被叫端收到邀请后默认弹出全屏通话等待界面。开启后先展示一个横幅，然后根据需要拉起全屏通话界面。
+
+### 实现多人通话
+
+主叫方使用 `calls` 方法发起通话时，若被叫用户列表超过一人，则自动视为群组通话。其他成员可通过 `join` 方法加入该多人通话。
+- **发起多人通话：**使用 `calls` 方法发起通话时，若被叫用户列表（`userIdList`）超过一人，则自动视为群组通话。
+
+   
+
+【Kotlin】
+``` java
+import com.tencent.cloud.tuikit.engine.call.TUICallDefine
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+import io.trtc.tuikit.atomicxcore.api.call.CallMediaType
+import io.trtc.tuikit.atomicxcore.api.call.CallParams
+
+val userIdList = mutableListOf<String>()
+userIdList.add("mike")
+userIdList.add("tate")
+val mediaType = CallMediaType.Audio
+val params = CallParams()
+TUICallKit.createInstance(context).calls(userIdList, mediaType, params, object : CompletionHandler {
+    override fun onFailure(code: Int, desc: String) {
+       // 失败回调
+    }
+    override fun onSuccess() {
+       // 成功回调
+    }
+})
+```
+
+【Java】
+``` java
+import com.tencent.cloud.tuikit.engine.call.TUICallDefine;
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+import io.trtc.tuikit.atomicxcore.api.call.CallMediaType;
+import io.trtc.tuikit.atomicxcore.api.call.CallParams;
+
+List<String> userIdList = new ArrayList<>();
+userIdList.add("mike");
+userIdList.add("tate");
+CallMediaType mediaType = CallMediaType.Audio;
+CallParams params = new CallParams();
+TUICallKit.createInstance(context).calls(userIdList, mediaType, params, new CompletionHandler() {
+    @Override
+    public void onFailure(int code, String desc) {
+        // 失败回调
+    }
+
+    @Override
+    public void onSuccess() {
+        // 成功回调
+    }
+});
+```
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| userIdList | List<String> | 目标用户的 userId 列表。 |
+| mediaType | CallMediaType | 通话的媒体类型，例如视频通话、语音通话。 - Audio : 语音通话。 - Video : 视频通话。 |
+| params | CallParams | 通话扩展参数，例如房间号、通话邀请超时时间等。 - roomId : 此次通话的房间 ID。 - timeout : 发起通话等待的最长时间，超过该时间通话结束。 - userData : 发起通话时自定义扩展字段。 - chatGroupId : 与 chat 结合使用，Chat 群组的群 ID 。 |
+| completion | CompletionHandler | 异步操作的结果回调。 |
+
+- **加入多人通话：**可使用 `join` 方法加入指定的群组通话。
+
+   
+
+【Kotlin】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+
+val callId = "123456" // 此次通话的 ID
+TUICallKit.createInstance(this).join(callId, object : CompletionHandler {
+    override fun onFailure(code: Int, desc: String) {
+      // 失败回调
+    }
+    override fun onSuccess() {
+      // 成功回调
+    }
+})
+```
+
+【Java】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+
+String callId = "123456"; // 此次通话的 ID
+TUICallKit.createInstance(this).join(callId, new CompletionHandler() {
+    @Override
+    public void onFailure(int code, String desc) {
+        // 失败回调
+    }
+
+    @Override
+    public void onSuccess() {
+        // 成功回调
+    }
+});
+```
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| callId | String | 此次通话的唯一标识。 |
+| completion | CompletionHandler | 异步操作的结果回调。 |
+
+### 设置语言
+- **支持的语言：**目前支持**简体中文、繁体中文、英文、日文和阿拉伯语。**
+
+- **切换语言：**TUICallKit 默认语言与手机系统保持一致 。如果需要切换语言，可以使用 `TUIThemeManager.getInstance().changeLanguage `方法设置语言，以设置语言为英文的示例代码如下**。**
+
+   
+
+【Kotlin】
+``` java
+import com.tencent.qcloud.tuicore.TUIThemeManager;
+
+public class MainActivity extends BaseActivity {
+    @Override
+  public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState)
+      
+      val language = TUIThemeManager.LANGUAGE_ZH_CN // 设置的语言
+      TUIThemeManager.getInstance().changeLanguage(applicationContext, language)
+    }
+}
+```
+
+【Java】
+``` java
+
+import com.tencent.qcloud.tuicore.TUIThemeManager;
+
+public class MainActivity extends BaseActivity {
+    @Override
+  public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      String language = TUIThemeManager.LANGUAGE_EN; // 设置的语言
+      TUIThemeManager.getInstance().changeLanguage(getApplicationContext(), language);
+    }
+}
+
+```
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| language | String | 设置的语言： - TUIThemeManager.LANGUAGE_EN：英文。 - TUIThemeManager.LANGUAGE_AR：阿拉伯语。 - TUIThemeManager.LANGUAGE_ZH_HK：中文繁体。 - TUIThemeManager.LANGUAGE_ZH_CN：中文简体。 |
+
+> **说明：**
+> 
+
+> 如需设置其他语言，请[联系我们](https://cloud.tencent.com/document/product/647/19906)获取协助。
+> 
+
+### 设置铃声
+
+您可通过以下方式设置默认铃声、来电静音模式、离线推送铃声：
+- **设置默认铃声（方式1）：**如果您通过源码依赖 TUICallKit 组件，您可以替换铃声资源文件（[发起呼叫时的铃声](https://github.com/Tencent-RTC/TUIKit_Android/blob/main/call/tuicallkit-kt/src/main/res/raw/phone_dialing.mp3)、[接到呼叫时的铃声](https://github.com/Tencent-RTC/TUIKit_Android/blob/main/call/tuicallkit-kt/src/main/res/raw/phone_ringing.mp3)）设置默认铃声。
+
+- **设置默认铃声（方式2）：**通过 [setCallingBell](https://cloud.tencent.com/document/product/647/78750#setCallingBell) 接口设置被叫端收到的来电铃声。
+
+   
+
+【Android（Kotlin）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+
+val filePath = "***/callingBell.mp3"
+TUICallKit.createInstance(context).setCallingBell(filePath)
+```
+
+【Android（Java）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+
+String filePath = "***/callingBell.mp3";
+TUICallKit.createInstance(context).setCallingBell(filePath);
+```
+
+**详情：**这里仅限传入本地文件地址，需要确保该文件目录是应用可以访问的。铃声设置后与设备绑定，更换用户，铃声依旧会生效。如需恢复默认铃声，filePath传空即可。
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| filePath | String | 铃声文件的路径。 |
+
+- **来电静音模式：**您可以通过 [enableMuteMode](https://cloud.tencent.com/document/product/647/78750#enableMuteMode) 设置静音模式。
+
+   
+
+【Android（Kotlin）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+
+TUICallKit.createInstance(context).enableMuteMode(true)
+```
+
+【Android（Java）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+
+TUICallKit.createInstance(context).enableMuteMode(true);
+```
+
+**详情：**开启后，收到通话请求，不会播放来电铃声。
+
+- **自定义离线推送铃声**：离线推送默认铃声是由系统决定的，可以在 手机设置 中，进入应用详情，查看或更改应用的通知铃声。
+
+## 自定义您的 UI
+
+### 替换图标按钮
+
+您可以直接替换 [res\drawable-xxhdpi](https://github.com/Tencent-RTC/TUIKit_Android/tree/main/atomic_x/src/main/res-callview/drawable-xxhdpi) 文件夹下的图标，以确保整个 App 中的图标色调风格保持一致。以下列出了基本的功能按钮，您可以替换对应的图标以适配自己的业务场景。
+
+常用图标文件名列表
+| 图标 | 文件名称 | 说明 |
+| --- | --- | --- |
+|  | callview_ic_dialing.png | 接听来电图标 |
+|  | callview_ic_hangup.png | 挂断通话图标 |
+|  | callview_ic_mic_unmute.png | 关闭麦克风图标 |
+|  | callview_ic_handsfree_disable.png | 关闭扬声器图标 |
+|  | callview_ic_camera_disable.png | 关闭摄像头图标 |
+|  | callview_ic_add_user_black.png | 通话过程中邀请用户图标 |
+
+## 交流与反馈
+
+如果您在使用过程中，有什么建议或者意见，可以 [联系我们](https://cloud.tencent.com/document/product/647/19906)，感谢您的反馈。
+
+---

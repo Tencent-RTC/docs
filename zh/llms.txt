@@ -1,0 +1,106 @@
+# Tencent RTC
+> Tencent RTC 是腾讯云实时音视频（TRTC）一站式解决方案，涵盖即时通讯（Chat UIKit）、音视频通话（CallKit）、视频直播与语聊房（LiveKit）、音视频会议（RoomKit）以及底层 WebRTC SDK。支持 Android、iOS、Flutter、React、Vue、uni-app 等多平台，提供含 UI 组件的快速集成方案。
+## 快速入门
+- [AI Agent RTC 快速接入（MCP + UserSig）](https://gitee.com/Tencent-RTC/docs/raw/main/zh/quick-start.md): 从零完成 MCP Server、SDKAppID/SDKSecretKey、UserSig 鉴权与首个工具调用。关键词：login、enterRoom、startLocalVideo、初始化、通话、直播、会议。
+- [配置 MCP Server](https://gitee.com/Tencent-RTC/docs/raw/main/zh/mcp.md): Cursor/VS Code 添加 MCP Server, 设置 SDKAppID/SDKSecretKey 环境变量, 启用 Chat/Call/Live/Room/TRTC 工具。
+- [RTC Skills 安装与能力映射](https://gitee.com/Tencent-RTC/docs/raw/main/zh/skills.md): 安装 Tencent RTC Skills，关键词：npx skills add Tencent-RTC/tencent-rtc-skills、 覆盖 Live/Room/Call/Chat 多个产品。
+## ChatKit
+- [集成 Chat UIKit (Android/iOS/Flutter/React/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/integration.md): 多端接入总览：Android、iOS、Flutter、React、Vue。覆盖登录鉴权、会话列表、消息列表、消息输入、联系人等核心页面与组件接入。
+- [ChatHeader 头部组件自定义 (React/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/features/chat-header.md): 组件与属性：ChatHeader/ChatHeaderLeft/ChatHeaderRight、avatarUrl、enableUserStatus、头部操作按钮扩展。
+- [ChatSetting 设置面板自定义 (React/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/features/chat-setting.md): 组件与状态：ChatSetting、UIKitProvider、setActiveTab；覆盖会话置顶、免打扰、清空会话等设置项。
+- [ContactList 联系人列表自定义 (React/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/features/contact-list.md): 组件与回调：ContactList、ContactItemType、ContactInfo、onClick、showActions。覆盖好友/群组/黑名单。
+- [ConversationActions 会话操作自定义 (React/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/features/conversation-actions.md): 操作项配置：ConversationActions、ConversationActionsProps、enablePin、enableDelete、自定义 actionsConfig。
+- [ConversationList 会话列表自定义 (React/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/features/conversation-list.md): 列表组合：ConversationList + ConversationSearch/ConversationPreview/ConversationActions/ConversationCreate。关键词：未读、置顶、搜索。
+- [ConversationPreview 会话预览自定义 (React/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/features/conversation-preview.md): 预览项渲染：ConversationPreview、ConversationModel、未读数、最后一条消息、会话点击跳转。
+- [ConversationSearch 会话搜索自定义 (React/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/features/conversation-search.md): 搜索组件：ConversationSearch、Search、SearchBar、SearchResults、SearchAdvanced、onResultItemClick。
+- [MessageInput 输入框自定义 (React/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/features/message-input.md): 输入能力：MessageInput、EmojiPicker、AttachmentPicker、autoFocus、hideSendButton、发送回调。
+- [MessageList 消息列表自定义 (React/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/features/message-list.md): 消息渲染：MessageList、MessageModel、messageActionList、消息气泡/时间分割/已读回执。
+- [Search 全局搜索组件自定义 (React/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/features/search.md): 全局搜索接口：Search、SearchType、SearchResultItem、onSearchComplete、onResultItemClick。覆盖用户/群组/消息。
+- [自定义 Chat UIKit 主题 (Android/iOS/Flutter)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/features/theme.md): 主题色/深色模式/视觉样式, 支持 Android Compose, iOS Swift, Flutter。
+- [排查 Android Chat UIKit 常见问题](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/faq/android.md): 构建错误、初始化失败、登录异常、运行时问题排查。
+- [排查 iOS Chat UIKit 常见问题](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/faq/ios.md): CocoaPods 编译和运行时问题, SDK 初始化异常排查。
+- [排查 Flutter Chat UIKit 常见问题](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/faq/flutter.md): 依赖冲突、构建错误、登录异常、兼容性问题排查。
+- [排查 Web Chat UIKit 常见问题](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/faq/web.md): 浏览器兼容/TypeScript 类型错误/打包/运行时问题, Web IM SDK 错误码。
+- [Chat UIKit 计费、服务端与通用问题](https://gitee.com/Tencent-RTC/docs/raw/main/zh/chatkit/faq/common.md): 免费版/付费版差异, 计费模式, 服务端 REST API 调用失败/回调配置异常, 服务端错误码。
+## CallKit
+- [集成 TUICallKit 音视频通话 (Android/iOS/Flutter/React/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/callkit/integration.md): 多端接入总览：来电、接听、挂断、音视频切换与通话 UI 集成。关键词：TUICallKit、TUICallEngine、@trtc/calls-uikit。
+- [TUICallEngine + TUICallKit Web/小程序 API 参考](https://gitee.com/Tencent-RTC/docs/raw/main/zh/callkit/callkit-api-reference.md): 完整 API 参考, 涵盖单人/多人通话发起、接听/挂断、通话类型切换等能力, 适用于 Web 和微信小程序。
+- [排查 Android TUICallKit 常见问题与 API 参考](https://gitee.com/Tencent-RTC/docs/raw/main/zh/callkit/faq/android.md): 音视频权限、通话建连失败、UI 异常排查, 含完整 API 和回调文档。
+- [排查 iOS TUICallKit 常见问题与 API 参考](https://gitee.com/Tencent-RTC/docs/raw/main/zh/callkit/faq/ios.md): CocoaPods 编译错误、通话异常排查, 含完整 API 和回调文档。
+- [排查 Flutter TUICallKit 常见问题与 API 参考](https://gitee.com/Tencent-RTC/docs/raw/main/zh/callkit/faq/flutter.md): 平台适配、权限、构建问题排查, 含完整 API、回调和类型定义文档。
+- [排查 Web TUICallKit 常见问题](https://gitee.com/Tencent-RTC/docs/raw/main/zh/callkit/faq/web.md): 组件渲染/通话建连/浏览器兼容问题。
+- [TUICallKit 错误码参考](https://gitee.com/Tencent-RTC/docs/raw/main/zh/callkit/faq/common.md): 完整错误码列表, 通话发起/接听/挂断各环节异常定位。
+## LiveKit (视频直播/语聊房)
+- [集成视频直播基础功能 (Android/iOS/Flutter)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/integration-live.md): 主播开播 (LiveCoreView), 观众观看, 直播列表, 三平台无UI集成。
+- [集成语聊房基础功能 (Android/iOS/Flutter/uni-app)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/integration-voice.md): 房主开播 (LiveSeatStore/VoiceCoreView), 听众收听, 房间列表, 四平台无UI集成。
+- [TUILiveKit API 速查（Android/iOS/Flutter/Web）](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/livekit-api-reference.md): 包含 Store/State/API 签名与参数说明。可检索关键词：分辨率/清晰度(updateVideoQuality, VideoQuality)、美颜(setBeautyLevel)、麦克风/摄像头开关、直播列表(LiveListState)、PK 连麦/PK 配置、成员列表(RoomParticipant/participantList)。
+- [实现观众列表管理 (LiveAudienceStore)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/features/audience-list.md): 实时观众列表/人数统计/动态监听/管理员权限/踢人, 适用于直播和语聊房场景 (Android/iOS/Flutter/uni-app)。
+- [集成音效控制 (AudioEffectStore/DeviceStore)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/features/audio-effect.md): 人声音量/耳返/变声 (萝莉/大叔/熊孩子等)/混响 (KTV/金属声等), 适用于直播和语聊房场景 (Android/iOS/Flutter/uni-app)。
+- [集成弹幕系统 (BarrageStore)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/features/barrage.md): 文本/自定义弹幕收发, 本地 Tip 消息, 适用于直播和语聊房场景 (Android/iOS/Flutter/uni-app)。
+- [集成直播基础美颜 (BaseBeautyStore)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/features/beauty.md): 磨皮/美白/红润 (0-9 强度), 一键重置, 状态监听。
+- [实现直播观众连麦 (CoGuestStore)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/features/co-guest-live.md): 观众申请上麦/主播邀请上麦/同意拒绝请求/下麦管理。
+- [实现语聊房语音连麦 (CoGuestStore/LiveSeatStore)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/features/co-guest-voice.md): 观众申请上麦/主播邀请上麦/麦位管理 (踢人/闭麦/锁麦)。
+- [实现直播主播跨房连线与 PK (CoHostStore/BattleStore)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/features/co-host-live.md): 发起/接受连线, 开始/结束 PK, PK 计时和结果判定。
+- [实现语聊房跨房连线与 PK (CoHostStore/BattleStore)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/features/co-host-voice.md): 发起/接受连线, 开始/结束 PK, 计时和结果判定。
+- [集成礼物系统 (GiftStore)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/features/gift.md): 礼物面板/发送接收/弹幕礼物消息/全屏礼物动画, 适用于直播和语聊房场景 (Android/iOS/Flutter/uni-app)。
+- [实现直播房间列表 (LiveListStore)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/features/live-list.md): 直播列表接口：LiveListStore.fetchLiveList、分页游标、创建房间、加入房间、离开房间、直播信息更新。
+- [实现语聊房房间列表 (LiveListStore)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/features/room-list.md): 语聊房列表接口：LiveListStore.fetchLiveList、分页游标、创建/加入/离开房间、房间信息与自定义元数据更新。
+- [LiveKit 错误码参考](https://gitee.com/Tencent-RTC/docs/raw/main/zh/livekit/faq/common.md): LiveKit 错误码列表, 定位开播失败/连麦/PK/房间异常等问题。
+## RoomKit
+- [集成 RoomKit 视频会议 (Android/iOS/Flutter/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/integration.md): 多端接入与工程配置总览。关键词：RoomStore / useRoomState、登录鉴权、创建/加入房间、设备权限、UI 组件集成。
+- [实现 RoomKit 会中呼叫 (Android/iOS/Flutter/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/features/call-user-to-room.md): 呼叫接口：RoomStore / useRoomState，callUserToRoom、acceptCall、rejectCall、cancelCall、getPendingCalls。
+- [管理 RoomKit 参会成员 (Android/iOS/Flutter/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/features/room-participant.md): 成员管理接口：RoomParticipantStore / useRoomParticipantState，getParticipantList、setAdmin、kickParticipant、closeParticipantDevice、disableAllDevices。
+- [管理 RoomKit 房间生命周期 (Android/iOS/Flutter/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/features/room-state.md): 房间接口：RoomStore / useRoomState，createRoom、joinRoom、leaveRoom、endRoom、updateRoomInfo、getRoomInfo。
+- [预定 RoomKit 会议房间 (Android/iOS/Flutter/Vue)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/features/schedule-room.md): 预约会议接口：RoomStore / useRoomState，预约创建、取消预约、getScheduledRoomList、getScheduledAttendees。
+- [集成 Vue RoomKit 基础美颜](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/features/beauty.md): 磨皮/美白/红润调节, 实时预览, 远端生效。
+- [实现 Vue RoomKit 设备检测](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/features/device-detection.md): useDeviceState API, 进房前摄像头/麦克风/扬声器/网络质量检测。
+- [管理 Vue RoomKit 设备状态](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/features/device-state.md): useDeviceState API, 摄像头/麦克风/扬声器开关与切换。
+- [实现 Vue RoomKit 会中聊天](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/features/room-chat.md): useRoomChat API, 文字/表情/图片实时聊天。
+- [渲染 Vue RoomKit 视频布局](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/features/room-view.md): useRoomView API, 宫格/侧边栏/演讲者布局, 视频挂件自定义。
+- [实现 Vue RoomKit 屏幕分享](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/features/screen-share.md): useDeviceState API, 屏幕/系统音频分享, 权限控制。
+- [使用 Vue RoomKit 虚拟背景](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/features/virtual-background.md): 背景虚化/自定义背景图片替换。
+- [RoomKit 错误码参考](https://gitee.com/Tencent-RTC/docs/raw/main/zh/roomkit/faq/error-code.md): 错误码列表, 会议创建/加入/设备异常定位。
+## WebRTC SDK
+- [集成 TRTC Web SDK 音视频通话](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/integration.md): trtc-sdk-v5 快速集成指南, 涵盖 SDK 安装、创建实例、进房、本地音视频采集发布, 要求 Node.js 18+, WebRTC 浏览器。
+- [TRTC Web SDK API 速查（类/方法/事件）](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/sdk-api-reference.md): 核心检索词：TRTC.create、enterRoom/exitRoom、startLocalVideo/startLocalAudio、publish/subscribe、EVENT、ERROR_CODE。
+- [AIDenoiser 降噪插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/ai-denoiser.md): 接口关键词：startPlugin/updatePlugin/stopPlugin。参数：assetsPath。场景：键盘/风扇噪声抑制、远场降噪。
+- [AudioMixer 背景音乐插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/audio-mixer.md): 接口关键词：startPlugin/updatePlugin/stopPlugin。参数：currentTime、loop、volume。场景：BGM 混音。
+- [自动播放策略处理（Chrome/Safari/iOS）](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/auto-play-policy.md): 事件与处理：AUTOPLAY_FAILED、enableAutoPlayDialog、自定义弹窗、用户手势恢复播放。
+- [使用 BasicBeauty 基础美颜插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/basic-beauty.md): 美颜/明亮/红润 3 参数 (0-1), 免费场景适用。
+- [Beauty 专业美颜插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/beauty.md): 接口关键词：startPlugin/updatePlugin/stopPlugin。能力：磨皮、美白、瘦脸、大眼、贴纸。
+- [自定义音视频采集与渲染](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/capture-rendering.md): 传入自定义 MediaStreamTrack 替代默认摄像头/麦克风采集, 自定义远端视频渲染控制。
+- [CDNStreaming 转推插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/cdn-streaming.md): 接口关键词：startPlugin/updatePlugin/stopPlugin。参数：PublishMode、streamId、CDNStreamingOptions。
+- [使用 CrossRoom 跨房连麦插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/cross-room.md): 不同房间主播音视频互动, 主播 PK/跨房连麦。
+- [设备插拔监听插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/device-change.md): 事件关键词：EVENT.DEVICE_CHANGED、EVENT.DEVICE_ERROR、ERROR_CODE.DEVICE_ERROR。场景：摄像头/麦克风热插拔。
+- [FaceDetection 人脸检测插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/face-detection.md): 接口关键词：startPlugin/updatePlugin/stopPlugin。参数：detectionInterval、minConfidence、missingTimeout。
+- [NetworkQuality 网络质量监测](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/network-quality.md): 事件关键词：EVENT.NETWORK_QUALITY。指标：uplink/downlink、rtt、loss、quality。
+- [TRTC Web 插件索引（按功能检索）](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/overview.md): 插件关键词：BasicBeauty、Beauty、VirtualBackground、AIDenoiser、AudioMixer、VideoMixer、CDNStreaming、DeviceDetector、NetworkQuality。
+- [防火墙/代理接入（Nginx + coturn）](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/proxy.md): 网络参数：websocketProxy、loggerProxy、TURN/STUN。关键词：企业内网、UDP 受限、代理转发。
+- [RealtimeTranscriber 实时转录插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/realtime-transcriber.md): 事件关键词：EVENT.REALTIME_TRANSCRIBER_MESSAGE。字段：sourceLanguage、translationTexts、isCompleted。
+- [SmallStreamAutoSwitcher 自动大小流切换](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/small-stream-auto.md): 接口关键词：startPlugin/updatePlugin/stopPlugin。参数：rttPoorLimit、lossPoorLimit、goodDuration。
+- [多人通话大小流优化](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/small-stream.md): 核心做法：双流编码 + 仅拉可视区域小流。关键词：streamType、startRemoteVideo、updateRemoteVideo。
+- [检测 WebRTC 浏览器兼容性](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/support-detection.md): 检测当前浏览器的 WebRTC 支持情况, 包括 H.264 编解码能力和摄像头麦克风权限。
+- [使用 TRTCVideoDecoder 解码器降级插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/video-decoder.md): 硬解码失败自动降级软解码 (wasm), 保证拉流成功率。
+- [使用 VideoMixer 视频合流插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/video-mixer.md): 摄像头/屏幕/文字/图片/视频合成一路流。
+- [VirtualBackground 虚拟背景插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/virtual-background.md): 接口关键词：startPlugin/updatePlugin/stopPlugin。能力：背景虚化、自定义背景图、人像分割。
+- [VoiceChanger 变声插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/voice-changer.md): 接口关键词：startPlugin/updatePlugin/stopPlugin。参数：voiceType。场景：实时变声。
+- [Watermark 视频水印插件](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/plugins/watermark.md): 接口关键词：startPlugin/updatePlugin/stopPlugin。参数：imageUrl、位置、尺寸、透明度。
+- [Web TRTC 自动播放受限排查](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/faq/web.md): 错误与事件：AUTOPLAY_FAILED、EVENT、enterRoom 后恢复播放。关键词：iOS WebView、用户手势、静音自动播。
+- [TRTC UserSig 鉴权与防火墙配置](https://gitee.com/Tencent-RTC/docs/raw/main/zh/webrtc/faq/common.md): UserSig 鉴权签名生成算法 (HMAC-SHA256), 调试/生产环境生成方式, 防火墙白名单配置。
+## Native TRTC SDK API
+- [TRTC SDK TRTCCloud API 参考 (Android/iOS/C++)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/sdk-api-reference.md): 核心方法：enterRoom、exitRoom、startLocalAudio、startLocalPreview、muteRemoteAudio。用于进退房、采集发布与远端订阅控制。
+- [TRTC SDK 事件回调参考 (Android/iOS/C++)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/event-callbacks.md): SDK 事件回调完整列表, 涵盖房间状态、用户音视频状态变更、网络质量等通知。
+- [TRTC SDK 类型定义参考 (Android/iOS/C++)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/type-definitions.md): SDK 关键数据结构, 包括进房参数、视频编码配置、网络 QoS 策略等。
+- [TRTC SDK 统计数据参考 (Android/iOS/C++)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/statistics.md): 音视频质量统计数据结构, 包含码率、帧率、分辨率、丢包率、延迟等指标。
+- [TRTC SDK TXAudioEffectManager 音效管理 (Android/iOS/C++)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/audio-effect-api.md): 核心方法：startPlayMusic、stopPlayMusic、setVoiceChangerType、setVoiceReverbType。用于背景音乐、变声、混响控制。
+- [TRTC SDK TXBeautyManager 美颜管理 (Android/iOS)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/beauty-filter-api.md): 核心方法：setBeautyStyle、setBeautyLevel、setWhitenessLevel、setRuddyLevel。用于磨皮、美白、红润调节。
+- [TRTC SDK TXDeviceManager 设备管理 (Android/iOS/C++)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/device-manager-api.md): 核心方法：switchCamera、setSystemVolumeType、设备枚举与切换。用于摄像头、音频设备和音量类型控制。
+- [TRTC SDK 错误码参考 (Android/iOS/C++)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/trtc/error-codes.md): 错误码与警告码完整列表, 用于定位进房失败、推拉流异常等问题。
+## Native Live SDK API
+- [Live SDK V2TXLivePremier 全局配置 (Android/iOS/Flutter)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/global-config-api.md): SDK 全局配置接口, 涵盖 License 设置、日志级别、控制台输出等初始化选项。
+- [Live SDK V2TXLivePusher API 参考 (Android/iOS/Flutter)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/live-pusher-api.md): 核心方法：startCamera、startMicrophone、startPush、stopPush。用于预览采集、设备控制与推流启停。
+- [Live SDK V2TXLivePlayer API 参考 (Android/iOS/Flutter)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/live-player-api.md): 核心方法：setRenderView、startLivePlay、stopPlay、setPlayoutVolume。用于拉流播放、渲染与音量控制。
+- [Live SDK V2TXLivePusherObserver 推流回调 (Android/iOS/Flutter)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/pusher-event-callbacks.md): 推流器事件回调完整列表, 涵盖推流状态、首帧采集、麦克风音量变化等通知。
+- [Live SDK V2TXLivePlayerObserver 播放回调 (Android/iOS/Flutter)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/player-event-callbacks.md): 播放器事件回调完整列表, 涵盖连接状态、音视频播放状态、音量变化等通知。
+- [Live SDK V2TXLiveDef 类型定义 (Android/iOS/Flutter)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/type-definitions.md): SDK 关键数据结构, 包括视频分辨率、画面填充模式、旋转方向等枚举和配置类型。
+- [Live SDK V2TXLiveCode 错误码 (Android/iOS/Flutter)](https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/error-codes.md): 错误码完整列表, 用于定位推流失败、拉流异常、音视频采集等问题。
