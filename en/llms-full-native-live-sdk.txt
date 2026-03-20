@@ -1,0 +1,2337 @@
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLiveCode Error Codes (Android/iOS/Flutter)
+description: Complete error code list for diagnosing stream pushing failures, pulling exceptions and capture issues.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/native-live/error-codes.md
+--------------------------------------------------------------------------------
+
+> The following API reference is based on the Android interface. Android (V2TXLiveCode), iOS (V2TXLiveCode), Flutter (V2TXLiveCode) share the same core method names and semantics; only signature styles differ.
+> - Android: Java style (e.g. `startLivePlay(String url)`)
+> - iOS: ObjC style (e.g. `startLivePlay:(NSString *)url`)
+> - Flutter: Dart async style (e.g. `Future<V2TXLiveCode> startLivePlay(String url)`), all methods return Future
+
+# V2TXLiveCode 错误码
+
+跨平台错误码参考（Android/iOS/Flutter）。各平台值完全一致，描述以最详细的平台为准。
+
+## 平台声明语法
+- **Android**: `public static final int <NAME> = <VALUE>;`
+- **iOS**: 枚举值 `<NAME> = <VALUE>`
+- **Flutter**: `static const int <NAME> = <VALUE>;`
+
+## General Error Codes
+| 错误码 | 值 | 含义 |
+|---|---|---|
+| `V2TXLIVE_OK` | 0 | Operation Successful |
+| `V2TXLIVE_ERROR_FAILED` | -1 | General Error |
+| `V2TXLIVE_ERROR_INVALID_PARAMETER` | -2 | Invalid Parameter |
+| `V2TXLIVE_ERROR_REFUSED` | -3 | API Call Refused |
+| `V2TXLIVE_ERROR_NOT_SUPPORTED` | -4 | API Not Supported |
+| `V2TXLIVE_ERROR_INVALID_LICENSE` | -5 | Invalid License |
+| `V2TXLIVE_ERROR_REQUEST_TIMEOUT` | -6 | Request Timeout |
+| `V2TXLIVE_ERROR_SERVER_PROCESS_FAILED` | -7 | Server Processing Failed |
+| `V2TXLIVE_ERROR_DISCONNECTED` | -8 | Connection Disconnected |
+| `V2TXLIVE_ERROR_NO_AVAILABLE_HEVC_DECODERS` | -2304 | No Available HEVC Decoders |
+
+## Network-Related Warning Codes
+| 错误码 | 值 | 含义 |
+|---|---|---|
+| `V2TXLIVE_WARNING_NETWORK_BUSY` | 1101 | Poor Network Condition |
+| `V2TXLIVE_WARNING_VIDEO_BLOCK` | 2105 | Video Playback Stuttering |
+
+## Camera-Related Warning Codes
+| 错误码 | 值 | 含义 |
+|---|---|---|
+| `V2TXLIVE_WARNING_CAMERA_START_FAILED` | -1301 | Camera Start Failed |
+| `V2TXLIVE_WARNING_CAMERA_OCCUPIED` | -1316 | Camera Occupied |
+| `V2TXLIVE_WARNING_CAMERA_NO_PERMISSION` | -1314 | Camera Permission Not Granted |
+
+## Microphone-Related Warning Codes
+| 错误码 | 值 | 含义 |
+|---|---|---|
+| `V2TXLIVE_WARNING_MICROPHONE_START_FAILED` | -1302 | Microphone Start Failed |
+| `V2TXLIVE_WARNING_MICROPHONE_OCCUPIED` | -1319 | Microphone Occupied |
+| `V2TXLIVE_WARNING_MICROPHONE_NO_PERMISSION` | -1317 | Microphone Permission Not Granted |
+
+## Screen Sharing Warning Codes
+| 错误码 | 值 | 含义 |
+|---|---|---|
+| `V2TXLIVE_WARNING_SCREEN_CAPTURE_NOT_SUPPORTED` | -1309 | Screen Sharing Not Supported by System |
+| `V2TXLIVE_WARNING_SCREEN_CAPTURE_START_FAILED` | -1308 | Failed to Start Screen Recording |
+| `V2TXLIVE_WARNING_SCREEN_CAPTURE_INTERRUPTED` | -7001 | Screen Recording Interrupted by System |
+
+## Codec Warning Codes
+| 错误码 | 值 | 含义 |
+|---|---|---|
+| `V2TXLIVE_WARNING_CURRENT_ENCODE_TYPE_CHANGED` | 1104 | Encoder Type Changed |
+| `V2TXLIVE_WARNING_CURRENT_DECODE_TYPE_CHANGED` | 2008 | Decoder Type Changed |
+| `V2TXLIVE_WARNING_ENCODER_START_FAILED` | -1303 | Video Encoder Start Failed |
+| `V2TXLIVE_WARNING_DECODER_START_FAILED` | -1304 | Video Decoder Start Failed |
+
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLivePremier Global Configuration (Android/iOS/Flutter)
+description: SDK global configuration API covering license setup, log level and console output initialization options.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/native-live/global-config-api.md
+--------------------------------------------------------------------------------
+
+> The following API reference is based on the Android interface. Android (V2TXLivePremier), iOS (V2TXLivePremier), Flutter (V2TXLivePremier) share the same core method names and semantics; only signature styles differ.
+> - Android: Java style (e.g. `startLivePlay(String url)`)
+> - iOS: ObjC style (e.g. `startLivePlay:(NSString *)url`)
+> - Flutter: Dart async style (e.g. `Future<V2TXLiveCode> startLivePlay(String url)`), all methods return Future
+
+# V2TXLivePremier 高级设置
+
+SDK 全局配置与管理类，提供 Licence 授权、日志配置、音频数据监听等能力。
+
+**适用平台：** Android / iOS / Flutter
+
+## 平台声明语法
+- **Android**: `V2TXLivePremier.methodName(params)`
+- **iOS**: `[V2TXLivePremier methodName:params]`
+- **Flutter**: `await V2TXLivePremier.methodName(params)`
+
+## V2TXLivePremier
+## getSDKVersionStr
+> **适用平台：** Android / iOS
+
+**Return Value**: Returns the SDK version as a string, for example: "10.7.0.12345"
+
+**When to Call**: Can be called at any time
+
+**Typical Use Cases**:
+- Checking version compatibility
+- Providing version information for troubleshooting
+- Collecting statistics and monitoring
+
+**Example**:
+
+```java
+// Android
+public static String getSDKVersionStr()
+```
+```objectivec
+// iOS
++ (NSString *)getSDKVersionStr;
+```
+
+## setObserver
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `observer`: An object that implements the V2TXLivePremierObserver interface
+
+**When to Call**: Set this during app startup; applies globally
+
+**Notes**:
+- Set the observer once at app startup
+- The observer instance must remain valid for the entire app lifecycle
+
+```java
+// Android
+public static void setObserver(V2TXLivePremierObserver observer)
+```
+```objectivec
+// iOS
++ (void)setObserver:(id<V2TXLivePremierObserver>)observer;
+```
+
+## setLogConfig
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `config`: Log configuration object, including log level, storage path, and other settings
+
+**When to Call**: Set during app startup; applies globally
+
+**Typical Use Cases**:
+- Enable detailed logs for debugging
+- Reduce log output in production
+- Customize the log storage path
+
+**Example**:
+
+```java
+// Android
+public static void setLogConfig(V2TXLiveDef.V2TXLiveLogConfig config)
+```
+```objectivec
+// iOS
++ (V2TXLiveCode)setLogConfig:(V2TXLiveLogConfig *)config;
+```
+
+## setEnvironment
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `env`: Environment identifier. Supported values:
+  - `"default"`: Default environment; the SDK automatically selects the optimal global access point
+  - `"GDPR"`: GDPR environment; audio and video data will not pass through servers in Mainland China
+
+**Note**: Only use this API if you have specific requirements
+
+```java
+// Android
+public static void setEnvironment(String env)
+```
+```objectivec
+// iOS
++ (V2TXLiveCode)setEnvironment:(const char *)env;
+```
+
+## setLicence
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `context`: Android context
+- `url`: License URL
+- `key`: License key
+
+**When to Call**: Must be called during app startup and before starting any streaming or publishing
+
+**Documentation**: https://cloud.tencent.com/document/product/454/34750
+
+**Example**:
+
+```java
+// Android
+public static void setLicence(Context context, String url, String key)
+```
+```objectivec
+// iOS
++ (void)setLicence:(NSString *)url key:(NSString *)key;
+```
+
+## setSocks5Proxy
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `host`: Socks5 proxy server address
+- `port`: Socks5 proxy server port
+- `username`: Proxy server username
+- `password`: Proxy server password
+- `config`: Socks5 proxy configuration
+
+**When to Call**: Set during app startup
+
+```java
+// Android
+public static void setSocks5Proxy(String host, int port, String username, String password, V2TXLiveDef.V2TXLiveSocks5ProxyConfig config)
+```
+```objectivec
+// iOS
++ (V2TXLiveCode)setSocks5Proxy:(NSString *)host 
+                          port:(NSInteger)port 
+                      username:(NSString *)username 
+                      password:(NSString *)password 
+                        config:(V2TXLiveSocks5ProxyConfig *)config;
+```
+
+## enableAudioCaptureObserver
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `enable`: Enable or disable the callback (default: false)
+- `format`: Audio frame callback format
+
+**When to Call**: Must be called before `V2TXLivePusher#startPush`
+
+```java
+// Android
+public static void enableAudioCaptureObserver(boolean enable, V2TXLiveDef.V2TXLiveAudioFrameObserverFormat format)
+```
+```objectivec
+// iOS
++ (V2TXLiveCode)enableAudioCaptureObserver:(BOOL)enable 
+                                   format:(V2TXLiveAudioFrameObserverFormat *)format;
+```
+
+## enableAudioPlayoutObserver
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `enable`: Enable or disable the callback (default: false)
+- `format`: Audio frame callback format
+
+**Technical Details**:
+- Audio frame duration is fixed at 0.02s
+- PCM format audio data
+- Callback provides mixed audio data for playback
+
+```java
+// Android
+public static void enableAudioPlayoutObserver(boolean enable, V2TXLiveDef.V2TXLiveAudioFrameObserverFormat format)
+```
+```objectivec
+// iOS
++ (V2TXLiveCode)enableAudioPlayoutObserver:(BOOL)enable 
+                                  format:(V2TXLiveAudioFrameObserverFormat *)format;
+```
+
+## enableVoiceEarMonitorObserver
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `enable`: Enable or disable the callback (default: false)
+
+```java
+// Android
+public static void enableVoiceEarMonitorObserver(boolean enable)
+```
+```objectivec
+// iOS
++ (V2TXLiveCode)enableVoiceEarMonitorObserver:(BOOL)enable;
+```
+
+## setUserId
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `userId`: User or device ID managed by your application logic
+
+**When to Call**: Set during app startup
+
+```java
+// Android
+public static void setUserId(String userId)
+```
+```objectivec
+// iOS
++ (void)setUserId:(NSString *)userId;
+```
+
+## callExperimentalAPI
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `jsonStr`: JSON string describing the API and its parameters
+
+**Return Values**:
+- `V2TXLIVE_OK`: Success
+- `V2TXLIVE_ERROR_INVALID_PARAMETER`: Invalid parameter
+
+```java
+// Android
+public static int callExperimentalAPI(String jsonStr)
+```
+```objectivec
+// iOS
++ (V2TXLiveCode)callExperimentalAPI:(NSString *)jsonStr;
+```
+
+## Get SDK Version
+> **适用平台：** Flutter
+
+**Return Value**: SDK version string, e.g., "10.7.0.12345"
+
+**When to Use**: No restrictions
+
+**Typical Use Cases**:
+- Checking version compatibility
+- Providing version details for troubleshooting
+- Reporting and monitoring
+
+**Example**:
+
+```dart
+// Flutter
+static Future<String> getSDKVersionStr() async
+```
+
+## Set Observer Callback
+> **适用平台：** Flutter
+
+**Parameter**:
+- `observer`: An object that implements the V2TXLivePremierObserver protocol
+
+**When to Use**: Set at app startup for global effect
+
+**Notes**:
+- Set the observer once during app startup
+- The observer object must remain valid for the entire app lifecycle
+
+**Example**:
+
+```dart
+// Flutter
+static Future<void> setObserver(V2TXLivePremierObserver? observer) async
+```
+
+## Configure SDK Environment
+> **适用平台：** Flutter
+
+**Parameter**:
+- `env`: Environment identifier. Options:
+  - `"default"`: Default environment; SDK automatically selects the optimal access point
+  - `"GDPR"`: GDPR-compliant environment; audio/video data does not pass through Mainland China servers
+
+**Note**: Only call this API if you have specific requirements.
+
+**Example**:
+
+```dart
+// Flutter
+static Future<V2TXLiveCode> setEnvironment(String env) async
+```
+
+## Set License Authorization
+> **适用平台：** Flutter
+
+**Parameters**:
+- `url`: License URL
+- `key`: License key
+
+**When to Use**: Call at app startup, before any streaming or playback
+
+**Documentation**: https://cloud.tencent.com/document/product/454/34750
+
+**Example**:
+
+```dart
+// Flutter
+static Future<void> setLicence(String url, String key) async
+```
+
+## Call Experimental API
+> **适用平台：** Flutter
+
+**Parameter**:
+- `jsonStr`: JSON string describing the API and its parameters
+
+**Return Value**:
+- `V2TXLIVE_OK`: Success
+- `V2TXLIVE_ERROR_INVALID_PARAMETER`: Invalid parameter
+
+**Example**:
+
+```dart
+// Flutter
+static Future<V2TXLiveCode> callExperimentalAPI(String jsonStr) async
+```
+
+## SDK Initialization Example
+> **适用平台：** Flutter
+
+#### Experimental API Example
+
+## License Authorization Management
+> **适用平台：** Flutter
+
+- **Required**: Call `setLicence()` before using the SDK; otherwise, features will be restricted
+- **Timing**: Set during app startup, before any streaming or playback
+- **Error Handling**: Monitor authorization status with the `onLicenceLoaded` callback
+
+## Callback Registration Timing
+> **适用平台：** Flutter
+
+- **Early Registration**: Register observer callbacks before SDK initialization
+- **Single Registration**: Set only once at app startup
+- **Lifecycle**: The observer object must remain valid throughout the app lifecycle
+
+## Thread Safety
+> **适用平台：** Flutter
+
+- **Main Thread Execution**: All callbacks in Flutter run on the UI main thread
+- **No Thread Handling Required**: No extra thread synchronization needed
+- **Async Safety**: Ensure asynchronous operations are handled correctly
+
+## Memory Management
+> **适用平台：** Flutter
+
+- **Timely Removal**: Remove observers when no longer needed
+- **Avoid Cyclic References**: Do not hold strong references to the SDK in callbacks
+- **Resource Release**: Release all resources when the app exits
+
+## Log Configuration
+> **适用平台：** Flutter
+
+- **Debug Phase**: Enable detailed logs for troubleshooting
+- **Production Environment**: Reduce log output for better performance
+- **Custom Handling**: Use the `onLog` callback for custom log processing
+
+## Environment Configuration
+> **适用平台：** Flutter
+
+- **Default Environment**: Use unless you have special requirements
+- **GDPR Environment**: Use only if GDPR compliance is required
+- **Proxy Settings**: Configure only if proxy access is needed
+
+## License Setup Best Practices
+> **适用平台：** Flutter
+
+## V2TXLivePremierObserver 回调接口
+| 回调 | 描述 | 平台 |
+|---|---|---|
+| onLog | Custom Log Callback | Android / iOS |
+| onLicenceLoaded | License Load Callback | Android / iOS |
+| onCaptureAudioFrame | Local Microphone Audio Callback | Android / iOS |
+| onPlayoutAudioFrame | Mixed Audio Playback Callback | Android / iOS |
+| onVoiceEarMonitorAudioFrame | Ear Monitor Audio Callback | Android / iOS |
+| Log Output Callback | Log Output Callback | Flutter |
+| License Load Callback | License Load Callback | Flutter |
+
+## onLog
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `level`: Log level
+- `log`: Log message
+
+**Typical Use Cases**:
+- Custom log processing
+- Redirect logs to your own logging system
+- Log filtering and formatting
+
+```java
+// Android
+public void onLog(int level, String log)
+```
+```objectivec
+// iOS
+- (void)onLog:(V2TXLiveLogLevel)level log:(NSString *)log;
+```
+
+## onLicenceLoaded
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `result`: Result code (0 for success, negative values indicate failure)
+- `reason`: Reason for failure
+
+```java
+// Android
+public void onLicenceLoaded(int result, String reason)
+```
+```objectivec
+// iOS
+- (void)onLicenceLoaded:(int)result Reason:(NSString *)reason;
+```
+
+## onCaptureAudioFrame
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `frame`: Audio data frame
+
+**Important Notes**:
+- Avoid time-consuming operations in this callback
+- Audio data can be modified
+- Frame duration is fixed at 0.02s
+- Does not include background music, sound effects, or other pre-processing
+- Ultra-low latency
+
+```java
+// Android
+public void onCaptureAudioFrame(V2TXLiveDef.V2TXLiveAudioFrame frame)
+```
+```objectivec
+// iOS
+- (void)onCaptureAudioFrame:(V2TXLiveAudioFrame *)frame;
+```
+
+## onPlayoutAudioFrame
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `frame`: PCM format audio data frame
+
+**Important Notes**:
+- Frame duration is fixed at 0.02s
+- Data is readable and writable; ensure timely processing
+- Does not include ear monitor audio data
+
+```java
+// Android
+public void onPlayoutAudioFrame(V2TXLiveDef.V2TXLiveAudioFrame frame)
+```
+```objectivec
+// iOS
+- (void)onPlayoutAudioFrame:(V2TXLiveAudioFrame *)frame;
+```
+
+## onVoiceEarMonitorAudioFrame
+> **适用平台：** Android / iOS
+
+**Parameters**:
+- `frame`: PCM format audio data frame
+
+**Important Notes**:
+- Frame duration may vary
+- Data is readable and writable; ensure timely processing
+
+```java
+// Android
+public void onVoiceEarMonitorAudioFrame(V2TXLiveDef.V2TXLiveAudioFrame frame)
+```
+```objectivec
+// iOS
+- (void)onVoiceEarMonitorAudioFrame:(V2TXLiveAudioFrame *)frame;
+```
+
+## Log Output Callback
+> **适用平台：** Flutter
+
+**Parameters**:
+- `type`: Callback type, should be `V2TXLivePremierObserverType.onLog`
+- `params`: Contains `level` and `log`
+
+**Use Cases**:
+- Custom log processing
+- Redirect logs to external systems
+- Log filtering and formatting
+
+**Example**:
+
+```dart
+// Flutter
+void Function(V2TXLivePremierObserverType type, Map<String, dynamic>? params)
+```
+
+## License Load Callback
+> **适用平台：** Flutter
+
+**Parameters**:
+- `type`: Callback type, should be `V2TXLivePremierObserverType.onLicenceLoaded`
+- `params`: Contains `result` and `reason`
+
+**Example**:
+
+```dart
+// Flutter
+void Function(V2TXLivePremierObserverType type, Map<String, dynamic>? params)
+```
+
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLivePlayer API Reference (Android/iOS/Flutter)
+description: Core methods: setRenderView, startLivePlay, stopPlay, setPlayoutVolume for playback rendering and volume control.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/native-live/live-player-api.md
+--------------------------------------------------------------------------------
+
+> The following API reference is based on the Android interface. Android (V2TXLivePlayer), iOS (V2TXLivePlayer), Flutter (V2TXLivePlayer) share the same core method names and semantics; only signature styles differ.
+> - Android: Java style (e.g. `startLivePlay(String url)`)
+> - iOS: ObjC style (e.g. `startLivePlay:(NSString *)url`)
+> - Flutter: Dart async style (e.g. `Future<V2TXLiveCode> startLivePlay(String url)`), all methods return Future
+
+**Cross-platform API naming reference (only APIs with different names):**
+| Canonical Name | Android | iOS | Flutter |
+| --- | --- | --- | --- |
+| setObserver | setObserver(observer) | setObserver: | addListener(listener) |
+| setRenderView | setRenderView(view) | setRenderView:(TXView *)view | setRenderViewID(viewID) |
+
+# V2TXLivePlayer 播放器 API
+
+适用平台：Android / iOS / Flutter
+
+## 平台差异总览
+
+| 概念 | Android | iOS | Flutter |
+|------|------|------|------|
+| 实例创建 | `new V2TXLivePlayerImpl(context)` | `[[V2TXLivePlayer alloc] init]` | `await V2TXLivePlayer.create()` |
+| 设置回调 | `setObserver(observer)` | `setObserver:observer` | `addListener(observer)` |
+| 设置渲染视图 | `setRenderView(view)` 支持 TXCloudVideoView/TextureView/SurfaceView | `setRenderView:(TXView *)view` iOS为UIView，macOS为NSView | `setRenderViewID(int viewID)` 参数为视图ID |
+| 布尔值 | `true/false` | `YES/NO` | `true/false` |
+| 异步调用 | 同步返回 int | 同步返回 V2TXLiveCode | 异步 `Future<V2TXLiveCode>` 需 await |
+| 枚举前缀 | `V2TXLiveDef.V2TXLiveRotation.V2TXLiveRotation0` | `V2TXLiveRotation0` | `V2TXLiveRotation.v2TXLiveRotation0` |
+
+**iOS 缺失的 API**：`setObserver`、`setRenderView`、`setRenderRotation`、`setRenderFillMode`、`setRenderMirrorMode`、`startLivePlay`、`stopPlay`、`isPlaying`、`pauseAudio`、`resumeAudio`、`pauseVideo`、`resumeVideo`、`setPlayoutVolume`、`setCacheParams`、`switchStream`、`getStreamList`、`enableVolumeEvaluation`、`snapshot`、`enableObserveVideoFrame`、`enableObserveAudioFrame`、`enableReceiveSeiMessage`、`startLocalRecording`、`stopLocalRecording`、`showDebugView`、`setProperty`、`enablePictureInPicture`、`getTextureId`
+**Flutter 缺失的 API**：`setObserver`、`setRenderView`、`setRenderRotation`、`setRenderFillMode`、`setRenderMirrorMode`、`startLivePlay`、`stopPlay`、`isPlaying`、`pauseAudio`、`resumeAudio`、`pauseVideo`、`resumeVideo`、`setPlayoutVolume`、`setCacheParams`、`switchStream`、`getStreamList`、`enableVolumeEvaluation`、`snapshot`、`enableObserveVideoFrame`、`enableObserveAudioFrame`、`enableReceiveSeiMessage`、`startLocalRecording`、`stopLocalRecording`、`showDebugView`、`setProperty`、`enablePictureInPicture`、`getTextureId`
+**Android 独有 API**：`setObserver`、`setRenderView`、`setRenderRotation`、`setRenderFillMode`、`setRenderMirrorMode`、`startLivePlay`、`stopPlay`、`isPlaying`、`pauseAudio`、`resumeAudio`、`pauseVideo`、`resumeVideo`、`setPlayoutVolume`、`setCacheParams`、`switchStream`、`getStreamList`、`enableVolumeEvaluation`、`snapshot`、`enableObserveVideoFrame`、`enableObserveAudioFrame`、`enableReceiveSeiMessage`、`startLocalRecording`、`stopLocalRecording`、`showDebugView`、`setProperty`、`enablePictureInPicture`、`getTextureId`
+
+## Basic Setup Interfaces
+
+### setObserver
+
+Set Player Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract void setObserver(V2TXLivePlayerObserver observer)
+```
+
+### setRenderView
+
+Set Video Rendering View
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setRenderView(TXCloudVideoView view)
+public abstract int setRenderView(TextureView view)
+public abstract int setRenderView(SurfaceView view)
+```
+
+### setRenderRotation
+
+Set Video Rotation Angle
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setRenderRotation(V2TXLiveRotation rotation)
+```
+
+### setRenderFillMode
+
+Set Video Fill Mode
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setRenderFillMode(V2TXLiveFillMode mode)
+```
+
+### setRenderMirrorMode
+
+Set Video Mirroring Mode
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setRenderMirrorMode(boolean enable)
+```
+
+## Playback Control Interfaces
+
+### startLivePlay
+
+Start Audio/Video Playback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int startLivePlay(String url)
+```
+
+### stopPlay
+
+Stop Audio/Video Playback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int stopPlay()
+```
+
+### isPlaying
+
+Check Playback Status
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int isPlaying()
+```
+
+## Audio/Video Control Interfaces
+
+### pauseAudio
+
+Pause Audio Playback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int pauseAudio()
+```
+
+### resumeAudio
+
+Resume Audio Playback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int resumeAudio()
+```
+
+### pauseVideo
+
+Pause Video Playback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int pauseVideo()
+```
+
+### resumeVideo
+
+Resume Video Playback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int resumeVideo()
+```
+
+### setPlayoutVolume
+
+Adjust Playback Volume
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setPlayoutVolume(int volume)
+```
+
+## Advanced Feature Interfaces
+
+### setCacheParams
+
+Configure Cache Time Range
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setCacheParams(float minTime, float maxTime)
+```
+
+### switchStream
+
+Switch Stream Resolution Seamlessly (FLV, LEB)
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int switchStream(String newUrl)
+```
+
+### getStreamList
+
+Retrieve Stream Information (HLS Supported)
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract ArrayList<V2TXLiveDef.V2TXLiveStreamInfo> getStreamList()
+```
+
+### enableVolumeEvaluation
+
+Enable Playback Volume Level Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int enableVolumeEvaluation(int intervalMs)
+```
+
+### snapshot
+
+Capture Video Frame
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int snapshot()
+```
+
+### enableObserveVideoFrame
+
+Enable Custom Video Rendering
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int enableObserveVideoFrame(boolean enable, V2TXLivePixelFormat pixelFormat, V2TXLiveBufferType bufferType)
+```
+
+### enableObserveAudioFrame
+
+Enable Audio Data Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int enableObserveAudioFrame(boolean enable)
+```
+
+### enableReceiveSeiMessage
+
+Enable SEI Message Reception
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int enableReceiveSeiMessage(boolean enable, int payloadType)
+```
+
+### startLocalRecording
+
+Start Local Recording
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int startLocalRecording(V2TXLiveLocalRecordingParams params)
+```
+
+### stopLocalRecording
+
+Stop Local Recording
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract void stopLocalRecording()
+```
+
+### showDebugView
+
+Show/Hide Debug Overlay
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract void showDebugView(boolean isShow)
+```
+
+### setProperty
+
+Advanced API Access
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setProperty(String key, Object value)
+```
+
+### enablePictureInPicture
+
+Enable Picture-in-Picture Mode (iOS Only)
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+Future<V2TXLiveCode> enablePictureInPicture(bool enable)
+```
+
+### getTextureId
+
+Retrieve Texture ID
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+Future<int> getTextureId(int width, int height)
+```
+
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLivePusher API Reference (Android/iOS/Flutter)
+description: Core methods: startCamera, startMicrophone, startPush, stopPush for preview capture, device control, and push lifecycle.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/native-live/live-pusher-api.md
+--------------------------------------------------------------------------------
+
+> The following API reference is based on the Android interface. Android (V2TXLivePusher), iOS (V2TXLivePusher), Flutter (V2TXLivePusher) share the same core method names and semantics; only signature styles differ.
+> - Android: Java style (e.g. `startLivePlay(String url)`)
+> - iOS: ObjC style (e.g. `startLivePlay:(NSString *)url`)
+> - Flutter: Dart async style (e.g. `Future<V2TXLiveCode> startLivePlay(String url)`), all methods return Future
+
+**Cross-platform API naming reference (only APIs with different names):**
+| Canonical Name | Android | iOS | Flutter |
+| --- | --- | --- | --- |
+| constructor | new V2TXLivePusherImpl(context, mode) | initWithLiveMode:(V2TXLiveMode)liveMode | V2TXLivePusher.create(mode) |
+| setObserver | setObserver(observer) | setObserver: | addListener(listener) |
+| setRenderView | setRenderView(view) | setRenderView:(TXView *)view | setRenderViewID(viewID) |
+
+# V2TXLivePusher 推流器 API
+
+适用平台：Android / iOS / Flutter
+
+## 平台差异总览
+
+| 概念 | Android | iOS | Flutter |
+|------|------|------|------|
+| 实例创建 | `new V2TXLivePusherImpl(context, mode)` | `initWithLiveMode:(V2TXLiveMode)liveMode` | `V2TXLivePusher.create(mode)` |
+| 设置回调 | `setObserver(observer)` | `setObserver:` | `addListener(listener)` |
+| 设置渲染视图 | `setRenderView(view)` | `setRenderView:(TXView *)view` | `setRenderViewID(viewID)` |
+
+**iOS 缺失的 API**：`setObserver`、`setRenderView`、`setRenderMirror`、`setEncoderMirror`、`setRenderRotation`、`setRenderFillMode`、`startPush`、`stopPush`、`isPushing`、`setAudioQuality`、`setVideoQuality`、`getAudioEffectManager`、`getBeautyManager`、`getDeviceManager`、`snapshot`、`setWatermark`、`enableVolumeEvaluation`、`enableCustomVideoProcess`、`enableCustomVideoCapture`、`enableCustomAudioCapture`、`sendSeiMessage`、`setMixTranscodingConfig`、`showDebugView`、`setProperty`
+**Flutter 缺失的 API**：`setObserver`、`setRenderView`、`setRenderMirror`、`setEncoderMirror`、`setRenderRotation`、`setRenderFillMode`、`startPush`、`stopPush`、`isPushing`、`setAudioQuality`、`setVideoQuality`、`getAudioEffectManager`、`getBeautyManager`、`getDeviceManager`、`snapshot`、`setWatermark`、`enableVolumeEvaluation`、`enableCustomVideoProcess`、`enableCustomVideoCapture`、`enableCustomAudioCapture`、`sendSeiMessage`、`setMixTranscodingConfig`、`showDebugView`、`setProperty`
+**Android 独有 API**：`setObserver`、`setRenderView`、`setRenderMirror`、`setEncoderMirror`、`setRenderRotation`、`setRenderFillMode`、`startPush`、`stopPush`、`isPushing`、`setAudioQuality`、`setVideoQuality`、`getAudioEffectManager`、`getBeautyManager`、`getDeviceManager`、`snapshot`、`setWatermark`、`enableVolumeEvaluation`、`enableCustomVideoProcess`、`enableCustomVideoCapture`、`enableCustomAudioCapture`、`sendSeiMessage`、`setMixTranscodingConfig`、`showDebugView`、`setProperty`
+
+## Basic Setup Interfaces
+
+### setObserver
+
+Set Pusher Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract void setObserver(V2TXLivePusherObserver observer);
+```
+
+### setRenderView
+
+Set Local Camera Preview View
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setRenderView(TXCloudVideoView view);
+public abstract int setRenderView(TextureView view);
+public abstract int setRenderView(SurfaceView view);
+```
+
+### setRenderMirror
+
+Set Local Camera Preview Mirroring
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setRenderMirror(V2TXLiveMirrorType mirrorType);
+```
+
+### setEncoderMirror
+
+Set Video Encoding Mirroring
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setEncoderMirror(boolean mirror);
+```
+
+### setRenderRotation
+
+Set Local Camera Preview Rotation
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setRenderRotation(V2TXLiveRotation rotation);
+```
+
+### setRenderFillMode
+
+Set Local Camera Preview Fill Mode
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setRenderFillMode(V2TXLiveFillMode mode);
+```
+
+## Streaming Control Interfaces
+
+### startPush
+
+Start Streaming
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int startPush(String url);
+```
+
+### stopPush
+
+Stop Streaming
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int stopPush();
+```
+
+### isPushing
+
+Check Streaming Status
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int isPushing();
+```
+
+## Audio/Video Control Interfaces
+
+### setAudioQuality
+
+Set Audio Quality
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setAudioQuality(V2TXLiveAudioQuality quality);
+```
+
+### setVideoQuality
+
+Set Video Encoding Parameters
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setVideoQuality(V2TXLiveVideoEncoderParam param);
+```
+
+## Effects Management Interfaces
+
+### getAudioEffectManager
+
+Get Audio Effect Manager
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract TXAudioEffectManager getAudioEffectManager();
+```
+
+### getBeautyManager
+
+Get Beauty Manager
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract TXBeautyManager getBeautyManager();
+```
+
+### getDeviceManager
+
+Get Device Manager
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract TXDeviceManager getDeviceManager();
+```
+
+## Advanced Feature Interfaces
+
+### snapshot
+
+Capture Local Frame
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int snapshot();
+```
+
+### setWatermark
+
+Set Watermark
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setWatermark(Bitmap image, float x, float y, float scale);
+```
+
+### enableVolumeEvaluation
+
+Enable Capture Volume Evaluation
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int enableVolumeEvaluation(int intervalMs);
+```
+
+### enableCustomVideoProcess
+
+Enable/Disable Custom Video Processing
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int enableCustomVideoProcess(boolean enable, V2TXLivePixelFormat pixelFormat, V2TXLiveBufferType bufferType);
+```
+
+### enableCustomVideoCapture
+
+Enable/Disable Custom Video Capture
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int enableCustomVideoCapture(boolean enable);
+```
+
+### enableCustomAudioCapture
+
+Enable/Disable Custom Audio Capture
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int enableCustomAudioCapture(boolean enable);
+```
+
+### sendSeiMessage
+
+Send SEI Message
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int sendSeiMessage(int payloadType, byte[] data);
+```
+
+### setMixTranscodingConfig
+
+Set Cloud Stream Mixing Parameters
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setMixTranscodingConfig(V2TXLiveTranscodingConfig config);
+```
+
+### showDebugView
+
+Show Debug Dashboard
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract void showDebugView(boolean isShow);
+```
+
+### setProperty
+
+Call Advanced V2TXLivePusher API
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public abstract int setProperty(String key, Object value);
+```
+
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLivePlayerObserver Player Callbacks (Android/iOS/Flutter)
+description: Complete player event callback list covering connection state, audio/video playback state and volume change notifications.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/native-live/player-event-callbacks.md
+--------------------------------------------------------------------------------
+
+> The following API reference is based on the Android interface. Android (V2TXLivePlayerObserver), iOS (V2TXLivePlayerObserver), Flutter (V2TXLivePlayerObserver) share the same core method names and semantics; only signature styles differ.
+> - Android: Java style (e.g. `startLivePlay(String url)`)
+> - iOS: ObjC style (e.g. `startLivePlay:(NSString *)url`)
+> - Flutter: Dart async style (e.g. `Future<V2TXLiveCode> startLivePlay(String url)`), all methods return Future
+
+# V2TXLivePlayerObserver 播放器回调 API
+
+适用平台：Android / iOS / Flutter
+
+## Error and Warning Callbacks
+
+### onError
+
+Player Error Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onError(V2TXLivePlayer player, int code, String msg, Bundle extraInfo)
+```
+
+### onWarning
+
+Player Warning Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onWarning(V2TXLivePlayer player, int code, String msg, Bundle extraInfo)
+```
+
+## Connection and Status Callbacks
+
+### onConnected
+
+Connection Success Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onConnected(V2TXLivePlayer player, Bundle extraInfo)
+```
+
+### onVideoResolutionChanged
+
+Video Resolution Change Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onVideoResolutionChanged(V2TXLivePlayer player, int width, int height)
+```
+
+## Playback Event Callbacks
+
+### onVideoPlaying
+
+Video Playback Start Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onVideoPlaying(V2TXLivePlayer player, boolean firstPlay, Bundle extraInfo)
+```
+
+### onVideoLoading
+
+Video Loading Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onVideoLoading(V2TXLivePlayer player, Bundle extraInfo)
+```
+
+### onAudioPlaying
+
+Audio Playback Start Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onAudioPlaying(V2TXLivePlayer player, boolean firstPlay, Bundle extraInfo)
+```
+
+### onAudioLoading
+
+Audio Loading Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onAudioLoading(V2TXLivePlayer player, Bundle extraInfo)
+```
+
+## Audio/Video Data Processing Callbacks
+
+### onPlayoutVolumeUpdate
+
+Volume Update Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onPlayoutVolumeUpdate(V2TXLivePlayer player, int volume)
+```
+
+### onRenderVideoFrame
+
+Custom Video Rendering Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onRenderVideoFrame(V2TXLivePlayer player, V2TXLiveVideoFrame videoFrame)
+```
+
+### onPlayoutAudioFrame
+
+Audio Frame Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onPlayoutAudioFrame(V2TXLivePlayer player, V2TXLiveAudioFrame audioFrame)
+```
+
+## Statistics and Monitoring Callbacks
+
+### onStatisticsUpdate
+
+Playback Statistics Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onStatisticsUpdate(V2TXLivePlayer player, V2TXLivePlayerStatistics statistics)
+```
+
+## Advanced Feature Callbacks
+
+### onSnapshotComplete
+
+Snapshot Completion Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onSnapshotComplete(V2TXLivePlayer player, Bitmap image)
+```
+
+### onReceiveSeiMessage
+
+SEI Message Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onReceiveSeiMessage(V2TXLivePlayer player, int payloadType, byte[] data)
+```
+
+### onStreamSwitched
+
+Stream Switch Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onStreamSwitched(V2TXLivePlayer player, String url, int code)
+```
+
+## Local Recording Callbacks
+
+### onLocalRecordBegin
+
+Recording Start Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onLocalRecordBegin(V2TXLivePlayer player, int code, String storagePath)
+```
+
+### onLocalRecording
+
+Recording Progress Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onLocalRecording(V2TXLivePlayer player, long durationMs, String storagePath)
+```
+
+### onLocalRecordComplete
+
+Recording Completion Callback
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onLocalRecordComplete(V2TXLivePlayer player, int code, String storagePath)
+```
+
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLivePusherObserver Pusher Callbacks (Android/iOS/Flutter)
+description: Complete pusher event callback list covering push status, first frame capture and microphone volume change notifications.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/native-live/pusher-event-callbacks.md
+--------------------------------------------------------------------------------
+
+> The following API reference is based on the Android interface. Android (V2TXLivePusherObserver), iOS (V2TXLivePusherObserver), Flutter (V2TXLivePusherObserver) share the same core method names and semantics; only signature styles differ.
+> - Android: Java style (e.g. `startLivePlay(String url)`)
+> - iOS: ObjC style (e.g. `startLivePlay:(NSString *)url`)
+> - Flutter: Dart async style (e.g. `Future<V2TXLiveCode> startLivePlay(String url)`), all methods return Future
+
+# V2TXLivePusherObserver 推流器回调 API
+
+适用平台：Android / iOS / Flutter
+
+## Error and Warning Callbacks
+
+### onError
+
+Stream Pusher Error Notification
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onError(int code, String msg, Bundle extraInfo)
+```
+
+### onWarning
+
+Stream Pusher Warning Notification
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onWarning(int code, String msg, Bundle extraInfo)
+```
+
+## Connection and Status Callbacks
+
+### onPushStatusUpdate
+
+Stream Pusher Connection Status
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onPushStatusUpdate(V2TXLivePushStatus status, String msg, Bundle extraInfo)
+```
+
+## Capture Event Callbacks
+
+### onCaptureFirstAudioFrame
+
+First Audio Frame Notification
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onCaptureFirstAudioFrame()
+```
+
+### onCaptureFirstVideoFrame
+
+First Video Frame Notification
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onCaptureFirstVideoFrame()
+```
+
+### onMicrophoneVolumeUpdate
+
+Microphone Capture Volume
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onMicrophoneVolumeUpdate(int volume)
+```
+
+## Audio/Video Data Processing Callbacks
+
+### onProcessAudioFrame
+
+Audio Frame Processing
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onProcessAudioFrame(V2TXLiveDef.V2TXLiveAudioFrame frame)
+```
+
+### onProcessVideoFrame
+
+Custom Video Frame Processing
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public int onProcessVideoFrame(V2TXLiveVideoFrame srcFrame, V2TXLiveVideoFrame dstFrame)
+```
+
+## OpenGL Environment Callbacks
+
+### onGLContextCreated
+
+OpenGL Environment Created
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onGLContextCreated()
+```
+
+### onGLContextDestroyed
+
+OpenGL Environment Destroyed
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onGLContextDestroyed()
+```
+
+## Statistics and Monitoring Callbacks
+
+### onStatisticsUpdate
+
+Streaming Statistics
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onStatisticsUpdate(V2TXLivePusherStatistics statistics)
+```
+
+## Advanced Feature Callbacks
+
+### onSnapshotComplete
+
+Snapshot Completion
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onSnapshotComplete(Bitmap image)
+```
+
+### onSetMixTranscodingConfig
+
+Cloud Stream Mixing (MixTranscoding)
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onSetMixTranscodingConfig(int code, String msg)
+```
+
+### onVoiceActivityDetectionUpdate
+
+Voice Activity Detection
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onVoiceActivityDetectionUpdate(boolean active)
+```
+
+## Screen Sharing Callbacks
+
+### onScreenCaptureStarted
+
+Screen Sharing Started
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onScreenCaptureStarted()
+```
+
+### onScreenCaptureStopped
+
+Screen Sharing Stopped
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onScreenCaptureStopped(int reason)
+```
+
+## Local Recording Callbacks
+
+### onLocalRecordBegin
+
+Local Recording Started
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onLocalRecordBegin(int code, String storagePath)
+```
+
+### onLocalRecording
+
+Local Recording Progress
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onLocalRecording(long durationMs, String storagePath)
+```
+
+### onLocalRecordComplete
+
+Local Recording Completed
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+**签名：**
+```java
+// Android
+public void onLocalRecordComplete(int code, String storagePath)
+```
+
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLiveDef Type Definitions (Android/iOS/Flutter)
+description: Key SDK data structures including video resolution, fill mode, rotation and other enum/config types.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/native-live/type-definitions.md
+--------------------------------------------------------------------------------
+
+> The following API reference is based on the Android interface. Android (V2TXLiveDef), iOS (V2TXLiveDef), Flutter (V2TXLiveDef) share the same core method names and semantics; only signature styles differ.
+> - Android: Java style (e.g. `startLivePlay(String url)`)
+> - iOS: ObjC style (e.g. `startLivePlay:(NSString *)url`)
+> - Flutter: Dart async style (e.g. `Future<V2TXLiveCode> startLivePlay(String url)`), all methods return Future
+
+# V2TXLiveDef 类型定义
+
+适用平台：Android / iOS / Flutter
+
+## Supported Protocols
+
+### V2TXLiveMode
+
+Supported Protocols for Live Streaming Push
+
+| 枚举值 | 说明 |
+|--------|------|
+| TXLiveMode_RTMP | Supported protocol: RTMP |
+| TXLiveMode_RTC | Supported protocol: RTC |
+**Protocol Details**:
+- RTMP: Standard protocol for live streaming
+- RTC: Real-Time Communication (TRTC) protocol
+
+## Video Type Definitions
+
+### V2TXLiveVideoResolution
+Video Resolution Enumeration
+
+| Resolution   | Bitrate Range | Frame Rate | Description                                 |
+|--------------|--------------|------------|---------------------------------------------|
+| 160×160      | 100–150 Kbps | 15 fps     | Ultra-low resolution, ideal for voice calls |
+| 270×270      | 200–300 Kbps | 15 fps     | Low resolution                              |
+| 480×480      | 350–525 Kbps | 15 fps     | Standard square resolution                  |
+| 320×240      | 250–375 Kbps | 15 fps     | 4:3 aspect ratio, standard resolution       |
+| 480×360      | 400–600 Kbps | 15 fps     | 4:3 aspect ratio, medium resolution         |
+| 640×480      | 600–900 Kbps | 15 fps     | SD resolution                               |
+| 320×180      | 250–400 Kbps | 15 fps     | 16:9 aspect ratio, low resolution           |
+| 480×270      | 350–550 Kbps | 15 fps     | 16:9 aspect ratio, standard resolution      |
+| 640×360      | 500–900 Kbps | 15 fps     | 16:9 aspect ratio, medium resolution        |
+| 960×540      | 800–1500 Kbps| 15 fps     | HD resolution                               |
+| 1280×720     | 1000–1800 Kbps| 15 fps    | 720p HD                                     |
+| 1920×1080    | 2500–3000 Kbps| 15 fps    | 1080p Full HD                               |
+
+### V2TXLiveVideoResolutionMode
+Video Orientation Mode
+Video resolution orientation:
+
+| Enum Value | Description |
+|------------|-------------|
+| `v2TXLiveVideoResolutionModeLandscape` | Landscape orientation |
+| `v2TXLiveVideoResolutionModePortrait` | Portrait orientation |
+**Note**: The orientation affects the actual resolution dimensions. For example:
+- Landscape: 640×360 = 640×360
+- Portrait: 640×360 = 360×640
+
+### V2TXLiveVideoEncoderParam
+
+Video Encoder Parameter Configuration
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| videoResolution | V2TXLiveVideoResolution | Video resolution |
+| videoResolutionMode | V2TXLiveVideoResolutionMode | Orientation mode |
+| videoFps | int | Capture frame rate |
+| videoBitrate | int | Target video bitrate |
+| minVideoBitrate | int | Minimum video bitrate |
+**Recommended Settings**:
+- **Frame Rate**: 15fps or 20fps. Using less than 5fps can cause severe playback stuttering; above 20fps may result in unnecessary bandwidth usage.
+- **Adaptive Bitrate**: Set both `videoBitrate` and `minVideoBitrate` to define the range for bitrate adaptation.
+
+### V2TXLiveMirrorType
+
+Local Camera Mirror Mode
+
+| 枚举值 | 说明 | 平台 |
+|--------|------|------|
+| V2TXLiveMirrorTypeAuto | System default: front camera mirrored, rear camera not mirrored | 全平台 |
+| V2TXLiveMirrorTypeEnable | Mirror mode enabled for both front and rear cameras | Android/iOS |
+| V2TXLiveMirrorTypeDisable | Mirror mode disabled for both front and rear cameras | Android/iOS |
+| v2TXLiveMirrorTypeEnable | Mirror mode for both front and rear cameras | Flutter |
+| v2TXLiveMirrorTypeDisable | No mirror mode for either camera | Flutter |
+
+### V2TXLiveFillMode
+
+Video Fill Mode
+
+| 枚举值 | 说明 | 平台 |
+|--------|------|------|
+| V2TXLiveFillModeFill | Image fills the view, cropping excess; some content may be lost | Android/iOS |
+| V2TXLiveFillModeFit | Image's longer side fits the view, shorter side padded with black; full content retained | Android/iOS |
+| V2TXLiveFillModeScaleFill | Image stretched to fill view; aspect ratio may not be preserved | Android/iOS |
+| v2TXLiveFillModeFill | Image fills the screen; excess is cropped, some content may be lost | Flutter |
+| v2TXLiveFillModeFit | Long edge fills the screen; short edge is padded with black, full content retained | Flutter |
+| v2TXLiveFillModeScaleFill | Image is stretched to fill; aspect ratio may not be preserved | Flutter |
+
+### V2TXLiveRotation
+
+Video Rotation Angle
+
+| 枚举值 | 说明 | 平台 |
+|--------|------|------|
+| V2TXLiveRotation0 | No rotation | 全平台 |
+| V2TXLiveRotation90 | 90° clockwise rotation | Android/iOS |
+| V2TXLiveRotation180 | 180° clockwise rotation | Android/iOS |
+| V2TXLiveRotation270 | 270° clockwise rotation | Android/iOS |
+| v2TXLiveRotation90 | Rotate 90 degrees clockwise | Flutter |
+| v2TXLiveRotation180 | Rotate 180 degrees clockwise | Flutter |
+| v2TXLiveRotation270 | Rotate 270 degrees clockwise | Flutter |
+
+### V2TXLivePixelFormat
+
+Video Frame Pixel Format
+
+| 枚举值 | 说明 | 平台 |
+|--------|------|------|
+| V2TXLivePixelFormatUnknown | Unknown pixel format | Android/iOS |
+| V2TXLivePixelFormatI420 | YUV420P I420 format | 全平台 |
+| V2TXLivePixelFormatTexture2D | OpenGL 2D texture format | 全平台 |
+| V2TXLivePixelFormatNV12 | NV12 | iOS |
+| V2TXLivePixelFormatBGRA32 | BGRA32 | iOS |
+| v2TXLivePixelFormatUnknown | Unknown | Flutter |
+| v2TXLivePixelFormatNV12 | YUV420SP NV12 format | Flutter |
+| v2TXLivePixelFormatBGRA32 | BGRA8888 format | Flutter |
+
+### V2TXLiveBufferType
+
+Video Data Buffer Type
+
+| 枚举值 | 说明 | 平台 |
+|--------|------|------|
+| V2TXLiveBufferTypeUnknown | Unknown buffer type | Android/iOS |
+| V2TXLiveBufferTypeByteBuffer | DirectBuffer, stores I420 and other buffers, used at the native layer | Android |
+| V2TXLiveBufferTypeByteArray | byte[], stores I420 and other buffers, used at the Java layer | Android |
+| V2TXLiveBufferTypeTexture | Operates directly on texture ID for optimal performance and minimal quality loss | Android/iOS |
+| V2TXLiveBufferTypePixelBuffer | PixelBuffer (native iOS video format) | iOS |
+| V2TXLiveBufferTypeNSData | NSData (used for I420 and other buffer types) | iOS |
+| v2TXLiveBufferTypeUnknown | Unknown | Flutter |
+| v2TXLiveBufferTypeByteBuffer | DirectBuffer for I420 and similar buffers, used in native layer | Flutter |
+| v2TXLiveBufferTypeByteArray | byte[] for I420 and similar buffers, used in Java layer | Flutter |
+| v2TXLiveBufferTypeTexture | Operates directly on texture ID, optimal performance, minimal quality loss | Flutter |
+
+### V2TXLiveTexture
+
+> **适用平台：** Android（iOS、Flutter 不支持）
+
+Video Texture Wrapper
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| textureId | int | Video texture ID |
+| eglContext10 | javax.microedition.khronos.egl.EGLContext | OpenGL EGLContext (v1.0) |
+| eglContext14 | android.opengl.EGLContext | Android EGLContext (v1.4) |
+
+### V2TXLiveVideoFrame
+
+Video Frame Information
+
+| 字段 | 类型 | 说明 | 平台 |
+|------|------|------|------|
+| pixelFormat | V2TXLivePixelFormat | Pixel format | 全平台 |
+| bufferType | V2TXLiveBufferType | Buffer type | 全平台 |
+| texture | V2TXLiveTexture | Texture wrapper | Android |
+| data | byte[] | Video data | 全平台 |
+| buffer | ByteBuffer | Video data buffer | Android |
+| width | int | Frame width | 全平台 |
+| height | int | Frame height | 全平台 |
+| rotation | int | Rotation angle | 全平台 |
+| pixelBuffer | CVPixelBufferRef | PixelBuffer data | iOS |
+| textureId | GLuint | Texture ID | iOS/Flutter |
+
+## Audio Type Definitions
+
+### V2TXLiveAudioQuality
+
+Audio Quality Settings
+
+| 枚举值 | 说明 | 平台 |
+|--------|------|------|
+| V2TXLiveAudioQualitySpeech | Speech: 16kHz sample rate, mono, 16 Kbps, suitable for voice calls | Android/iOS |
+| V2TXLiveAudioQualityDefault | Default: 48kHz sample rate, mono, 50 Kbps, SDK default | Android/iOS |
+| V2TXLiveAudioQualityMusic | Music: 48k sample rate, stereo, full band, 128kbps; suitable for high-fidelity music | Android/iOS |
+| v2TXLiveAudioQualitySpeech | Speech quality: 16k sample rate, mono, 16kbps bitrate, ideal for voice calls | Flutter |
+| v2TXLiveAudioQualityDefault | Default quality: 48k sample rate, mono, 50kbps bitrate (SDK default) | Flutter |
+| v2TXLiveAudioQualityMusic | Music quality: 48k sample rate, stereo/full band, 128kbps bitrate, suitable for high-fidelity music | Flutter |
+
+### V2TXLiveAudioFrame
+
+Audio Frame Data
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| data | byte[] | Audio data |
+| sampleRate | int | Sample rate (default: 48000 Hz) |
+| channel | int | Audio channel count (default: 1, mono) |
+| timestamp | long | Timestamp (ms) |
+
+### V2TXLiveAudioFrameOperationMode
+> **适用平台：** Android / iOS（Flutter 不支持）
+
+Audio Callback Data Access Mode
+
+| 枚举值 | 说明 | 平台 |
+|--------|------|------|
+| V2TXLiveAudioFrameOperationModeReadWrite | Read/write mode: access and modify callback audio data (default) | Android/iOS |
+| V2TXLiveAudioFrameOperationModeReadOnly | Read-only mode: access callback audio data only | Android/iOS |
+
+### V2TXLiveAudioFrameObserverFormat
+> **适用平台：** Android / iOS（Flutter 不支持）
+
+Audio Frame Callback Format
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| sampleRate | int | Sample rate (default: 48000 Hz) |
+| channel | int | Audio channel count (default: 1) |
+| samplesPerCall | int | Samples per callback |
+| mode | V2TXLiveAudioFrameOperationMode | Data access mode |
+**Parameter Notes**:
+- **samplesPerCall**: Must be an integer multiple of sampleRate/100
+
+## Statistics Data Definitions
+
+### V2TXLivePusherStatistics
+
+Pusher Statistics
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| appCpu | int | App CPU usage (%) |
+| systemCpu | int | System CPU usage (%) |
+| width | int | Video width |
+| height | int | Video height |
+| fps | int | Frame rate (fps) |
+| videoBitrate | int | Video bitrate (Kbps) |
+| audioBitrate | int | Audio bitrate (Kbps) |
+| rtt | int | SDK to cloud Round-Trip Time (RTT) (ms) |
+| netSpeed | int | Uplink speed (Kbps) |
+
+### V2TXLivePlayerStatistics
+
+Player Statistics
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| appCpu | int | App CPU usage (%) |
+| systemCpu | int | System CPU usage (%) |
+| width | int | Video width |
+| height | int | Video height |
+| fps | int | Frame rate (fps) |
+| videoBitrate | int | Video bitrate (Kbps) |
+| audioBitrate | int | Audio bitrate (Kbps) |
+| audioPacketLoss | int | Audio packet loss rate (%) |
+| videoPacketLoss | int | Video packet loss rate (%) |
+| jitterBufferDelay | int | Playback delay (ms) |
+| audioTotalBlockTime | int | Total audio playback stuttering time (ms) |
+| audioBlockRate | int | Audio playback stuttering rate (%) |
+| videoTotalBlockTime | int | Total video playback stuttering time (ms) |
+| videoBlockRate | int | Video playback stuttering rate (%) |
+| rtt | int | Round-Trip Time (RTT) (ms) |
+| netSpeed | int | Download speed (Kbps) |
+
+## Connection Status Enumerations
+
+### V2TXLivePushStatus
+
+Live Stream Connection Status
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLivePushStatusDisconnected | Disconnected from server |
+| V2TXLivePushStatusConnecting | Connecting to server |
+| V2TXLivePushStatusConnectSuccess | Connected to server |
+| V2TXLivePushStatusReconnecting | Reconnecting to server |
+
+## Cloud Stream Mixing Configuration
+
+### V2TXLiveMixInputType
+
+Stream Mixing Input Type
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLiveMixInputTypeAudioVideo | Mix audio and video |
+| V2TXLiveMixInputTypePureVideo | Mix video only |
+| V2TXLiveMixInputTypePureAudio | Mix audio only |
+
+### V2TXLiveMixStream
+
+Cloud Stream Mixing Sub-Screen Layout
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| userId | String | userId participating in cloud stream mixing |
+| streamId | String | Push streamId |
+| x | int | X coordinate (absolute pixels) |
+| y | int | Y coordinate (absolute pixels) |
+| width | int | Layer width (absolute pixels) |
+| height | int | Layer height (absolute pixels) |
+| zOrder | int | Layer z-order (1–15, must be unique) |
+| inputType | V2TXLiveMixInputType | Input type |
+
+### V2TXLiveTranscodingConfig
+
+Cloud Stream Mixing MixTranscoding Configuration
+
+| 字段 | 类型 | 说明 | 平台 |
+|------|------|------|------|
+| videoWidth | int | Output video width after transcoding | 全平台 |
+| videoHeight | int | Output video height after transcoding | 全平台 |
+| videoBitrate | int | Output video bitrate after transcoding (Kbps) | 全平台 |
+| videoFramerate | int | Output video frame rate after transcoding (fps) | 全平台 |
+| videoGOP | int | Keyframe interval (seconds) | 全平台 |
+| backgroundColor | int | Mixed screen background color | 全平台 |
+| backgroundImage | String | Mixed screen background image | 全平台 |
+| audioSampleRate | int | Output audio sample rate after transcoding | 全平台 |
+| audioBitrate | int | Output audio bitrate after transcoding (Kbps) | 全平台 |
+| audioChannels | int | Output audio channel count after transcoding | 全平台 |
+| mixStreams | ArrayList<V2TXLiveMixStream> | Sub-screen layout information | Android/Flutter |
+| outputStreamId | String | Output stream ID for CDN | 全平台 |
+
+## Local Recording Configuration
+
+### V2TXLiveRecordMode
+
+Local Recording Mode
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLiveRecordModeBoth | Record both audio and video |
+
+### V2TXLiveLocalRecordingParams
+
+Local Recording Parameters
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| filePath | String | Recording file path (required) |
+| recordMode | V2TXLiveRecordMode | Recording mode |
+| interval | int | Update interval for recording info (ms) |
+**Parameter Notes**:
+- **filePath**: Must include filename and extension (currently supports MP4 only)
+- **interval**: Valid range is 1000–10000ms; set to -1 to disable recording info callback
+
+## Log Configuration
+
+### V2TXLiveLogLevel
+
+Log Level Enumeration
+
+| 常量名 | 值 | 说明 |
+|--------|-----|------|
+| V2TXLiveLogLevelAll | 0 | Output all log levels |
+| V2TXLiveLogLevelDebug | 1 | Output DEBUG and above |
+| V2TXLiveLogLevelInfo | 2 | Output INFO and above |
+| V2TXLiveLogLevelWarning | 3 | Output WARNING and above |
+| V2TXLiveLogLevelError | 4 | Output ERROR and above |
+| V2TXLiveLogLevelFatal | 5 | Output only FATAL |
+| V2TXLiveLogLevelNULL | 6 | Disable all SDK logs |
+
+### V2TXLiveLogConfig
+
+Log Configuration
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| logLevel | int | Log level |
+| enableObserver | boolean | Enable log observer callback |
+| enableConsole | boolean | Print logs to console |
+| enableLogFile | boolean | Enable local log files |
+| logPath | String | Local log directory |
+**Default Storage Path**: On iOS/macOS, logs are stored in the Documents/log directory by default.
+**Field Descriptions**:
+- **logLevel**: Controls the verbosity of SDK log output
+- **enableObserver**: Receive log info via Observer for custom handling
+- **enableConsole**: Print log info to the editor console for debugging
+- **enableLogFile**: Enable local log file for troubleshooting
+- **logPath**: Directory for storing logs; uses default path if not specified
+
+## Additional Configurations
+
+### V2TXLiveSocks5ProxyConfig
+
+SOCKS5 Proxy Configuration
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| supportHttps | boolean | Enable HTTPS support |
+| supportTcp | boolean | Enable TCP support |
+| supportUdp | boolean | Enable UDP support |
+
+### V2TXLiveStreamInfo
+
+Adaptive Stream Switching Info
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| width | int | Video width |
+| height | int | Video height |
+| bitrate | int | Bitrate (bps) |
+| framerate | float | Frame rate |
+| url | String | Stream URL |
+This document details all type definitions in `V2TXLiveDef.java` and serves as a comprehensive API reference for developing with Tencent Cloud Live Streaming.
+
+## Video Types
+
+### Picture
+
+in-Picture State
+
+> **适用平台：** iOS（Android、Flutter 不支持）
+
+### V2TXLivePictureInPictureState
+
+> **适用平台：** iOS（Android、Flutter 不支持）
+
+Picture-in-Picture State Enumeration
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLivePictureInPictureStateUndefined | Undefined state |
+| V2TXLivePictureInPictureStateOccurError | Error occurred |
+| V2TXLivePictureInPictureStateWillStart | Will start |
+| V2TXLivePictureInPictureStateDidStart | Started |
+| V2TXLivePictureInPictureStateWillStop | Will stop |
+| V2TXLivePictureInPictureStateDidStop | Stopped |
+| V2TXLivePictureInPictureStateRestoreUI | Restore UI from picture-in-picture |
+
+## Connection Status
+
+### V2TXAudioRoute
+
+> **适用平台：** iOS（Android、Flutter 不支持）
+
+Audio Output Mode
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXAudioRouteSpeakerphone | Play via the speaker (device speaker) |
+| V2TXAudioRouteEarpiece | Play via the receiver (device earpiece) |
+
+## Render View Definition
+
+### V2TXLiveRenderView
+
+> **适用平台：** Flutter（Android、iOS 不支持）
+
+Defines the video rendering view type.
+
+| 常量名 | 值 | 说明 |
+|--------|-----|------|
+| renderViewType | 'v2_live_view_factory' |  |
+
+## Other Configurations
+
+### TXSystemVolumeType
+
+> **适用平台：** Flutter（Android、iOS 不支持）
+
+System Volume Control Type
+
+| 常量名 | 值 | 说明 |
+|--------|-----|------|
+| TXSystemVolumeTypeAuto | 0 | Auto mode switching |
+| TXSystemVolumeTypeMedia | 1 | Media volume |
+| TXSystemVolumeTypeVOIP | 2 | Call volume |
+
+### TXAudioRoute
+
+> **适用平台：** Flutter（Android、iOS 不支持）
+
+Audio Routing Type
+
+| 常量名 | 值 | 说明 |
+|--------|-----|------|
+| TXAudioRouteSpeakerphone | 0 | Play via the speaker |
+| TXAudioRouteEarpiece | 1 | Play via the receiver |
+
+## Audio Effects Processing
+
+### TXVoiceReverbType
+
+> **适用平台：** Flutter（Android、iOS 不支持）
+
+Reverb Effect Types
+
+| 常量名 | 值 | 说明 |
+|--------|-----|------|
+| TXVoiceReverbTypeOff | 0 | Disable reverb |
+| TXVoiceReverbTypeKTV | 1 | KTV |
+| TXVoiceReverbTypeSmallRoom | 2 | Small room |
+| TXVoiceReverbTypeGreatHall | 3 | Great hall |
+| TXVoiceReverbTypeDeep | 4 | Deep |
+| TXVoiceReverbTypeLoud | 5 | Loud |
+| TXVoiceReverbTypeMetallic | 6 | Metallic |
+| TXVoiceReverbTypeMagnetic | 7 | Magnetic |
+| TXVoiceReverbTypeEthereal | 8 | Ethereal |
+| TXVoiceReverbTypeStudio | 9 | Studio |
+| TXVoiceReverbTypeMelodious | 10 | Melodious |
+| TXVoiceReverbTypeStudio2 | 11 | Studio 2 |
+
+### TXVoiceChangerType
+
+> **适用平台：** Flutter（Android、iOS 不支持）
+
+Voice Changer Effect Types
+
+| 常量名 | 值 | 说明 |
+|--------|-----|------|
+| TXVoiceChangerTypeOff | 0 | Disable voice changer |
+| TXVoiceChangerTypeChild | 1 | Naughty boy |
+| TXVoiceChangerTypeLittleGirl | 2 | Girl |
+| TXVoiceChangerTypeUncle | 3 | Middle-aged man |
+| TXVoiceChangerTypeHeavyMetal | 4 | Heavy metal |
+| TXVoiceChangerTypeCold | 5 | Cold |
+| TXVoiceChangerTypePunk | 6 | Punk |
+| TXVoiceChangerTypeBeast | 7 | Beast |
+| TXVoiceChangerTypeFatty | 8 | Fatty |
+| TXVoiceChangerTypeStrongCurrent | 9 | Strong current |
+| TXVoiceChangerTypeRobot | 10 | Robot |
+| TXVoiceChangerTypeEthereal | 11 | Ethereal |

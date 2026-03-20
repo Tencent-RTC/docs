@@ -1,0 +1,3834 @@
+--------------------------------------------------------------------------------
+title: Integrate Vue RoomKit Basic Beauty
+description: Use RoomKit free beauty panel for smoothing, whitening and blushing with real-time preview and remote effect.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/roomkit/features/beauty.md
+--------------------------------------------------------------------------------
+
+The basic beauty feature allows users to apply skin smoothing, whitening, and ruddiness adjustments to portraits during video calls or live streaming.
+
+## Use Cases
+
+- **Video Conferencing:** Minimize skin blemishes, brighten skin tone, making participants look more professional and energetic.
+
+- **Online Live Streaming:** Hosts use beauty features to enhance visual appeal and attract more viewers.
+
+- **Online Education:** Teachers and students maintain a clean and natural appearance, creating a good classroom atmosphere.
+
+## Prerequisites
+
+- **User Status:** The user has completed login authentication through useLoginState, refer to Integration Overview, and is in **logged in** status.
+
+- **Environment Dependencies:** The project has imported `tuikit-atomicx-vue3`.
+
+- **Device Requirements:** A working camera device is required, and the user has authorized camera access. If the user denies authorization, the virtual background feature will not be available.
+
+## Implementing Basic Beauty Feature
+
+This feature provides two integration solutions. You can choose the most suitable one according to business needs:
+- **Solution 1 (Recommended):** Quick integration using UI components. Directly import the beauty panel component ([FreeBeautyPanel](https://github.com/Tencent-RTC/TUIKit_Vue3/tree/main/packages/tuikit-atomicx-vue3/src/components/FreeBeautyPanel)) provided by `tuikit-atomicx-vue3`, embed it into your application dialog, with the lowest development cost.
+
+- **Solution 2 (Advanced):** Custom integration using underlying API. Based on atomicx-core SDK API useFreeBeautyState state hook to implement UI and interaction logic yourself, with the highest flexibility.
+
+   
+
+## Solution 1: Quick Integration Using UI Components
+
+`tuikit-atomicx-vue3` provides a core beauty settings panel component:
+- [**FreeBeautyPanel**](https://github.com/Tencent-RTC/TUIKit_Vue3/tree/main/packages/tuikit-atomicx-vue3/src/components/FreeBeautyPanel)**:** Basic beauty configuration panel, including parameter adjustment functions for skin smoothing, whitening, and ruddiness.
+
+### Step 1: Import Component
+
+``` typescript
+import { FreeBeautyPanel } from 'tuikit-atomicx-vue3/room';
+```
+
+### Step 2: Use Component
+
+It is generally recommended to place `FreeBeautyPanel` in a dialog or modal, triggered by button click.
+
+**The following example shows how to implement a complete interaction for clicking a button to open beauty settings:**
+
+> **Note:**
+> 
+
+> All TUIKit components must be wrapped inside UIKitProvider, otherwise they will not be able to obtain context dependencies, causing style anomalies.
+> 
+
+``` typescript
+<template>
+  <UIKitProvider theme="light" language="zh-CN">
+    <div class="toolbar-container">
+      <!-- 1. Trigger button -->
+      <button @click="openBeautySettings">Beauty Settings</button>
+
+      <!-- 2. Settings dialog -->
+      <div v-if="showSettings" class="modal-mask">
+        <div class="modal-content">
+          <div class="modal-header">
+            <span>Basic Beauty</span>
+            <button @click="showSettings = false">Close</button>
+          </div>
+          
+          <div class="modal-body">
+            <!-- 3. Import panel component -->
+            <!-- @close event: Triggered when user clicks the close button (if any) inside the panel -->
+            <FreeBeautyPanel @close="showSettings = false" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </UIKitProvider>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import { UIKitProvider } from '@tencentcloud/uikit-base-component-vue3';
+import { FreeBeautyPanel, useDeviceState } from 'tuikit-atomicx-vue3/room';
+
+const showSettings = ref(false);
+const { cameraList } = useDeviceState();
+
+const openBeautySettings = () => {
+  // 1. Check if there is an available camera
+  if (cameraList.value.length === 0) {
+    alert('No camera detected, cannot set beauty effects');
+    return;
+  }
+
+  // 2. Open settings panel
+  showSettings.value = true;
+};
+</script>
+
+<style scoped>
+.modal-mask {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;
+}
+.modal-content { background: white; width: 600px; border-radius: 8px; overflow: hidden; }
+.modal-header { padding: 16px; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; }
+.modal-body { padding: 16px; }
+</style>
+```
+
+The internal logic of this component is as follows:
+- **Display Panel:** After users click the button, a dialog containing `FreeBeautyPanel` pops up.
+
+- **Adjust Parameters:** Users drag sliders inside the panel to adjust skin smoothing, whitening, and ruddiness parameters.
+
+- **Real-time Preview:** During adjustment, the preview interface is called in real-time to preview beauty effects.
+
+- **Save and Apply:** When closing the panel (triggering `@close` event), the current settings are automatically saved to take effect for remote users.
+
+## Solution 2: Custom Integration Using Underlying API
+
+This section mainly introduces how to implement basic beauty through atomicx-core SDK API useFreeBeautyState interface.
+
+### Step 1: Set Preview
+
+When users adjust beauty parameters (e.g., dragging sliders), use setFreeBeauty for real-time preview. At this time, the effect is only visible locally and will not be transmitted to remote users.
+
+> **Note:**
+> 
+
+> Parameter values range from 0-100.
+> 
+
+``` typescript
+import { useFreeBeautyState } from 'tuikit-atomicx-vue3/room';
+
+const { setFreeBeauty, beautyConfig } = useFreeBeautyState();
+
+// Example: Adjust beauty parameters
+const updatePreview = async (beauty: number, white: number, ruddy: number) => {
+  // The values in beautyConfig will update automatically, here's how to manually set preview
+  await setFreeBeauty({
+    beautyLevel: beauty,      // Skin smoothing (0-100)
+    whitenessLevel: white,    // Whitening (0-100)
+    ruddinessLevel: ruddy     // Ruddiness (0-100)
+  });
+};
+```
+
+### Step 2: Save and Apply
+
+After users confirm the preview effect is satisfactory, call saveBeautySetting to apply the current configuration to the video stream. At this time, remote users can see the beauty effect.
+
+> **Note:**
+> 
+
+> The virtual background feature depends on camera devices. You can use useDeviceState to check device status.
+> - cameraList: List of currently available camera devices. If the list is empty, it means no camera was detected or camera permission was denied.
+
+``` typescript
+import { useFreeBeautyState } from 'tuikit-atomicx-vue3/room';
+
+const { saveBeautySetting } = useFreeBeautyState();
+
+const applyBeauty = async () => {
+  // Save the currently previewed settings to take effect for remote users
+  await saveBeautySetting();
+  console.log('Beauty effects applied');
+};
+```
+
+### Step 3: Disable Beauty Effects
+
+To disable beauty, simply set all parameters to 0 and save.
+``` typescript
+const closeBeauty = async () => {
+  // 1. Set all parameters to 0 and preview
+  await setFreeBeauty({
+    beautyLevel: 0,
+    whitenessLevel: 0,
+    ruddinessLevel: 0
+  });
+  
+  // 2. Save to apply
+  await saveBeautySetting();
+};
+```
+
+## Development Notes
+
+- **Parameter Range:**`setFreeBeauty` accepts parameters (`beautyLevel`, `whitenessLevel`, `ruddinessLevel`) all ranging from 0-100.
+
+- **Preview and Apply:** To provide better user experience, beauty adjustment is divided into **"preview"** and **"apply"** stages. `setFreeBeauty` is only used for local preview, and you must call `saveBeautySetting` to formally apply by calling `trtcCloud.setBeautyStyle` to the stream.
+
+- **Device Dependencies:** Beauty features depend on video streams, so effects can only be seen when the camera is enabled. If no camera is detected, it is recommended to disable the beauty entry point.
+
+- **Performance Consumption:** Enabling beauty will increase CPU and GPU load. It is recommended to guide users to use moderately on low-end devices.
+
+## Common Questions
+
+### **Why can't remote users see the effect after adjusting beauty?**
+
+Please confirm if `saveBeautySetting()` was called. `setFreeBeauty()` is only used for local preview, and effects will only be applied to the streaming video after saving.
+
+### **Can beauty be set without a camera?**
+
+No. Beauty features process video streams. If no video is captured, beauty cannot take effect. It is recommended to hide or disable the beauty entry point when there is no camera.
+
+### **Do I need to manually reset beauty after leaving the room or turning off the camera?**
+
+No. `useFreeBeautyState` has internally implemented automatic state management:
+- Camera switch: Beauty pauses when camera is turned off, and automatically restores the last saved settings when reopened.
+
+- Entering/exiting rooms: All beauty parameters are automatically reset when exiting a room, no need for developers to clean up manually.
+
+## **Sample Project**
+
+Tencent Cloud provides a sample project [atomicx-vite-vue3-ts](https://github.com/Tencent-RTC/TUIRoomKit/tree/main/Web/example/atomicx-vite-vue3-ts) on GitHub, which you can refer to for implementing complete RoomKit functionality.
+
+## API Documentation
+
+| **State/Component** | **Feature Description** | **API Documentation** |
+| --- | --- | --- |
+| **useFreeBeautyState** | Free beauty feature management | API Documentation |
+
+--------------------------------------------------------------------------------
+title: Implement RoomKit In-Meeting Call (Android/iOS/Flutter/Vue)
+description: Call APIs: RoomStore / useRoomState, callUserToRoom, acceptCall, rejectCall, cancelCall, getPendingCalls.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/roomkit/features/call-user-to-room.md
+--------------------------------------------------------------------------------
+
+The in-room call feature allows users within a meeting (inviter) to send real-time invitations to users outside the room (invitees). This feature is implemented based on `Atomicx State Hooks` and helps developers quickly build interactive scenarios with proactive invitation capabilities.
+
+## Use Cases
+
+- **Collaborative Office:** During remote meetings, if cross-departmental decisions are involved, you can invite external experts to join the meeting with one click, shortening communication paths.
+
+- **Live Teaching:** During the teaching process, if teachers find that some students are absent, they can directly invite them to join the class.
+
+- **Internet Medical Consultation:** During case analysis, the primary physician can invite senior doctors to enter the virtual consultation room for multi-party consultation through the call feature, or doctors can call patients in the waiting room for consultations.
+
+## Prerequisites
+
+Before integrating this feature, please ensure the following conditions are met:
+- **Inviter (User A):** The user has completed login authentication through `useLoginState`, refer to Integration Overview, and is already in a room as the room owner or member, refer to Room Lifecycle.
+
+- **Invitee (User B):** The user has completed login authentication through `useLoginState`, refer to Integration Overview, to receive signaling events.
+
+- **Environment Dependencies:** The project has correctly installed and imported `tuikit-atomicx-vue3`.
+
+## Implementing In-Room Call Feature
+
+The core process for implementing in-room calls is as follows:
+
+In-room call sequence diagram
+
+### Step 1: Initiate Call (Inviter)
+
+The inviter calls the callUserToRoom interface to initiate an invitation. Please ensure the inviter is currently in the room (i.e., currentRoom is not empty), otherwise the call cannot be initiated.
+``` typescript
+import { useRoomState } from 'tuikit-atomicx-vue3/room';
+
+const { currentRoom, callUserToRoom } = useRoomState();
+
+const inviteUser = async () => {
+  // In-room calls must be associated with an existing roomId, so check the current user's room status first
+  if (!currentRoom.value) {
+    console.warn('Please enter a room first before initiating an invitation');
+    return;
+  }
+
+  try {
+    const resultMap = await callUserToRoom({
+      roomId: currentRoom.value.roomId, // Room ID the invitee will join
+      userIdList: ['user1', 'user2'],    // Target user ID array, supports single or multiple users
+      timeout: 60,                        // Invitation validity period (seconds), both parties will trigger onCallTimeout after timeout
+      // extensionInfo can be used to pass business custom data, such as invitation type, additional messages, etc.
+      extensionInfo: JSON.stringify({ type: 'emergency', priority: 'high' }) 
+    });
+    
+    // resultMap returns the status corresponding to each userId, such as Success, AlreadyInRoom (already in room) or AlreadyInCalling (in call)
+    console.log('Invitation sent successfully, detailed status map:', resultMap);
+  } catch (error) {
+    console.error('Failed to send call request, please check network or login status:', error);
+  }
+};
+```
+
+### Step 2: Listen for Call Events (Invitee)
+
+The invitee needs to listen for the `onCallReceived` event. It is recommended to implement this in long-lived components such as `App.vue` to ensure the user can respond regardless of which page they are on.
+``` typescript
+import { ref, onMounted, onUnmounted } from 'vue';
+import { useRoomState, RoomEvent } from 'tuikit-atomicx-vue3/room';
+
+const { 
+  subscribeEvent, 
+  unsubscribeEvent, 
+  acceptCall, 
+  rejectCall, 
+  joinRoom, 
+  currentRoom 
+} = useRoomState();
+
+const showInviteDialog = ref(false); // Control UI dialog visibility
+const currentCallInfo = ref(null);   // Cache the received invitation context
+
+const handleCallReceived = async ({ roomInfo, call, extensionInfo }) => {
+  // Conflict handling: If the user is currently in a meeting, according to business policy, usually should directly reject new invitations to prevent interference
+  if (currentRoom.value?.roomId) {
+    await rejectCall({ roomId: roomInfo.roomId });
+    return;
+  }
+
+  // Record invitation details for displaying inviter name or business transparent data in UI
+  currentCallInfo.value = { roomInfo, call };
+  showInviteDialog.value = true;
+};
+
+// Accept invitation logic
+const onUserAccept = async () => {
+  if (!currentCallInfo.value) return;
+  const { roomId } = currentCallInfo.value.roomInfo;
+
+  try {
+    // Key process A: Respond to signaling. Inform the inviter that it has been accepted so they can update UI (e.g., display "Other party answered")
+    await acceptCall({ roomId });
+    
+    // Key process B: Execute room entry. Only by calling joinRoom will the audio and video push-pull stream link be truly opened
+    await joinRoom({ roomId }); 
+  } catch (error) {
+    console.error('Room entry operation failed after accepting call:', error);
+  } finally {
+    closeDialog();
+  }
+};
+
+// Reject invitation logic
+const onUserReject = async () => {
+  if (currentCallInfo.value) {
+    // Inform the inviter that it has been rejected, the inviter will receive onCallRejected event
+    await rejectCall({ roomId: currentCallInfo.value.roomInfo.roomId });
+  }
+  closeDialog();
+};
+
+const closeDialog = () => {
+  showInviteDialog.value = false;
+  currentCallInfo.value = null;
+};
+
+// Event full lifecycle management: Ensure listening on component mount and removal on destroy to prevent event overflow
+onMounted(() => {
+  subscribeEvent(RoomEvent.onCallReceived, handleCallReceived);
+  
+  // Listen for various exceptions/sync events that cause invitation to end, ensuring UI dialog can close in time
+  subscribeEvent(RoomEvent.onCallCancelled, closeDialog); // Inviter cancelled the call
+  subscribeEvent(RoomEvent.onCallTimeout, closeDialog);   // Call timed out without response
+  subscribeEvent(RoomEvent.onCallHandledByOtherDevice, closeDialog); // User already handled the call on another device
+});
+
+onUnmounted(() => {
+  // Remove all listeners to avoid continuing to execute handleCallReceived after component destruction, causing memory leaks or errors
+  unsubscribeEvent(RoomEvent.onCallReceived, handleCallReceived);
+  unsubscribeEvent(RoomEvent.onCallCancelled, closeDialog);
+  unsubscribeEvent(RoomEvent.onCallTimeout, closeDialog);
+  unsubscribeEvent(RoomEvent.onCallHandledByOtherDevice, closeDialog);
+});
+```
+
+## Practical Tutorial: Improving Call Connection Rate
+
+To achieve higher call connection rates in business scenarios, in addition to implementing basic functions, it is recommended to refer to the following strategies to optimize user experience:
+
+### 1. Enhanced Call Awareness (Avoid Users Missing Calls)
+
+Due to Web characteristics, browser mute or page running in background state may cause users to miss calls.
+- **Visual Reminder**: Use Page Visibility API to detect page visibility status. If the page is in the background, you can implement title bar flashing prompts by cyclically modifying `document.title` (e.g.: "【New Invitation】UserA invites you to the meeting...") to attract user attention.
+
+- **Audio Reminder**: Play high-priority alert ringtone when the `onCallReceived` event is triggered. Note: Must comply with browser's Autoplay Policy, most browsers will restrict audio autoplay in the absence of user interaction (such as clicks, touches, or key presses).
+
+### 2. Enrich Invitation Context (Improve Answering Willingness)
+
+Invitations lacking clear intent are easily rejected by users. It is recommended to fully utilize the `extensionInfo` field to pass key business information to improve users' willingness to answer.
+- **Pass Business Context**: Use `extensionInfo` to transparently pass business fields such as `reason` (e.g.: "Project emergency review"), `level` (e.g.: "P0 troubleshooting"), etc., to inform users of the urgency and importance of the call.
+
+### 3. Multi-Channel Reach Backup (Ensure Message Delivery)
+
+Limited by Web mechanisms, when the browser process ends, real-time signaling cannot be received. It is recommended to adopt the following alternative solutions to ensure reach:
+- **Browser System Notifications**: Guide users to authorize Web Notification API. As long as the browser process is not closed (including minimized or in background tabs), OS-level pop-up notifications can be triggered to effectively remind users.
+
+- **Multi-Channel Reach**: It is recommended to combine backend business logic to send meeting links through **SMS**, **Email**, or **Enterprise WeChat** and other external channels when detecting that users are offline or timeout without response, achieving all-around reach.
+
+### 4. Intelligent Retry Mechanism (Solve "Room Entry Failed After Accepting Invitation")
+
+In weak network or other unstable environments, calling `joinRoom` after users click accept invitation may experience occasional failures.
+- **Automatic Retry**: It is recommended to introduce 2-3 automatic retry mechanisms (recommended combined with exponential backoff strategy) in the exception handling logic (`catch`) of `onUserAccept` to maximize ensuring users can successfully join the meeting after clicking "accept".
+
+## Development Notes
+
+1. **Accepting Invitation Does Not Equal Entering Room**
+
+   `acceptCall` is only a signaling layer reply (informing the other party that the call has been answered). Users must manually call `await joinRoom({ roomId })` immediately after calling `acceptCall` to truly enter the audio and video room.
+
+2. **Lifecycle Management**
+
+   Please be sure to call `unsubscribeEvent` in the component destruction cycle (`onUnmounted`). If listeners are not cleaned up, when users switch pages, listeners from old pages will remain in memory, causing one invitation to pop up multiple windows or logic to execute repeatedly.
+
+3. **Timeout Settings**
+
+   If the `timeout` parameter is not set, in some network exceptions or program crash situations, invitations may remain in a suspended state for a long time, making it impossible to initiate another call to that user. It is recommended to set it to 30-60 seconds.
+
+## Common Questions
+
+1. **How to pass custom parameters when calling (e.g., "Emergency meeting from XX")?**
+
+   Use the `extensionInfo` parameter of `callUserToRoom` to pass a JSON string. The invitee can parse the string to obtain business information in the `extensionInfo` field of the `onCallReceived` event.
+
+2. **If the invitee is not online, can they receive the invitation after coming online?**
+
+   No. The invitation event is an instantaneous signaling action, and the SDK currently does not resend call notifications received while offline.
+
+3. **Can issued invitations be cancelled?**
+
+   Yes. Call `cancelCall({ roomId, userIdList })` to cancel. At this time, the invitee will receive the `onCallCancelled` event, and you need to listen to this event to close the UI dialog on the invitee side.
+
+4. **What to do if room entry fails after accepting?**
+
+   Check if you have logged in to `TUIRoomEngine`, retry `joinRoom({ roomId })` and capture error prompts to the user; if necessary, provide a "retry" button on the UI.
+
+5. **How to prompt when the other party is busy or already in another room?**
+
+   If `AlreadyInRoom` / `AlreadyInCalling` appears in the return value `resultMap` of `callUserToRoom`, you should prompt on the inviter UI "The other party is busy/already in a meeting" and decide whether to retry later.
+
+6. **Dialog not closing after timeout/cancellation?**
+
+   Make sure to listen to `onCallTimeout`, `onCallCancelled`, `onCallHandledByOtherDevice`, and uniformly close the dialog and clear current invitation data in the callback.
+
+7. **How to handle simultaneous ringing on multiple devices?**
+
+   After accepting/rejecting on any device, other devices will receive `onCallHandledByOtherDevice`, and you need to close dialogs on other ends to avoid repeated processing.
+
+8. **How should extensionInfo be agreed upon?**
+
+   It is recommended to use a JSON string and agree on fields (e.g., `type`, `priority`, `from`), parse and display friendly text (e.g., "Emergency meeting from XX") in `handleCallReceived`.
+
+## **Sample Project**
+
+Tencent Cloud provides a sample project [atomicx-vite-vue3-ts](https://github.com/Tencent-RTC/TUIRoomKit/tree/main/Web/example/atomicx-vite-vue3-ts) on GitHub, which you can refer to for implementing complete RoomKit functionality.
+
+## API Documentation
+
+| **State/Component** | **Feature Description** | **API Documentation** |
+| --- | --- | --- |
+| **useRoomState** | Room state management (create, join, schedule, etc.) | API Documentation |
+
+--------------------------------------------------------------------------------
+title: Implement Vue RoomKit Device Detection
+description: Use useDeviceState API for pre-meeting camera, microphone, speaker and network quality detection.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/roomkit/features/device-detection.md
+--------------------------------------------------------------------------------
+This document will guide you on how to provide device preview and testing functionality before users join a room. Through the pre-room testing interfaces provided by Atomicx, you can guide users to check and adjust their audio/video device status, ensuring they enter the multi-party audio/video room in the best condition.
+
+## Feature Introduction
+
+Device preview is an important part of ensuring the smooth operation of audio/video rooms. Atomicx provides a dedicated set of testing interfaces specifically for pre-room scenarios, with core capabilities including:
+- **Video Preview**: Start the camera without streaming to verify picture clarity and lighting.
+
+- **Microphone Detection**: Confirm microphone capture is working properly through real-time volume feedback.
+
+- **Speaker Calibration**: Confirm output device and volume settings by playing test audio.
+
+## Prerequisites
+
+- User has completed login authentication through useLoginState, please refer to Integration Overview.
+
+## Implementing Device Detection Features
+
+### Step 1: Camera Test
+
+Use the startCameraTest method to start camera testing. This method is only used for local preview and does not generate network traffic.
+
+**Code Example:**
+``` typescript
+<template>
+  <div class="preview-container">
+    <!-- Camera preview area -->
+    <div id="camera-preview" class="camera-preview">
+      <!-- Loading status -->
+      <div v-if="isCameraTestLoading" class="loading-overlay">
+        <div class="loading-spinner" />
+        <span>Starting camera...</span>
+      </div>
+    </div>
+
+    <!-- Camera selection -->
+    <div class="camera-selector">
+      <label>Select Camera</label>
+      <select 
+        :value="currentCamera?.deviceId" 
+        @change="handleCameraChange"
+        :disabled="isCameraTestLoading"
+      >
+        <option 
+          v-for="camera in cameraList" 
+          :key="camera.deviceId"
+          :value="camera.deviceId"
+        >
+          {{ camera.deviceName }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Control buttons -->
+    <div class="control-buttons">
+      <button @click="getCameraList">Get Camera List</button>
+      <button 
+        @click="toggleCameraTest"
+        :disabled="isCameraTestLoading"
+      >
+        {{ isCameraTesting ? 'Stop Preview' : 'Start Preview' }}
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { IconWarning } from '@tencentcloud/uikit-base-component-vue3';
+import { 
+  useLoginState,
+  useDeviceState, 
+  DeviceStatus,
+  DeviceError,
+} from 'tuikit-atomicx-vue3/room';
+
+const { 
+  isCameraTesting,
+  isCameraTestLoading,
+  cameraList,
+  currentCamera,
+  startCameraTest,
+  stopCameraTest,
+  getCameraList,
+  setCurrentCamera
+} = useDeviceState();
+
+onUnmounted(() => {
+  if (isCameraTesting.value) {
+    stopCameraTest();
+  }
+});
+
+const toggleCameraTest = async () => {
+  if (isCameraTesting.value) {
+    await stopCameraTest();
+  } else {
+    const previewElement = document.getElementById('camera-preview');
+    if (previewElement) {
+      await startCameraTest({ view: previewElement });
+    }
+  }
+};
+
+const handleCameraChange = async (event: Event) => {
+  const deviceId = (event.target as HTMLSelectElement).value;
+  try {
+    await setCurrentCamera({ deviceId });
+  } catch (error) {
+    console.error('Failed to switch camera:', error);
+  }
+};
+</script>
+
+<style scoped>
+.preview-container {  position: relative;  width: 100%;  max-width: 640px;  margin: 0 auto;}.camera-preview {  width: 100%;  position: relative;  aspect-ratio: 16 / 9;  background-color: #000;  border-radius: 8px;  overflow: hidden;}.loading-overlay {  position: absolute;  inset: 0;  display: flex;  flex-direction: column;  align-items: center;  justify-content: center;  gap: 12px;  background-color: rgba(0, 0, 0, 0.7);  color: white;  border-radius: 8px;}.loading-spinner {  width: 40px;  height: 40px;  border: 4px solid rgba(255, 255, 255, 0.3);  border-top-color: white;  border-radius: 50%;  animation: spin 0.8s linear infinite;}@keyframes spin {  to { transform: rotate(360deg); }}.error-message {  display: flex;  align-items: center;  gap: 8px;  padding: 12px;  margin-top: 12px;  background-color: #ffebee;  color: #c62828;  border-radius: 4px;  font-size: 14px;}.camera-selector {  margin-top: 16px;  display: flex;  align-items: center;  gap: 12px;}.camera-selector label {  font-weight: 500;  min-width: 80px;}.camera-selector select {  flex: 1;  padding: 8px 12px;  border: 1px solid #e0e0e0;  border-radius: 4px;  font-size: 14px;}.control-buttons {  margin-top: 16px;  display: flex;  gap: 12px;}.control-buttons button {  flex: 1;  padding: 12px 24px;  background-color: #1976d2;  color: white;  border: none;  border-radius: 4px;  font-size: 14px;  font-weight: 500;  cursor: pointer;  transition: background-color 0.3s;}.control-buttons button:hover:not(:disabled) {  background-color: #1565c0;}.control-buttons button:disabled {  background-color: #bdbdbd;  cursor: not-allowed;}
+</style>
+```
+
+### Step 2: Microphone Test
+
+Start microphone testing through startMicrophoneTest, and use testingMicVolume to implement real-time volume bar fluctuation in the UI.
+
+**Code Example:**
+``` typescript
+<template>
+  <div class="microphone-test">
+    <!-- Volume display -->
+    <div class="volume-display">
+      <div class="volume-label">Microphone Volume</div>
+      <div class="volume-bar-container">
+        <div 
+          class="volume-bar" 
+          :style="{ width: `${testingMicVolume}%` }"
+          :class="volumeClass"
+        />
+      </div>
+      <div class="volume-value">{{ testingMicVolume }}</div>
+    </div>
+
+    <!-- Microphone selection -->
+    <div class="microphone-selector">
+      <label>Select Microphone</label>
+      <select 
+        :value="currentMicrophone?.deviceId" 
+        @change="handleMicrophoneChange"
+        :disabled="isMicrophoneTesting"
+      >
+        <option 
+          v-for="mic in microphoneList" 
+          :key="mic.deviceId"
+          :value="mic.deviceId"
+        >
+          {{ mic.deviceName }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Control buttons -->
+    <div class="control-buttons">
+      <button 
+        @click="getMicrophoneList"
+      >
+        Get Devices
+      </button>
+      <button 
+        @click="toggleMicrophoneTest"
+      >
+        {{ isMicrophoneTesting ? 'Stop Test' : 'Start Test' }}
+      </button>
+    </div>
+
+    <!-- Test tip -->
+    <div v-if="isMicrophoneTesting" class="test-tip">
+      <span>Please speak into the microphone to see volume changes</span>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { 
+  useDeviceState, 
+  DeviceError,
+} from 'tuikit-atomicx-vue3/room';
+
+const { 
+  isMicrophoneTesting,
+  testingMicVolume,
+  microphoneList,
+  currentMicrophone,
+  startMicrophoneTest,
+  stopMicrophoneTest,
+  getMicrophoneList,
+  setCurrentMicrophone
+} = useDeviceState();
+
+// Volume bar style class
+const volumeClass = computed(() => {
+  const volume = testingMicVolume.value;
+  if (volume === 0) return 'volume-zero';
+  if (volume < 30) return 'volume-low';
+  if (volume < 70) return 'volume-medium';
+  return 'volume-high';
+});
+
+// Cleanup: stop testing
+onUnmounted(() => {
+  if (isMicrophoneTesting.value) {
+    stopMicrophoneTest();
+  }
+});
+
+// Toggle microphone test
+const toggleMicrophoneTest = async () => {
+  if (isMicrophoneTesting.value) {
+    await stopMicrophoneTest();
+  } else {
+    try {
+      await startMicrophoneTest({ interval: 200 });
+    } catch (error) {
+      console.error('Failed to start microphone test:', error);
+    }
+  }
+};
+
+// Switch microphone device
+const handleMicrophoneChange = async (event: Event) => {
+  const deviceId = (event.target as HTMLSelectElement).value;
+  try {
+    await setCurrentMicrophone({ deviceId });
+  } catch (error) {
+    console.error('Failed to switch microphone:', error);
+  }
+};
+</script>
+
+<style scoped>
+.microphone-test {  width: 100%;  max-width: 640px;  margin: 0 auto;}.volume-display {  padding: 24px;  background-color: #f5f5f5;  border-radius: 8px;  margin-bottom: 16px;}.volume-label {  font-size: 14px;  font-weight: 500;  color: #666;  margin-bottom: 12px;}.volume-bar-container {  width: 100%;  height: 24px;  background-color: #e0e0e0;  border-radius: 12px;  overflow: hidden;  margin-bottom: 8px;}.volume-bar {  height: 100%;  transition: width 0.1s ease;  border-radius: 12px;}.volume-bar.volume-zero {  background-color: #9e9e9e;}.volume-bar.volume-low {  background-color: #ff9800;}.volume-bar.volume-medium {  background-color: #4caf50;}.volume-bar.volume-high {  background-color: #2196f3;}.volume-value {  text-align: center;  font-size: 18px;  font-weight: 600;  color: #333;}.microphone-selector {  display: flex;  align-items: center;  gap: 12px;  margin-bottom: 16px;}.microphone-selector label {  font-weight: 500;  min-width: 80px;}.microphone-selector select {  flex: 1;  padding: 8px 12px;  border: 1px solid #e0e0e0;  border-radius: 4px;  font-size: 14px;}.error-message {  display: flex;  align-items: center;  gap: 8px;  padding: 12px;  margin-bottom: 16px;  background-color: #ffebee;  color: #c62828;  border-radius: 4px;  font-size: 14px;}.control-buttons {  margin-bottom: 12px; display: flex; gap: 8px; }.control-buttons button {  flex: 1; width: 100%;  padding: 12px 24px;  background-color: #1976d2;  color: white;  border: none;  border-radius: 4px;  font-size: 14px;  font-weight: 500;  cursor: pointer;  transition: background-color 0.3s;}.control-buttons button:hover:not(:disabled) {  background-color: #1565c0;}.control-buttons button:disabled {  background-color: #bdbdbd;  cursor: not-allowed;}.test-tip {  display: flex;  align-items: center;  gap: 8px;  padding: 12px;  background-color: #e3f2fd;  color: #1565c0;  border-radius: 4px;  font-size: 13px;}
+</style>
+```
+
+### Step 3: Speaker Test
+
+Use the startSpeakerTest method to play a specified audio file to confirm whether the speaker is working properly.
+
+**Code Example:**
+``` typescript
+<template>
+  <div class="speaker-test">
+    <!-- Speaker selection -->
+    <div class="speaker-selector">
+      <label>Select Speaker</label>
+      <select 
+        :value="currentSpeaker?.deviceId" 
+        @change="handleSpeakerChange"
+        :disabled="isSpeakerTesting"
+      >
+        <option 
+          v-for="speaker in speakerList" 
+          :key="speaker.deviceId"
+          :value="speaker.deviceId"
+        >
+          {{ speaker.deviceName }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Control buttons -->
+    <div class="control-buttons">
+      <button @click="getSpeakerList">Get Speaker List</button>
+      <button 
+        @click="toggleSpeakerTest"
+        :disabled="isSpeakerTesting"
+      >
+        {{ isSpeakerTesting ? 'Playing...' : 'Play Test Audio' }}
+      </button>
+      <button 
+        v-if="isSpeakerTesting"
+        @click="stopSpeakerTest"
+      >
+        Stop Playback
+      </button>
+    </div>
+
+    <!-- Test tip -->
+    <div v-if="isSpeakerTesting" class="test-tip">
+      <span>Playing test audio, please confirm if you can hear the sound</span>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
+import { useDeviceState } from 'tuikit-atomicx-vue3/room';
+
+const { 
+  isSpeakerTesting,
+  speakerList,
+  currentSpeaker,
+  startSpeakerTest,
+  stopSpeakerTest,
+  getSpeakerList,
+  setCurrentSpeaker,
+} = useDeviceState();
+
+// Test audio file path
+// Note: This URL is for development testing only. For production environments, please use your own audio file. It is recommended to use a 3-5 second MP3 format audio file
+const testAudioPath = 'https://web.sdk.qcloud.com/trtc/electron/download/resources/media/TestSpeaker.mp3';
+
+// Cleanup: stop testing
+onUnmounted(() => {
+  if (isSpeakerTesting.value) {
+    stopSpeakerTest();
+  }
+});
+
+// Toggle speaker test
+const toggleSpeakerTest = async () => {
+  if (isSpeakerTesting.value) {
+    await stopSpeakerTest();
+  } else {
+    try {
+      await startSpeakerTest({ filePath: testAudioPath });
+    } catch (error) {
+      console.error('Failed to start speaker test:', error);
+    }
+  }
+};
+
+// Switch speaker device
+const handleSpeakerChange = async (event: Event) => {
+  const deviceId = (event.target as HTMLSelectElement).value;
+  try {
+    await setCurrentSpeaker({ deviceId });
+  } catch (error) {
+    console.error('Failed to switch speaker:', error);
+  }
+};
+</script>
+
+<style scoped>
+.speaker-test {  width: 100%;  max-width: 640px;  margin: 0 auto;}.speaker-selector {  display: flex;  align-items: center;  gap: 12px;  margin-bottom: 24px;}.speaker-selector label {  font-weight: 500;  min-width: 80px;}.speaker-selector select {  flex: 1;  padding: 8px 12px;  border: 1px solid #e0e0e0;  border-radius: 4px;  font-size: 14px;}.volume-slider-container {  display: flex;  align-items: center;  gap: 12px;}.volume-slider {  flex: 1;  height: 6px;  border-radius: 3px;  background: #e0e0e0;  outline: none;  -webkit-appearance: none;}.volume-slider::-webkit-slider-thumb {  -webkit-appearance: none;  width: 18px;  height: 18px;  border-radius: 50%;  background: #1976d2;  cursor: pointer;}.volume-slider::-moz-range-thumb {  width: 18px;  height: 18px;  border-radius: 50%;  background: #1976d2;  cursor: pointer;  border: none;}.volume-value {  min-width: 50px;  text-align: right;  font-weight: 500;  color: #333;}.control-buttons {  display: flex;  gap: 12px;  margin-bottom: 12px;}button {  flex: 1;  padding: 12px 24px;  background-color: #1976d2;  color: white;  border: none;  border-radius: 4px;  font-size: 14px;  font-weight: 500;  cursor: pointer;  transition: background-color 0.3s;}.control-buttons button:hover:not(:disabled) {  background-color: #1565c0;}.control-buttons button:disabled {  background-color: #bdbdbd;  cursor: not-allowed;}.test-tip {  display: flex;  align-items: center;  gap: 8px;  padding: 12px;  background-color: #e3f2fd;  color: #1565c0;  border-radius: 4px;  font-size: 13px;}
+</style>
+```
+
+## API Documentation
+
+| **State/Component** | **Feature Description** | **API Documentation** |
+| --- | --- | --- |
+| **useDeviceState** | Contains audio/video device status, audio/video device list and operation interfaces. | API Documentation |
+
+--------------------------------------------------------------------------------
+title: Manage Vue RoomKit Device State
+description: Use useDeviceState API to manage camera, microphone, speaker on/off and switching in meetings.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/roomkit/features/device-state.md
+--------------------------------------------------------------------------------
+This document guides you on how to use Atomicx components and the `useDeviceState` Hook to manage audio/video device (camera, microphone, speaker) state in meetings, and how to obtain local network quality information.
+
+## Feature Introduction
+
+- **Device Enumeration & Switching:** Supports real-time retrieval of available system device lists and seamless switching.
+
+- **Fine-grained State Control:** Provides capabilities for enabling/disabling, muting capture, volume adjustment, and real-time volume monitoring.
+
+- **Error Diagnosis:** Real-time feedback on hardware conflicts, missing system permissions, and other abnormal states.
+
+- **Network Quality Monitoring:** Provides multi-dimensional network information including latency and packet loss rate.
+
+## Prerequisites
+
+- User has completed login authentication through useLoginState, please refer to Integration Overview.
+
+- If integrating within an `iframe`, permissions must be declared in the tag.
+
+   ``` typescript
+   <iframe allow="microphone; camera;"></iframe>
+   ```
+
+## Implementing Camera Management
+
+You can control local camera on/off, switch devices, and monitor capture status and errors through useDeviceState.
+
+### Step 1: Enable/Disable Camera
+
+Control camera on/off by calling openLocalCamera and closeLocalCamera methods.
+``` typescript
+import { useDeviceState, DeviceStatus } from 'tuikit-atomicx-vue3/room';
+const { cameraStatus, openLocalCamera, closeLocalCamera } = useDeviceState();
+const toggleCamera = async () => {
+  if (cameraStatus.value === DeviceStatus.On) {
+    await closeLocalCamera();
+  } else {
+    await openLocalCamera();
+  }
+};
+```
+
+### Step 2: Get/Switch Camera Device
+
+#### Desktop Camera Get and Switch Example
+
+You can get all available camera devices through cameraList, and use setCurrentCamera method to switch the currently used camera.
+``` typescript
+import { useDeviceState } from 'tuikit-atomicx-vue3/room';
+const { cameraList, currentCamera, getCameraList, setCurrentCamera } = useDeviceState();
+
+// Get camera list
+await getCameraList();
+
+// Iterate and display available cameras
+cameraList.value.forEach((camera) => {
+  console.log(`Camera: ${camera.deviceName} (${camera.deviceId})`);
+});
+
+// Switch to specified camera
+const switchCamera = async (deviceId: string) => {
+  try {
+    // Switch device (if camera is already on, will automatically re-capture using new device)
+    await setCurrentCamera({ deviceId });
+    console.log('Camera switched successfully');
+  } catch (error) {
+    console.error('Camera switch failed:', error);
+    // On switch failure, will continue using original device
+  }
+};
+
+// Monitor current camera changes
+watch(currentCamera, (camera) => {
+  if (camera) {
+    console.log('Currently using camera:', camera.deviceName);
+  }
+});
+```
+
+> **Note:**
+> 
+
+> When calling setCurrentCamera to switch devices, if the camera is already on, Atomicx will automatically stop capturing from the current device and restart capture using the new device, with seamless video stream switching. If switching fails, it will continue using the original device.
+> 
+
+#### Mobile Camera Switch Example
+
+Mobile devices use switchCamera to switch between front and rear cameras.
+``` typescript
+import { useDeviceState } from 'tuikit-atomicx-vue3/room';
+const { isFrontCamera, switchCamera } = useDeviceState();
+
+// Determine if mobile device
+const isMobile = /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+// Switch front/rear camera (only supported on mobile)
+const toggleCamera = async () => {
+  if (!isMobile) {
+    console.warn('Front/rear camera switching is only supported on mobile devices');
+    return;
+  }
+  
+  // Switch to opposite camera
+  await switchCamera({ isFrontCamera: !isFrontCamera.value });
+  console.log(`Switched to ${isFrontCamera.value ? 'front' : 'rear'} camera`);
+};
+```
+
+### Step 3: Handle Camera Capture Errors
+
+When camera capture errors occur, you can get error information through the cameraLastError property.
+
+> Note:
+> 
+
+> Common camera errors include `NoSystemPermission` (no system permission) and `OccupiedError` (device occupied). You should display clear error messages to users based on this property.
+> 
+
+``` typescript
+import { useDeviceState, DeviceError } from 'tuikit-atomicx-vue3/room';
+const { cameraLastError } = useDeviceState();
+
+// Monitor camera errors
+watch(cameraLastError, (error) => {
+  switch (error) {
+    case DeviceError.NoSystemPermission:
+      console.error('Camera permission denied, please enable camera permission in system settings');
+      break;
+    case DeviceError.NoDeviceDetected:
+      console.error('No camera device detected');
+      break;
+    case DeviceError.OccupiedError:
+      console.error('Camera is occupied by another application');
+      break;
+    case DeviceError.NotSupportCapture:
+      console.error('Current browser does not support camera capture');
+      break;
+    default:
+      break;
+  }
+});
+```
+
+## Implementing Microphone Management
+
+You can control local microphone on/off, mute, volume adjustment, and real-time volume display through useDeviceState, and monitor capture status and errors.
+
+### Step 1: Enable/Disable Microphone
+
+``` typescript
+import { useDeviceState, DeviceStatus } from 'tuikit-atomicx-vue3/room';
+const { microphoneStatus, openLocalMicrophone, closeLocalMicrophone } = useDeviceState();
+const toggleMicrophone = async () => {
+  if (microphoneStatus.value === DeviceStatus.On) {
+    await closeLocalMicrophone();
+  } else {
+    await openLocalMicrophone();
+  }
+};
+```
+
+### Step 2: Get/Switch Microphone Device
+
+#### Desktop Browser Get/Switch Microphone Example
+
+You can get all available microphone devices through microphoneList, and use setCurrentMicrophone method to switch the currently used microphone.
+``` typescript
+import { useDeviceState } from 'tuikit-atomicx-vue3/room';
+
+const { 
+  microphoneList, 
+  currentMicrophone, 
+  getMicrophoneList, 
+  setCurrentMicrophone 
+} = useDeviceState();
+
+// Get microphone list
+await getMicrophoneList();
+
+// Iterate and display available microphones
+microphoneList.value.forEach((mic) => {
+  console.log(`Microphone: ${mic.deviceName} (${mic.deviceId})`);
+});
+
+// Switch to specified microphone
+const switchMicrophone = async (deviceId: string) => {
+  await setCurrentMicrophone({ deviceId });
+};
+
+// Monitor current microphone changes
+watch(currentMicrophone, (mic) => {
+  if (mic) {
+    console.log('Currently using microphone:', mic.deviceName);
+  }
+});
+```
+
+### Step 3: Set Capture Volume
+
+You can use the setCaptureVolume method to adjust the local microphone capture volume.
+``` typescript
+import { useDeviceState } from 'tuikit-atomicx-vue3/room';
+const { captureVolume, setCaptureVolume } = useDeviceState();
+
+// Set capture volume to 50%
+await setCaptureVolume(50);
+
+// Monitor capture volume changes
+watch(captureVolume, (volume) => {
+  console.log('Current capture volume:', volume);
+});
+```
+
+### Step 4: Display Real-time Volume
+
+The currentMicVolume property updates the local microphone capture volume in real-time, and can be used for dynamic volume bar display.
+``` typescript
+<template>
+  <div class="mic-volume">
+    <label>Microphone Volume</label>
+    <div class="volume-bar-container">
+      <div 
+        class="volume-bar" 
+        :style="{ width: `${currentMicVolume}%` }" 
+      />
+    </div>
+    <span>{{ currentMicVolume }}</span>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useDeviceState } from 'tuikit-atomicx-vue3/room';
+const { currentMicVolume } = useDeviceState();
+</script>
+
+<style scoped>
+.volume-bar-container {
+  width: 200px;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.volume-bar {
+  height: 100%;
+  background-color: #4caf50;
+  transition: width 0.1s ease;
+}
+</style>
+```
+
+### Step 5: Handle Microphone Capture Errors
+
+When microphone capture errors occur, you can get error information through microphoneLastError data.
+``` typescript
+import { useDeviceState, DeviceError } from 'tuikit-atomicx-vue3/room';
+const { microphoneLastError } = useDeviceState();
+
+// Monitor microphone errors
+watch(microphoneLastError, (error) => {
+  switch (error) {
+    case DeviceError.NoSystemPermission:
+      console.error('Microphone permission denied, please enable microphone permission in system settings');
+      break;
+    case DeviceError.NoDeviceDetected:
+      console.error('No microphone device detected');
+      break;
+    case DeviceError.OccupiedError:
+      console.error('Microphone is occupied by another application');
+      break;
+    case DeviceError.NotSupportCapture:
+      console.error('Current browser does not support microphone capture');
+      break;
+    default:
+      break;
+  }
+});
+```
+
+## Implementing Speaker Management
+
+Speaker (playback device) mainly involves switching devices and setting playback volume.
+
+### Step 1: Get/Switch Speaker Device
+
+You can get all available speaker devices through speakerList, and use setCurrentSpeaker method to switch the currently used speaker.
+``` typescript
+import { useDeviceState } from 'tuikit-atomicx-vue3/room';
+const { 
+  speakerList, 
+  currentSpeaker, 
+  getSpeakerList, 
+  setCurrentSpeaker 
+} = useDeviceState();
+
+// Get speaker list
+await getSpeakerList();
+
+// Iterate and display available speakers
+speakerList.value.forEach((speaker) => {
+  console.log(`Speaker: ${speaker.deviceName} (${speaker.deviceId})`);
+});
+
+// Switch to specified speaker
+const switchSpeaker = async (deviceId: string) => {
+  await setCurrentSpeaker({ deviceId });
+};
+
+// Monitor current speaker changes
+watch(currentSpeaker, (speaker) => {
+  if (speaker) {
+    console.log('Currently using speaker:', speaker.deviceName);
+  }
+});
+```
+
+### Step 2: Set Playback Volume
+
+You can use the setOutputVolume method to adjust speaker playback volume.
+``` typescript
+import { useDeviceState } from 'tuikit-atomicx-vue3/room';
+const { outputVolume, setOutputVolume } = useDeviceState();
+
+// Set playback volume to 60%
+await setOutputVolume(60);
+
+// Monitor playback volume changes
+watch(outputVolume, (volume) => {
+  console.log('Current playback volume:', volume);
+});
+```
+
+## Implementing Network Quality Monitoring
+
+Using the networkInfo data in useDeviceState, you can monitor the local user's network quality in real-time.
+
+> **Note:**
+> 
+
+> Valid data can only be obtained in networkInfo when the local user has joined the room through joinRoom and turned on the microphone or camera.
+> 
+
+``` typescript
+<template>
+  <div class="network-indicator" @click="showDetails = !showDetails">
+    <TUIIcon v-if="networkIcon" :icon="networkIcon" />
+    <span class="network-text">{{ networkText }}</span>
+    <div v-if="showDetails" class="network-details">
+      <div>Latency: {{ networkInfo?.delay }}ms</div>
+      <div>Uplink Loss: {{ networkInfo?.upLoss }}%</div>
+      <div>Downlink Loss: {{ networkInfo?.downLoss }}%</div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import {
+  IconNetworkStability,
+  IconNetworkFluctuation,
+  IconNetworkLag,
+  IconNetworkDisconnected,
+  IconArrowStrokeUp,
+} from '@tencentcloud/uikit-base-component-vue3';
+import { useDeviceState, NetworkQuality } from 'tuikit-atomicx-vue3/room';
+
+const { networkInfo } = useDeviceState();
+const showDetails = ref(false);
+
+// Network quality icon
+const networkIcon = computed(() => {
+  if (!networkInfo.value) return '';
+  switch (networkInfo.value.quality) {
+    case NetworkQuality.Excellent:
+    case NetworkQuality.Good:
+      return IconNetworkStability;
+    case NetworkQuality.Poor:
+      return IconNetworkFluctuation;
+    case NetworkQuality.Bad:
+    case NetworkQuality.VeryBad:
+      return IconNetworkLag;
+    case NetworkQuality.Down:
+      return IconNetworkDisconnected;
+    default:
+      return '';
+  }
+});
+
+// Network quality text
+const networkText = computed(() => {
+  if (!networkInfo.value) return 'Unknown';
+  switch (networkInfo.value.quality) {
+    case NetworkQuality.Excellent:
+      return 'Excellent';
+    case NetworkQuality.Good:
+      return 'Good';
+    case NetworkQuality.Poor:
+      return 'Fair';
+    case NetworkQuality.Bad:
+      return 'Poor';
+    case NetworkQuality.VeryBad:
+      return 'Very Poor';
+    case NetworkQuality.Down:
+      return 'Disconnected';
+    default:
+      return 'Unknown';
+  }
+});
+</script>
+
+<style scoped>
+
+.network-indicator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.network-details {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  padding: 8px;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 2;
+}
+</style>
+```
+
+## API Documentation
+
+| **State/Component** | **Feature Description** | **API Documentation** |
+| --- | --- | --- |
+| **useDeviceState** | Contains audio/video device status, audio/video device list and operation interfaces. | API Documentation |
+
+--------------------------------------------------------------------------------
+title: Implement Vue RoomKit In-Meeting Chat
+description: Use useRoomChat API for in-meeting text, emoji, image real-time chat.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/roomkit/features/room-chat.md
+--------------------------------------------------------------------------------
+
+The in-room chat feature allows members within a meeting to interact in real-time through text, emojis, and other forms. This feature is implemented based on the IM component capabilities of `tuikit-atomicx-vue3`, providing users with a convenient instant messaging experience.
+
+## Use Cases
+
+- **Online Seminars:** When speakers give video presentations, participants can ask questions or discuss through text.
+
+- **Remote Collaboration:** Team members can send text, images, files, etc. during communication.
+
+- **Live Teaching:** Students can send bullet comments or questions in the chat area, and teachers can view and answer in real-time, enhancing classroom interaction.
+
+## Prerequisites
+
+Before integrating this feature, please ensure the following conditions are met:
+- **User Status:** The user has completed login authentication through useLoginState, refer to Integration Overview, and is already in a room as the room owner or member, refer to Room Management.
+
+- **Environment Dependencies:** The project has correctly installed and imported `tuikit-atomicx-vue3`.
+
+## Implementing In-Room Chat Feature
+
+This feature provides two integration solutions. You can choose the most suitable one according to business needs:
+- **Solution 1 (Recommended):** Quick integration using UI components. Directly import the message list component ([MessageList](https://github.com/Tencent-RTC/TUIKit_Vue3/tree/main/packages/tuikit-atomicx-vue3/src/components/MessageList)) and message input component ([MessageInput](https://github.com/Tencent-RTC/TUIKit_Vue3/tree/main/packages/tuikit-atomicx-vue3/src/components/MessageInput)) provided by `tuikit-atomicx-vue3`, with the lowest development cost.
+
+- **Solution 2 (Advanced):** Custom integration using underlying API. Based on atomicx-core SDK API useMessageListState and useMessageInputState state hooks to implement UI and interaction logic yourself, with the highest flexibility.
+
+   
+
+   In-room chat
+
+## Solution 1: Quick Integration Using UI Components
+
+`tuikit-atomicx-vue3` provides two core components:
+- [**MessageList**](https://github.com/Tencent-RTC/TUIKit_Vue3/tree/main/packages/tuikit-atomicx-vue3/src/components/MessageList)**:** Message list component that displays chat history and supports operations such as copying, recalling, and deleting messages.
+
+- [**MessageInput**](https://github.com/Tencent-RTC/TUIKit_Vue3/tree/main/packages/tuikit-atomicx-vue3/src/components/MessageInput)**:** Message input component that supports sending text, emojis, images, and files, and can be automatically disabled based on mute status.
+
+### Step 1: Data Initialization
+
+After the user successfully joins a room, you need to call the setActiveConversation interface to initialize chat data. It is recommended to listen for changes in currentRoom to handle this automatically.
+
+> **Note:**
+> - `GROUP` is a fixed prefix, the `setActiveConversation` parameter must be ``GROUP${roomId}``, otherwise messages cannot be sent or received normally.
+> - `GROUP` is the fixed prefix for IM SDK group conversations (refer to [IM Conversation Types](https://web.sdk.qcloud.com/im/doc/zh-cn/Conversation.html)). Room chat is based on IM groups, so the conversation ID must be in the ``GROUP${roomId}`` format.
+
+``` typescript
+import { watch } from 'vue';
+import { useConversationListState } from 'tuikit-atomicx-vue3/chat';
+import { useRoomState } from 'tuikit-atomicx-vue3/room';
+
+const { currentRoom } = useRoomState();
+const { setActiveConversation } = useConversationListState();
+
+// Listen for room ID changes and automatically switch to the corresponding IM group conversation
+watch(() => currentRoom.value?.roomId, (roomId) => {
+  if (roomId) {
+    // Key step: Set the current active conversation ID, the rule is "GROUP" + room ID
+    setActiveConversation(`GROUP${roomId}`);
+  }
+}, { immediate: true });
+```
+
+### Step 2: Use Components
+
+In your page, you can directly combine these two components. Also combine useRoomParticipantState to get the current user's mute status and control the availability of the input box.
+
+> **Note:**
+> 
+
+> All TUIKit components must be wrapped inside UIKitProvider, otherwise they will not be able to obtain context dependencies, causing style anomalies.
+> 
+
+``` typescript
+<template>
+  <UIKitProvider theme="light" language="zh-CN">
+    <div class="room-chat-container">
+      <!-- Message list component -->
+      <!-- messageActionList: Configure operations supported by long-pressing messages, such as copy, recall, delete -->
+      <MessageList
+        class="message-list"
+        :messageActionList="['copy', 'recall', 'delete']"
+      />
+
+      <!-- Message input component -->
+      <!-- disabled: Disable input box when user is muted -->
+      <!-- hideSendButton: Optional, hide send button, use enter to send -->
+      <MessageInput
+        class="message-input"
+        :placeholder="inputPlaceholder"
+        :disabled="isMessageDisabled"
+        hideSendButton
+      />
+    </div>
+  </UIKitProvider>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue';
+import { UIKitProvider } from '@tencentcloud/uikit-base-component-vue3';
+import { MessageInput, MessageList } from 'tuikit-atomicx-vue3/chat';
+import { useRoomParticipantState } from 'tuikit-atomicx-vue3/room';
+
+const { localParticipant } = useRoomParticipantState();
+
+// Get current user's mute status, isMessageDisabled is synchronized in real-time by the room backend, no need for frontend active polling, frontend only needs to bind this state to automatically respond to mute changes.
+const isMessageDisabled = computed(() => localParticipant.value?.isMessageDisabled);
+
+// Dynamically display placeholder prompt based on status
+const inputPlaceholder = computed(() => 
+  isMessageDisabled.value ? 'You have been muted' : 'Please enter message...'
+);
+</script>
+
+<style scoped>
+.room-chat-container{display:flex;flex-direction:column;height:100%;padding:8px;gap:8px}.message-list{flex:1;overflow:hidden}.message-input{flex-shrink:0;border:1px solid #e0e0e0;border-radius:8px}
+</style>
+```
+
+### Step 3: Handle Unread Message Count (Optional)
+
+If the chat window is usually collapsed or closed, you need to listen for changes in messageList to count unread messages and provide prompts on the UI (such as chat icon badges).
+``` typescript
+import { ref, watch } from 'vue';
+import { useMessageListState } from 'tuikit-atomicx-vue3/chat';
+
+const { messageList } = useMessageListState();
+const unreadCount = ref(0);
+const isChatWindowOpen = ref(false); // Need to maintain this state according to your business logic
+
+watch(() => messageList.value?.length, (newLength, oldLength) => {
+  // If this is the first load or data is empty, do not count
+  if (!newLength || newLength === 0) return;
+
+  // Only increase unread count when chat window is closed and new messages are received
+  if (!isChatWindowOpen.value && newLength > (oldLength || 0)) {
+    unreadCount.value += (newLength - (oldLength || 0));
+  }
+});
+
+// Clear unread count when user opens chat window
+const openChatWindow = () => {
+  isChatWindowOpen.value = true;
+  unreadCount.value = 0;
+};
+```
+
+## Solution 2: Custom Integration Using Underlying API
+
+This section mainly introduces how to implement a custom chat interface through atomicx-core SDK API useMessageListState and useMessageInputState interfaces.
+
+> **Note:**
+> 
+
+> `MessageInputState` supports integration with `@tiptap/vue-3` editor by default. If you only need a simple text input box (e.g., `<input>` or `<textarea>`), please **ignore** `setEditorInstance`, `setContent` and other APIs bound to editor instances, and directly use `updateRawValue` and `sendMessage`.
+> 
+
+#### Step 1: Data Initialization
+
+After the user successfully joins a room, you need to call the setActiveConversation interface to initialize chat data. It is recommended to listen for changes in currentRoom to handle this automatically.
+
+> **Note:**
+> - `GROUP` is a fixed prefix, the `setActiveConversation` parameter must be ``GROUP${roomId}``, otherwise messages cannot be sent or received normally.
+> - When switching rooms or exiting a room, it is recommended to reset or clear the active conversation to avoid sending messages to the wrong conversation.
+
+``` typescript
+import { watch } from 'vue';
+import { useConversationListState } from 'tuikit-atomicx-vue3/chat';
+import { useRoomState } from 'tuikit-atomicx-vue3/room';
+
+const { currentRoom } = useRoomState();
+const { setActiveConversation } = useConversationListState();
+
+// Listen for room ID changes and automatically switch to the corresponding IM group conversation
+watch(() => currentRoom.value?.roomId, (roomId) => {
+  if (roomId) {
+    // Key step: Set the current active conversation ID, the rule is "GROUP" + room ID
+    setActiveConversation(`GROUP${roomId}`);
+  }
+}, { immediate: true });
+```
+
+#### Step 2: Get Message List
+
+Use useMessageListState to get the message list of the current conversation. `messageList` is reactive data and will automatically update with newly received messages.
+``` typescript
+import { useMessageListState } from 'tuikit-atomicx-vue3/chat';
+
+const { 
+  messageList,      // Reactive message list
+  loadMoreOlderMessage, // Method to load more history messages
+  hasMoreOlderMessage,   // Whether there are more history messages
+} = useMessageListState();
+
+// Example: Render message list
+// <div v-for="msg in messageList" :key="msg.ID">
+//   {{ msg.payload.text }}
+// </div>
+```
+
+#### Step 3: Send Messages
+
+Use useMessageInputState to manage input box content and send messages.
+``` typescript
+import { useMessageInputState } from 'tuikit-atomicx-vue3/chat';
+
+const { 
+  inputRawValue,  // Reactive data: current input content
+  updateRawValue, // Method: Update input content (will automatically trigger "other party is typing" status)
+  sendMessage     // Method: Send message
+} = useMessageInputState();
+
+const handleSend = async () => {
+  // Validate non-empty
+  if (!inputRawValue.value) return;
+  
+  try {
+    // 1. Send message
+    // Method A: Send the content of current inputRawValue
+    await sendMessage();
+    
+    // Method B: Directly send specified text (not dependent on inputRawValue)
+    // await sendMessage('Hello World');
+
+    console.log('Sent successfully');
+    
+    // 2. Clear input box after successful send
+    // Key point: In non-rich text mode, must use updateRawValue('') to clear
+    // Do not use setContent(''), this method only takes effect after binding an editor instance
+    updateRawValue('');
+  } catch (error) {
+    console.error('Send failed', error);
+  }
+};
+
+// Example: Bind to native input box
+// <input 
+//   :value="inputRawValue" 
+//   @input="(e) => updateRawValue(e.target.value)" 
+//   @keyup.enter="handleSend" 
+// />
+```
+
+#### Step 4: Load History Messages
+
+Use the loadMoreOlderMessage method to paginate and pull history messages. Usually triggered when scrolling to the top of the list.
+
+> **Note:**
+> 
+
+> After loading history messages, you usually need to manually adjust the scroll position to keep the current viewing perspective from jumping.
+> 
+
+``` typescript
+import { useMessageListState } from 'tuikit-atomicx-vue3/chat';
+
+const { 
+  hasMoreOlderMessage,
+  loadMoreOlderMessage
+} = useMessageListState();
+
+const loadHistory = async () => {
+  if (hasMoreOlderMessage.value) {
+    // Record scroll height before loading
+    // const previousHeight = scrollContainer.value.scrollHeight;
+    
+    await loadMoreOlderMessage();
+    
+    // Restore scroll position after DOM update
+    // nextTick(() => {
+    //   const currentHeight = scrollContainer.value.scrollHeight;
+    //   scrollContainer.value.scrollTop += (currentHeight - previousHeight);
+    // });
+  }
+};
+```
+
+#### Step 5: Advanced Features (Read Receipts)
+
+If you need read receipt functionality, you can use setEnableReadReceipt.
+``` typescript
+const { 
+  setEnableReadReceipt, // Enable/disable read receipts
+} = useMessageListState();
+
+// Enable read receipts
+setEnableReadReceipt(true);
+```
+
+## Development Notes
+
+- **Mute Status Synchronization**
+
+   `localParticipant.isMessageDisabled` is controlled by room administrators. When administrators enable "mute all" or individually mute a user, this property will automatically update. Please be sure to bind this property to the input box's `disabled` state to restrict user speaking at the frontend level.
+
+- **Conversation Switch Timing**
+
+   Ensure `setActiveConversation` is called after successfully entering the room and when `roomId` has a value. If called before entering the room, it may fail because the SDK has not finished initialization or is not logged in.
+
+- **Container Layout Requirements (Important)**
+
+   The message list component internally handles scrolling logic, so **the parent container must have a fixed height** (e.g., `height: 100%` or specific pixel value) and set `overflow: hidden`, otherwise the list will stretch infinitely and cannot scroll.
+
+- **Message Type Handling**
+
+   `messageList` contains multiple types of messages (text, images, files, etc.). When customizing rendering, you need to distinguish and handle according to `msg.type`.
+
+- **Input State Management**
+
+   Using `updateRawValue` to update input content will automatically trigger "other party is typing" status notification (if supported). Using only `inputRawValue.value = 'xxx'` may not trigger this status.
+
+- **History Message Scroll Maintenance**
+
+   In custom development, after calling `loadMoreOlderMessage` to load history messages, the DOM height will increase. To prevent view jumping, you need to record `scrollHeight` before loading, and adjust `scrollTop` after loading (`nextTick`) by calculating the height difference.
+
+- **New Message Scroll Strategy**
+
+   It is recommended to implement "smart scroll" logic: when users are at the bottom of the list, automatically scroll to the bottom when receiving new messages; when users are browsing history messages, keep the current position unchanged and display a "new message" prompt bubble.
+
+- **Conversation ID Format Requirements**
+
+   When calling `setActiveConversation`, you must use the ``GROUP${roomId}`` format (GROUP is a fixed prefix). This is the standard format for IM SDK group conversations, cannot be customized or prefix omitted, otherwise messages cannot be sent or received normally.
+
+## Common Questions
+
+**Failed to switch to group conversation or message list is empty?**
+
+Ensure you call `setActiveConversation('GROUP' + roomId)` after successful login and room entry; not logged in or empty roomId will cause failure.
+
+**Cannot receive messages or list is blank?**
+
+Check if the current active conversation is correct (`GROUP` prefix + roomId), and whether network/authentication is normal; if necessary, reset the active conversation `setActiveConversation` to refresh.
+
+**Unread count not clearing?**
+
+You need to manually maintain unread count logic. Update count when opening chat window, or when receiving new messages but window is closed.
+
+**Can still click send when muted?**
+
+Please ensure frontend UI disables send button and input box according to `isMessageDisabled` status. Although the server will also intercept, frontend disable provides better experience.
+
+**Custom avatar/nickname display?**
+
+Can use `MessageList` slot or custom Message component, prioritize displaying `nameCard` within the room, and customize avatar styles, etc.
+
+**How to send images or files in custom solution?**
+
+The `sendMessage` method supports passing an `InputContent[]` array. You can construct an array containing `type: 'image'` or `type: 'file'` along with the corresponding `file` object to implement rich media message sending.
+``` typescript
+import { useMessageInputState } from 'tuikit-atomicx-vue3/chat';
+
+const { sendMessage } = useMessageInputState();
+
+// Example: Send image
+// const file = ...; // File object obtained from input type="file"
+await sendMessage([{ type: 'image', file }]);
+```
+
+**How to modify default styles of UI components?**
+
+Component class names in `tuikit-atomicx-vue3` are usually stable. You can use CSS deep selectors (e.g., Vue's `:deep()`) to override default styles. For example `.message-list :deep(.tui-message-bubble) { background-color: #f0f0f0; }`.
+
+## **Sample Project**
+
+Tencent Cloud provides a sample project [atomicx-vite-vue3-ts](https://github.com/Tencent-RTC/TUIRoomKit/tree/main/Web/example/atomicx-vite-vue3-ts) on GitHub, which you can refer to for implementing complete RoomKit functionality.
+
+## API Documentation
+
+| **State/Component** | **Feature Description** | **API Documentation** |
+| --- | --- | --- |
+| **useRoomState** | Room state management (create, join, schedule, etc.) | API Documentation |
+| **useRoomParticipantState** | Room participant management (member list, permission control) | API Documentation |
+| **useConversationListState** | Conversation list management | API Documentation |
+| **useMessageListState** | Message list management | API Documentation |
+| **useMessageInputState** | Message input management | API Documentation |
+
+--------------------------------------------------------------------------------
+title: Manage RoomKit Participants (Android/iOS/Flutter/Vue)
+description: Participant APIs: RoomParticipantStore / useRoomParticipantState, getParticipantList, setAdmin, kickParticipant, closeParticipantDevice, disableAllDevices.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/roomkit/features/room-participant.md
+--------------------------------------------------------------------------------
+
+This document will guide you on how to manage participants in a room. Atomicx provides an out-of-the-box list component `RoomParticipantList` for quick integration, and exposes the useRoomParticipantState Hook to facilitate custom member control logic implementation.
+
+## Feature Introduction
+
+The member management module covers a complete set of capabilities for displaying user information and handling permissions in the room:
+- **Real-time List Display:** Dynamically presents nicknames, roles, audio/video status, and volume fluctuation of all members in the room.
+
+- **Permission Control:** Supports room owner or administrator to perform management operations such as kicking out, muting all, and transferring ownership.
+
+- **Tiered Management:** Supports differentiated permission strategies for room owners, administrators, and regular members.
+
+## Prerequisites
+
+- User has completed login authentication through useLoginState, please refer to Integration Overview.
+
+- User has entered the room through useRoomState, please refer to Room Management.
+
+## Integrating Member Management Component
+
+If you need to quickly build a member list interface, it's recommended to directly use the `RoomParticipantList` component. `RoomParticipantList` is an out-of-the-box participant list component with built-in complete member management UI and interactions.
+
+Example code for integrating `RoomParticipantList` component:
+``` typescript
+<template>
+  <div class="room-page">
+    <!-- Participant list sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span>Participants ({{ currentRoom.participantCount }})</span>
+        <IconClose />
+      </div>
+
+      <!-- Participant list component -->
+      <RoomParticipantList />
+    </aside>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import { IconClose } from '@tencentcloud/uikit-base-component-vue3';
+import { 
+  RoomView,
+  RoomParticipantList,
+  useRoomState,
+  useRoomParticipantState 
+} from 'tuikit-atomicx-vue3/room';
+
+const { currentRoom } = useRoomState();
+const { participantList } = useRoomParticipantState();
+</script>
+
+<style scope>
+.room-page {
+  width: 100vw;
+  height: 100vh;
+  min-width: 1150px;
+  display: flex;
+  flex-direction: row;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.sidebar-header {
+  display: flex;
+  height: 60px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 20px;
+}
+</style>
+```
+
+> **Note:**
+> - `RoomParticipantList` will automatically fill the height and width of its parent container, please ensure its parent container has explicit dimensions.
+> - When using the `RoomParticipantList` component, ensure global `UIKitProvider` is configured in `App.vue`, please refer to [Configure App.vue](https://cloud.tencent.com/document/product/647/81962#ce98ee15-b0cb-43af-81da-70f51231430e).
+
+## Implementing Member Management Features
+
+If you need to customize member list UI or trigger management actions in specific business scenarios, please use useRoomParticipantState.
+
+### Step 1: Get Member List
+
+Get reactive member data participantList through getParticipantList.
+``` typescript
+import { useRoomState, useRoomParticipantState } from 'tuikit-atomicx-vue3/room';
+
+const { currentRoom } = useRoomState();
+const { participantList, participantListCursor, getParticipantList } = useRoomParticipantState();
+
+// Get room user list after successfully joining room
+watch(() => currentRoom.value?.roomId, async () => {
+ await getParticipantList();
+})
+
+// Load more users when scrolling to bottom of list
+const handleLoadMore = async () => {
+  if (participantListCursor.value) {
+    await getParticipantList({ cursor: participantListCursor.value });
+  }
+};
+```
+
+> **Note:**
+> 
+
+> Data successfully fetched by `getParticipantList` interface will be automatically maintained in `participantList`, UI only needs to render data from `participantList`.
+>
+
+### Step 2: Render Participant Information
+
+Developers can use participantList data to customize rendering of user information list.
+``` typescript
+<template>
+  <div class="participant-list">
+    <div class="list-header">
+      <h3>Participants ({{ participantList.length }})</h3>
+      <button @click="handleRefresh">
+        <IconRefresh />
+      </button>
+    </div>
+    <div class="list-content">
+      <div 
+        v-for="participant in participantList" 
+        :key="participant.userId"
+        class="participant-item"
+      >
+        <!-- Avatar -->
+        <Avatar 
+          :user-id="participant.userId" 
+          :avatar-url="participant.avatarUrl" 
+        />
+
+        <!-- User info -->
+        <div class="user-info">
+          <div class="user-name">
+            <span>{{ participant.userName }}</span>
+            <span v-if="participant.userId === localParticipant.userId" class="badge">Me</span>
+            <span 
+              v-if="participant.role === RoomParticipantRole.Owner" 
+              class="role-badge owner"
+            >
+              Owner
+            </span>
+            <span 
+              v-else-if="participant.role === RoomParticipantRole.Admin" 
+              class="role-badge admin"
+            >
+              Admin
+            </span>
+          </div>
+        </div>
+
+        <!-- Device status -->
+        <div class="device-status">
+          <IconMicOn 
+            size="20"
+            v-if="participant.microphoneStatus === DeviceStatus.On" 
+            class="icon-on"
+          />
+          <IconMicOff size="20" v-else class="icon-off" />
+          <IconCameraOn
+            size="20"
+            v-if="participant.cameraStatus === DeviceStatus.On" 
+            class="icon-on"
+          />
+          <IconCameraOff size="20" v-else class="icon-off" />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue';
+import { IconRefresh, IconMicOn, IconMicOff, IconCameraOn, IconCameraOff } from '@tencentcloud/uikit-base-component-vue3';
+import { 
+  useRoomParticipantState,
+  Avatar,
+  RoomParticipantRole,
+  DeviceStatus
+} from 'tuikit-atomicx-vue3/room';
+
+const { 
+  localParticipant, 
+  participantList,
+  getParticipantList,
+  transferOwner
+} = useRoomParticipantState();
+
+const handleRefresh = async () => {
+  await getParticipantList({ cursor: '' });
+};
+</script>
+
+<style scoped>
+.participant-list {  display: flex;  flex-direction: column;  width: 400px;  height: 100%;  background-color: white;}.list-header {  display: flex;  align-items: center;  justify-content: space-between;  padding: 16px;  border-bottom: 1px solid #e0e0e0;}.list-header h3 {  margin: 0;  font-size: 16px;  font-weight: 600;}.list-content {  flex: 1;  overflow-y: auto;  padding: 8px;}.participant-item {  display: flex;  align-items: center;  gap: 12px;  padding: 12px;  border-radius: 8px;  transition: background-color 0.2s;}.participant-item:hover {  background-color: #f5f5f5;}.participant-item.is-local {  background-color: #e3f2fd;}.user-info {  flex: 1;  min-width: 0;}.user-name {  display: flex;  align-items: center;  gap: 6px;  font-size: 14px;  font-weight: 500;}.badge {  padding: 2px 6px;  background-color: #4caf50;  color: white;  border-radius: 3px;  font-size: 12px;}.role-badge {  padding: 2px 6px;  border-radius: 3px;  font-size: 12px;}.role-badge.owner {  background-color: #ff9800;  color: white;}.role-badge.admin {  background-color: #2196f3;  color: white;}.device-status {  display: flex;  gap: 8px;}.icon-on {  color: #4caf50;}.icon-off {  color: #999;}.action-button {  padding: 4px 8px;  background: transparent;  border: none;  cursor: pointer;  border-radius: 4px;  color: #666;}.action-button:hover {  background-color: #f0f0f0;}
+</style>
+```
+
+### Step 3: Set User Custom Information
+
+Developers can use the updateParticipantMetaData interface to set custom data for users to **implement job titles**, **purchase status** and other capabilities. After updating, the `metaData` information will be maintained in the reactive data of the corresponding user in `participantList`.
+``` typescript
+<template>
+  <div v-for="participant in participantList" :key="participant.userId">
+    <span>{{ participant.userName }}</span>
+    <span v-if="participant.metaData">
+      {{ JSON.parse(participant.metaData).level }}
+    </span>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue';
+import { IconRefresh, IconMicOn, IconMicOff, IconCameraOn, IconCameraOff } from '@tencentcloud/uikit-base-component-vue3';
+import { 
+  useRoomParticipantState,
+} from 'tuikit-atomicx-vue3/room';
+
+const { 
+  updateParticipantMetaData,
+} = useRoomParticipantState();
+
+await updateParticipantMetaData({
+ userId: '', // Specify user id
+ metaData: JSON.stringify({ level: 1 }),   // Business custom information
+})
+</script>
+```
+
+### Step 4: Manage Member Roles
+
+Room owner can change user role to administrator through setAdmin interface, and revoke user administrator status through revokeAdmin method.
+``` typescript
+const { setAdmin, revokeAdmin } = useRoomParticipantState();
+
+// Set regular user as administrator
+await setAdmin({ userId });
+
+// Change administrator to regular user
+await revokeAdmin({ userId });
+```
+
+### Step 5: Manage Member Media Devices
+
+Room owner and administrators can remotely control other members' media devices through closeParticipantDevice interface to maintain a quiet and orderly meeting environment.
+``` typescript
+import { useRoomParticipantState, DeviceType } from 'tuikit-atomicx-vue3/room';
+const { closeParticipantDevice } = useRoomParticipantState();
+
+// Force close specified member's microphone
+async function handleCloseUserMicrophone(userId: string) {
+  await closeParticipantDevice({
+    userId,
+    deviceType: DeviceType.Microphone,
+  });
+}
+
+// Force close specified member's camera
+async function handleCloseUserCamera(userId: string) {
+  await closeParticipantDevice({
+    userId,
+    deviceType: DeviceType.Camera,
+  });
+}
+```
+
+### Step 6: Enable Global State Management
+
+Room owner and administrators can enable room global state management through disableAllDevices and disableAllMessages interfaces.
+
+#### **Disable media devices of all regular users in the room**
+``` typescript
+import { useRoomParticipantState, DeviceType } from 'tuikit-atomicx-vue3/room';
+const { closeParticipantDevice } = useRoomParticipantState();
+
+// Force close all regular members' microphones
+async function handleDisableAllMicrophone() {
+  await disableAllDevices({
+    deviceType: DeviceType.Microphone,
+    disable: true,
+  });
+}
+
+// Remove microphone restriction for all
+async function handleEnableAllMicrophone() {
+  await disableAllDevices({
+    deviceType: DeviceType.Microphone,
+    disable: false,
+  });
+}
+
+// Force close all regular members' cameras
+async function handleDisableAllCamera() {
+  await disableAllDevices({
+    deviceType: DeviceType.Camera,
+    disable: true,
+  });
+}
+
+// Remove camera restriction for all
+async function handleEnableAllCamera() {
+  await disableAllDevices({
+    deviceType: DeviceType.Camera,
+    disable: false,
+  });
+}
+```
+
+#### **Disable in-meeting chat for all regular users in the room**
+``` typescript
+import { useRoomParticipantState, DeviceType } from 'tuikit-atomicx-vue3/room';
+const { disableAllMessages } = useRoomParticipantState();
+
+// Force disable chat capability for all regular members
+async function handleDisableAllMessage() {
+  await disableAllMessages({
+    disable: true,
+  });
+}
+```
+
+### **Step 7:** Monitor Member Speaking Status
+
+Through speakingUsers, you can get real-time information about users currently speaking in the room and their volume levels.
+``` typescript
+const { speakingUsers } = useRoomParticipantState();
+
+// Check if user is speaking
+const isSpeaking = (userId: string) => speakingUsers.value.has(userId);
+// Get user real-time volume (0-100)
+const getVolume = (userId: string) => speakingUsers.value.get(userId) || 0;
+```
+
+### Step 8: Kick Out Room Members
+
+Room owner and administrators can remove users from the room through kickParticipant interface.
+``` typescript
+const { kickParticipant } = useRoomParticipantState();
+
+// Kick user out of room
+await kickParticipant({ userId });
+```
+
+### Step 9: Invite Others to Join Room
+
+In real business scenarios, you may need to initiate call invitations to users not yet in the room. Atomicx provides complete call system support, please see In-Meeting Call.
+
+## API Documentation
+
+| **State/Component** | **Feature Description** | **API Documentation** |
+| --- | --- | --- |
+| **useRoomParticipantState** | Contains user data in the room and user management interfaces. | API Documentation |
+
+## Development Recommendations
+
+**Permission Check:** In the UI layer, it's recommended to determine the current user's operation permissions through `participant.role`, hiding **kick out** or **mute** buttons for users without management permissions.
+``` typescript
+<script setup>
+import { RoomParticipantRole } from 'tuikit-atomicx-vue3/room';
+
+const { localParticipant } = useRoomParticipantState();
+
+// Check if current user has admin permissions
+const hasAdminPermission = computed(() => {
+  return localParticipant.value.role === RoomParticipantRole.Owner ||
+         localParticipant.value.role === RoomParticipantRole.Admin;
+});
+</script>
+
+// Use in template
+<template>
+<button v-if="hasAdminPermission" @click="handleKick">Kick Out</button>
+</template>
+```
+
+--------------------------------------------------------------------------------
+title: Manage RoomKit Room Lifecycle (Android/iOS/Flutter/Vue)
+description: Room APIs: RoomStore / useRoomState, createRoom, joinRoom, leaveRoom, endRoom, updateRoomInfo, getRoomInfo.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/roomkit/features/room-state.md
+--------------------------------------------------------------------------------
+This document will guide you in detail on how to use Atomicx's useRoomState to manage the complete lifecycle of a room, including creating, joining, leaving, and ending a room, as well as handling key room status notifications. The following sequence diagram demonstrates the main process from room creation to destruction.
+
+## Feature Introduction
+
+useRoomState is the core Hook responsible for room management in the Atomicx solution. It encapsulates complex underlying signaling processes, and developers can drive room state through simple reactive data and method calls.
+- **Create & Join:** Create and join a room through createAndJoinRoom method, or join an existing room through joinRoom method.
+
+- **Real-time State Sync:** The `useRoomState` Hook internally maintains currentRoom reactive data, automatically synchronizing room name, mode, member count and other information.
+
+- **Role-based Exit Mechanism:** Provides clear operational boundaries for different roles. Regular members can use leaveRoom to exit; while the room owner (host) has endRoom permission to end the room and destroy room resources with one click.
+
+## **Prerequisites**
+
+User has completed login authentication through useLoginState, please refer to Integration Overview.
+
+## Implementing Room Management
+
+### Step 1: Import useRoomState
+
+``` typescript
+import { useRoomState } from 'tuikit-atomicx-vue3/room';
+
+const { 
+  createAndJoinRoom, 
+  joinRoom, 
+  leaveRoom, 
+  endRoom,
+  currentRoom 
+} = useRoomState();
+```
+
+### Step 2: Create Room
+
+Create room (room owner): Use createAndJoinRoom, after successful call the user will automatically obtain room owner permissions.
+
+> **Note:**
+> 
+
+> The roomId specified when creating a room is recommended to be generated and issued by the business backend to ensure global uniqueness and stability of the room ID.
+> 
+
+- **Example 1: User creates room**
+
+   ``` typescript
+   import { useRoomState } from 'tuikit-atomicx-vue3/room';
+   const { createAndJoinRoom } = useRoomState();
+   
+   await createAndJoinRoom({
+     roomId: 'YOUR_ROOM_ID',    // Specify room ID, generated by business backend
+   })
+   ```
+- **Example 2: User creates room and specifies room name**
+
+   ``` typescript
+   import { useRoomState } from 'tuikit-atomicx-vue3/room';
+   const { createAndJoinRoom } = useRoomState();
+   
+   await createAndJoinRoom({
+     roomId: 'YOUR_ROOM_ID',    // Specify room ID, generated by business backend
+     options: {
+       roomName: 'My Temporary Room'
+     }
+   })
+   ```
+- **Example 3: User creates password-protected room**
+
+   ``` typescript
+   import { useRoomState } from 'tuikit-atomicx-vue3/room';
+   const { createAndJoinRoom } = useRoomState();
+   
+   await createAndJoinRoom({
+     roomId: 'YOUR_ROOM_ID',    // Specify room ID, generated by business backend
+     options: {
+       roomName: 'My Temporary Room',
+       password: '123456',
+     }
+   })
+   ```   
+
+   > **Note:**
+   > 
+
+   > Creator automatically joins the room when calling createAndJoinRoom, no password required.
+   > 
+
+- **Example 4: User creates room and configures member management settings**
+
+   ``` typescript
+   import { useRoomState } from 'tuikit-atomicx-vue3/room';
+   const { createAndJoinRoom } = useRoomState();
+   
+   await createAndJoinRoom({
+     roomId: 'YOUR_ROOM_ID',    // Specify room ID, generated by business backend
+     options: {
+       roomName: 'My Temporary Room',
+       password: '123456',
+       isAllMicrophoneDisabled: true,   // Enable mute all
+       isAllCameraDisabled: true,       // Enable disable all videos
+       isAllScreenShareDisabled: true,  // Enable disable all screen sharing
+       isAllMessageDisabled: true,      // Enable disable all in-meeting messages
+     }
+   })
+   ```   
+
+   > **Note:**
+   > 
+
+   > Member management configuration only applies to regular members, room owner and administrators are not restricted. To modify member management configuration after room creation or manage individual member permissions, please refer to Member Management.
+   >
+
+### Step 3: User joins existing room
+
+Logged-in users can call joinRoom to join an existing room. Atomicx only supports users joining one room at a time.
+- **Example 1: User joins room**
+
+   ``` typescript
+   import { useRoomState } from 'tuikit-atomicx-vue3/room';
+   const { joinRoom } = useRoomState();
+   
+   await joinRoom({
+     roomId: 'YOUR_ROOM_ID',    // Specify room ID, generated by business backend
+   })
+   ```
+- **Example 2: User joins password-protected room**
+
+   ``` typescript
+   import { useRoomState } from 'tuikit-atomicx-vue3/room';
+   const { joinRoom } = useRoomState();
+   
+   await joinRoom({
+     roomId: 'YOUR_ROOM_ID',    // Specify room ID, generated by business backend
+     password: '123456',
+   })
+   ```
+
+### Step 4: Update room information
+
+Room owner can use updateRoomInfo to update room name and password after creating a room.
+``` typescript
+import { useRoomState } from 'tuikit-atomicx-vue3/room';
+const { updateRoomInfo } = useRoomState();
+
+await updateRoomInfo({
+  roomId: 'YOUR_ROOM_ID',    // Specify room ID, generated by business backend
+  options: {
+     roomName: 'New Room Name',
+     password: '234567',
+  },
+})
+```
+
+> **Note:**
+> 
+
+> Room owner must be in the room to call updateRoomInfo. If room owner has left the room, they need to rejoin before updating room information.
+>
+
+### Step 5: Leave room
+
+Both room owner and regular users can call leaveRoom interface to leave the room. Prerequisite for using this interface is that the user has joined the room through createAndJoinRoom or joinRoom interface.
+``` typescript
+import { useRoomState } from 'tuikit-atomicx-vue3/room';
+const { leaveRoom } = useRoomState();
+
+await leaveRoom();
+```
+
+### Step 6: Destroy room
+
+Only room owner can call endRoom interface to destroy the room. Prerequisite for using this interface is that the user has created a room through createAndJoinRoom or has obtained room owner status.
+``` typescript
+import { useRoomState } from 'tuikit-atomicx-vue3/room';
+const { endRoom } = useRoomState();
+
+await endRoom();
+```
+
+> **Note:**
+> - If room owner leaves the room without calling endRoom, the room will continue to exist until automatic reclamation conditions are met (6 consecutive hours without users).
+> - Room owner can transfer owner status to other users through transferOwner interface.
+
+### Step 7: Handle abnormal exit
+
+#### Handle room destroyed event
+
+Regular users can handle room destruction business interaction by listening to `RoomEvent.onRoomEnded` event.
+``` typescript
+import { useRoomState, RoomEvent } from 'tuikit-atomicx-vue3/room';
+import { TUIMessageBox } from '@tencentcloud/uikit-base-component-vue3';
+const { subscribeEvent, unsubscribeEvent } = useRoomState();
+
+function onRoomEnded() {
+  TUIMessageBox.alert({
+    title: 'Notice',
+    content: 'Room owner has ended the room',
+  });
+}
+
+// Subscribe to RoomEvent when component loads
+subscribeEvent(RoomEvent.onRoomEnded, onRoomEnded);
+// Unsubscribe from RoomEvent when component is destroyed
+unsubscribeEvent(RoomEvent.onRoomEnded, onRoomEnded);
+```
+
+#### Handle user kicked from room event
+
+Regular users can handle being kicked from room business interaction by listening to `RoomParticipantEvent.onKickedFromRoom` event.
+``` typescript
+import { useRoomParticipantState, RoomParticipantEvent, KickedOutOfRoomReason } from 'tuikit-atomicx-vue3/room';
+import { TUIMessageBox } from '@tencentcloud/uikit-base-component-vue3';
+
+const { subscribeEvent, unsubscribeEvent } = useRoomParticipantState();
+
+function onKickedFromRoom({ reason }: { reason: KickedOutOfRoomReason; message: string }) {
+    let notice = '';
+    switch (reason) {
+      case KickedOutOfRoomReason.KickedByAdmin:
+        notice = 'You have been removed from the room by the host';
+        break;
+      case KickedOutOfRoomReason.ReplacedByAnotherDevice:
+        notice = 'Your account has been logged in on another device';
+        break;
+      case KickedOutOfRoomReason.KickedByServer:
+        notice = 'You have been removed from the room by the server';
+        break;
+      case KickedOutOfRoomReason.ConnectionTimeout:
+        notice = 'Network connection timeout, exiting room';
+        break;
+      case KickedOutOfRoomReason.InvalidStatusOnReconnect:
+        notice = 'Room has been destroyed or you were removed during offline period';
+        break;
+      case KickedOutOfRoomReason.RoomLimitExceeded:
+        notice = 'Room capacity reached, unable to join';
+        break;
+      default:
+        notice = 'You have been removed from the room';
+        break;
+    }
+    TUIMessageBox.alert({
+      title: 'Notice',
+      content: notice,
+    });
+  }
+
+// Subscribe to RoomParticipantEvent when component loads
+subscribeEvent(RoomParticipantEvent.onKickedFromRoom, onKickedFromRoom);
+// Unsubscribe from RoomParticipantEvent when component is destroyed
+unsubscribeEvent(RoomParticipantEvent.onKickedFromRoom, onKickedFromRoom);
+```
+
+## Advanced Implementation
+
+The current document introduces quickly creating and immediately joining a room, suitable for instant multi-party audio/video communication scenarios.
+
+However, in real business scenarios, we often need to plan ahead: set room topics, schedule specific start and end times, and invite participants. Participants can receive reminders before the multi-party audio/video room starts and join on time.
+
+Atomicx provides complete scheduled room capabilities, including:
+- **Schedule Room:** Set multi-party room time and participant list in advance.
+
+- **Schedule List**: View and manage all upcoming multi-party rooms under your name.
+
+- **Meeting Reminders:** Support automatic reminder logic before start.
+
+   If you need to implement more complex business multi-party audio/video room management logic as described above, please refer to: Schedule Room.
+
+--------------------------------------------------------------------------------
+title: Render Vue RoomKit Video Layout
+description: Use useRoomView API for grid layout, sidebar layout and speaker mode video rendering with custom video overlays.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/roomkit/features/room-view.md
+--------------------------------------------------------------------------------
+
+This document will guide you in using Atomicx's core view component `RoomView` to implement video rendering for real-time audio and video rooms. By configuring layout templates and utilizing component slots, you can quickly implement video layout switching and personalized customization.
+
+`RoomView` is the main container component responsible for video rendering in Atomicx. It automatically handles video stream subscription, rendering, and release. You only need to focus on its layout configuration and UI enhancement.
+
+## Core Capabilities
+
+`RoomView`, as the core view container for multi-party audio and video rooms, has built-in multiple enterprise-grade audio and video processing capabilities:
+- **Intelligent Performance Management**: Supports lazy loading of video streams within the viewport, and can automatically switch between high and low-definition streams based on stream area size and number of remote streams, significantly reducing system energy consumption and bandwidth usage.
+
+- **Fine-grained Sorting Strategy**: The system automatically adjusts frame order based on roles (host priority) and media status (audio and video enabled priority).
+
+- **Interactive Speaker Mode**: Supports double-clicking to lock the main screen, and in sidebar or top bar layouts, supports collapsing non-core areas to focus on presentation content.
+
+- **Immersive Visual Design**: All video windows are forced to maintain a standard `16:9` ratio, combined with interactive display toolbars, providing an interference-free multi-party audio and video room experience.
+
+## Customizable Range
+
+`RoomView` focuses only on underlying video stream playback, while giving developers all "presentation rights" at the view layer. Using `RoomView`, you can freely define:
+- **Layout Switching**: Transform layouts in real-time according to business scenarios (e.g., speaker mode or discussion mode).
+
+- **Video Widget UI:** Including name tags, volume dynamic waveforms, role badges, etc.
+
+## **Prerequisites**
+
+- The user has completed login authentication through useLoginState, please refer to Integration Overview.
+
+- The user has entered a room through useRoomState, refer to Room Management.
+
+- Global `UIKitProvider` has been configured in `App.vue`, please refer to [Configure App.vue](https://cloud.tencent.com/document/product/647/81962#ce98ee15-b0cb-43af-81da-70f51231430e).
+
+## Implementing Video Layout Feature
+
+### Step 1: Import and Render Basic Layout
+
+In your meeting page (e.g., RoomLayoutView.vue), import `RoomView` and the layout enum `RoomLayoutTemplate`.
+``` typescript
+<template>
+  <div class="room-container">
+    <RoomView />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import { RoomView } from 'tuikit-atomicx-vue3/room';
+</script>
+
+<style lang="scss">
+.room-container {
+ width: 100%;
+ height: 100%;
+}
+</style>
+```
+
+> **Note:**
+> 
+
+> `RoomView` will automatically fill the parent container's height and width, please ensure its parent container has explicit dimensions.
+>
+
+### Step 2: Switch Layout Mode
+
+You can dynamically update the `layoutTemplate` attribute value of `RoomView` based on business logic (e.g., clicking a switch button).
+| Property Name | Type | Default Value | Description |
+| --- | --- | --- | --- |
+| `layoutTemplate` | `RoomLayoutTemplate` | `RoomLayoutTemplate.GridLayout` | Video stream layout |
+
+`RoomLayoutTemplate` optional value analysis:
+| Layout Mode | Enum Value | Description |
+| --- | --- | --- |
+| Grid Layout | `RoomLayoutTemplate.GridLayout` | Default layout. All participant screens are evenly arranged, supports pagination when participants exceed 9 people. |
+| Sidebar Layout | `RoomLayoutTemplate.SidebarLayout` | Main screen is prominently displayed, with other participant screens arranged in a sidebar format, suitable for speeches, reports, and other scenarios. |
+| Top Bar Layout | `RoomLayoutTemplate.CinemaLayout` | Main screen is prominently displayed, with other participant screens arranged in a top bar format, suitable for speeches, reports, and other scenarios. |
+
+``` typescript
+<template>
+  <!-- Add layout switch buttons -->
+  <div class="layout-switcher">
+    <button @click="switchLayout(RoomLayoutTemplate.GridLayout)">Grid</button>
+    <button @click="switchLayout(RoomLayoutTemplate.SidebarLayout)">Sidebar</button>
+    <button @click="switchLayout(RoomLayoutTemplate.CinemaLayout)">Top Bar</button>
+  </div>
+  <div class="room-container">
+    <RoomView :layoutTemplate="currentLayout" />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import { RoomView, RoomLayoutTemplate } from 'tuikit-atomicx-vue3/room';
+// Default to grid layout
+const currentLayout = ref(RoomLayoutTemplate.GridLayout);
+
+// Switch layout
+const switchLayout = (layout: RoomLayoutTemplate) => {
+  currentLayout.value = layout;
+};
+</script>
+
+<style lang="scss">
+.room-container {
+ width: 100%;
+ height: 100%;
+}
+</style>
+```
+
+### Step 3: Implement Video Stream Widget Information
+
+You can customize UI display content for video screens (e.g., set nicknames, add custom icons) by using the `participantViewUI` slot.
+
+| Slot Parameter | Type | Description |
+| --- | --- | --- |
+| `participant` | `RoomParticipant` | Participant object corresponding to the current video stream, containing real-time status information such as user's `userId`, `userName`, `role`, etc. |
+| `streamType` | `VideoStreamType` | Distinguish whether the current is camera stream (Camera) or screen share stream (Screen) |
+
+#### Prepare Visual Resources
+
+To provide complete interactive feedback, it is recommended to prepare the following icons in advance:
+- Microphone status icons: Distinguish between enabled, muted, and dynamic volume bars.
+
+- Identity icons: Used to distinguish room owner (Owner), administrator (Admin), and regular members.
+
+- Network signal icons: Display real-time uplink/downlink network quality.
+   
+
+   > **Special Note:**
+   > 
+
+   > We provide copyright-free icons in the @tencentcloud/uikit-base-component-vue3 npm package in the sample project, which you can directly import and use.
+   > 
+
+#### Implementation Code Example
+1. Add file `ParticipantViewUI.vue` to implement UI rendering logic for a single video stream widget layer.
+
+   ``` typescript
+   <template>
+     <div class="stream-cover-container">
+       <div class="corner-user-info-container">
+         <div
+           v-if="showMasterIcon || showAdminIcon"
+           :class="{ 'master-icon': showMasterIcon, 'admin-icon': showAdminIcon }"
+         >
+           <IconUser />
+         </div>
+         <div v-if="!isScreenStream" :class="['audio-icon-container']">
+           <div class="audio-level-container">
+             <div class="audio-level" :style="audioLevelStyle" />
+           </div>
+           <IconMicOff v-if="!isMicrophoneOn" class="audio-icon" size="20" />
+           <IconMicOn v-else class="audio-icon" size="20" />
+         </div>
+         <span class="user-name" :title="displayName">
+           {{ displayName }}
+         </span>
+       </div>
+     </div>
+   </template>
+   
+   <script setup lang="ts">
+   import { computed, defineProps } from 'vue';
+   import {
+     IconUser,
+     IconMicOff,
+     IconMicOn,
+   } from '@tencentcloud/uikit-base-component-vue3';
+   import { RoomParticipantRole, DeviceStatus, VideoStreamType, useRoomParticipantState } from 'tuikit-atomicx-vue3/room';
+   import type { RoomParticipant } from 'tuikit-atomicx-vue3/room';
+   
+   interface Props {
+     participant: RoomParticipant;
+     streamType: VideoStreamType;
+   }
+   const props = defineProps<Props>();
+   
+   const { speakingUsers } = useRoomParticipantState();
+   const speakingAudioVolume = computed(() => speakingUsers.value.get(props.participant.userId) || 0);
+   const audioLevelStyle = computed(() => {
+     if (props.participant.microphoneStatus === DeviceStatus.Off || !speakingAudioVolume.value) {
+       return '';
+     }
+     return `height: ${speakingAudioVolume.value * 4}%`;
+   });
+   
+   const isMicrophoneOn = computed(() => props.participant.microphoneStatus === DeviceStatus.On);
+   const displayName = computed(() => props.participant.nameCard || props.participant.userName || props.participant.userId);
+   
+   const showMasterIcon = computed(() => {
+     const { role } = props.participant;
+     return role === RoomParticipantRole.Owner && props.streamType === VideoStreamType.Camera;
+   });
+   
+   const showAdminIcon = computed(() => {
+     const { role } = props.participant;
+     return (role === RoomParticipantRole.Admin && props.streamType === VideoStreamType.Camera);
+   });
+   </script>
+   
+   <style lang="scss" scoped>
+   .stream-cover-container {  position: absolute;  top: 0;  left: 0;  width: 100%;  height: 100%;  border-radius: 12px;  pointer-events: none;  .corner-user-info-container {    position: absolute;    bottom: 8px;    left: 8px;    display: flex;    align-content: center;    align-items: center;    box-sizing: border-box;    min-width: 118px;    max-width: calc(100% - 24px);    padding-right: 10px;    height: 32px;    overflow: hidden;    font-size: 14px;    color: var(--uikit-color-white-1);    border-radius: 16px;    background-color: var(--uikit-color-black-5);    .master-icon,    .admin-icon {      display: flex;      flex-shrink: 0;      align-items: center;      justify-content: center;      width: 32px;      height: 32px;      margin-left: 0;      border-radius: 50%;      background-color: var(--button-color-primary-default);    }    .admin-icon {      background-color: var(--text-color-warning);    }    .audio-icon-container {      margin-left: 4px;      position: relative;      width: 20px;      height: 20px;      flex-shrink: 0;      min-width: 20px;      &:first-child {        margin-left: 8px;      }      .audio-level-container {        position: absolute;        top: 2px;        left: 6px;        display: flex;        flex-flow: column-reverse wrap;        justify-content: space-between;        width: 8px;        height: 12px;        overflow: hidden;        border-radius: 4px;        .audio-level {          width: 100%;          background-color: var(--text-color-success);          transition: height 0.2s;        }      }      .audio-icon {        position: absolute;        top: 0;        left: 0;      }    }    .user-name {      margin-left: 4px;      overflow: hidden;      text-overflow: ellipsis;      white-space: nowrap;      min-width: 0;    }    .screen-icon {      flex-shrink: 0;      min-width: 0;      color: var(--uikit-color-white-1);      margin-left: 4px;      margin-right: 2px;    }    .screen-info {      margin-left: 4px;      font-size: 12px;      color: var(--uikit-color-white-1);      flex-shrink: 0;      min-width: 0;    }  }}
+   </style>
+   ```
+2. Configure `RoomView` slot to render video stream widget content on the page.
+
+   ``` typescript
+   <template>
+     <div class="room-container">
+       <RoomView :layout-template="currentLayout">
+         <template #participantViewUI="{ participant, streamType }">
+           <ParticipantViewUI :participant="participant" :stream-type="streamType" />
+         </template>
+       </RoomView>
+     </div>
+   </template>
+   
+   <script setup lang="ts">
+   import { ref } from 'vue';
+   import { RoomView, RoomLayoutTemplate } from 'tuikit-atomicx-vue3/room';
+   // Import the newly added ParticipantViewUI.vue file
+   import ParticipantViewUI from './ParticipantViewUI.vue';
+   
+   // Default to grid layout
+   const currentLayout = ref(RoomLayoutTemplate.GridLayout);
+   </script>
+   ```
+
+## API Documentation
+
+| **State/Component** | **Feature Description** | **API Documentation** |
+| --- | --- | --- |
+| **useRoomParticipantState** | Contains room user data and user management interface. | API Documentation |
+
+## Common Questions
+
+### **Does RoomView include screen share stream rendering?**
+
+`RoomView` has built-in remote screen share stream rendering. For local screen sharing, you need to complete local screen share placeholder UI through the `participantViewUI` slot.
+
+### Does RoomView include default UI widgets?
+
+`RoomView` has no default UI widgets internally. You can refer to [RoomView Open Source Usage Example](https://github.com/Tencent-RTC/TUIRoomKit/tree/main/Web/example/atomicx-vite-vue3-ts/src/components/RoomLayoutView) to quickly complete custom UI widgets.
+
+### If the layouts provided by RoomView do not meet requirements, can more optional layouts be provided?
+
+`RoomView` currently supports grid layout, sidebar, and top bar layouts. If you have customization needs, please [contact us](https://cloud.tencent.com/document/product/647/19906).
+
+--------------------------------------------------------------------------------
+title: Schedule RoomKit Meeting Rooms (Android/iOS/Flutter/Vue)
+description: Scheduling APIs: RoomStore / useRoomState, schedule create/cancel, getScheduledRoomList, getScheduledAttendees.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/roomkit/features/schedule-room.md
+--------------------------------------------------------------------------------
+
+The scheduled room feature allows users to plan meeting times, topics, and entry passwords in advance. Through this feature, users can create future meeting plans, generate exclusive meeting numbers and entry links, making it convenient to notify participants in advance.
+
+## Use Cases
+
+- **Corporate Regular Meetings:** Schedule weekly and monthly meetings in advance to ensure participants receive notifications ahead of time.
+
+- **Online Class Scheduling:** Teachers can set up course schedules for the week in advance.
+
+- **Remote Interview Appointments:** HR can schedule specific time slots for interviewees and interviewers.
+
+## Prerequisites
+
+- **User Status:** The user has completed login authentication through useLoginState, refer to Integration Overview, and must be in **logged in** status to initiate scheduling or view scheduled list.
+
+- **Environment Dependencies:** The project has imported `tuikit-atomicx-vue3`.
+
+## Implementing Scheduled Room Feature
+
+This feature provides two integration solutions. You can choose the most suitable one according to business needs:
+- **Solution 1 (Recommended):** Quick integration using UI components. Directly import the schedule room panel ([ScheduleRoomPanel](https://github.com/Tencent-RTC/TUIKit_Vue3/blob/main/packages/tuikit-atomicx-vue3/src/components/ScheduleRoomPanel/ScheduleRoomPanel.vue)) and scheduled room list component ([ScheduledRoomList](https://github.com/Tencent-RTC/TUIKit_Vue3/blob/main/packages/tuikit-atomicx-vue3/src/components/ScheduleRoomPanel/ScheduledRoomList.vue)) provided by `tuikit-atomicx-vue3`, with the lowest development cost.
+
+- **Solution 2 (Advanced):** Custom integration using underlying API. Based on atomicx-core SDK API `useRoomState` state hook to implement UI and interaction logic yourself, with the highest flexibility.
+
+   
+
+## Solution 1: Quick Integration Using UI Components
+
+`tuikit-atomicx-vue3` provides two core components:
+- [**ScheduleRoomPanel**](https://github.com/Tencent-RTC/TUIKit_Vue3/blob/main/packages/tuikit-atomicx-vue3/src/components/ScheduleRoomPanel/ScheduleRoomPanel.vue)**:** Configuration panel for scheduling meetings, including time selection, member invitation, and other functions.
+
+- [**ScheduledRoomList**](https://github.com/Tencent-RTC/TUIKit_Vue3/blob/main/packages/tuikit-atomicx-vue3/src/components/ScheduleRoomPanel/ScheduledRoomList.vue)**:** Displays the current user's scheduled meeting list, supports clicking to join, modify, and cancel schedules.
+
+### Step 1: Import Components
+
+``` typescript
+import { ScheduleRoomPanel, ScheduledRoomList } from 'tuikit-atomicx-vue3/room';
+```
+
+### Step 2: Use Components
+
+In your page, you can directly combine these two components.
+``` typescript
+<template>
+  <UIKitProvider theme="light" language="zh-CN">
+    <div class="schedule-container">
+      <!-- Schedule button, displays schedule dialog after clicking -->
+      <button @click="showSchedulePanel = true">
+        Schedule Meeting
+      </button>
+
+      <!-- Schedule list component -->
+      <div class="list-container">
+        <!-- Listen to join-room event to handle joining logic -->
+        <ScheduledRoomList @join-room="handleJoinRoom" />
+      </div>
+
+      <!-- Schedule panel dialog -->
+      <!-- It is recommended to wrap it in a Dialog or Modal component -->
+      <div v-if="showSchedulePanel" class="modal-mask">
+        <div class="modal-content">
+          <ScheduleRoomPanel
+            @confirm="handleScheduleConfirm"
+            @cancel="showSchedulePanel = false"
+          />
+        </div>
+      </div>
+    </div>
+  </UIKitProvider>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import { UIKitProvider } from '@tencentcloud/uikit-base-component-vue3';
+import { ScheduleRoomPanel, ScheduledRoomList, useRoomState } from 'tuikit-atomicx-vue3/room';
+
+const { joinRoom } = useRoomState();
+
+const showSchedulePanel = ref(false);
+
+const handleScheduleConfirm = (roomId: string, options: Record<string, any>) => {
+  console.log('Schedule successful', roomId, options);
+  showSchedulePanel.value = false;
+  // Optional: Display invitation dialog or copy link
+};
+
+const handleJoinRoom = async (roomInfo: { roomId: string }) => {
+  console.log('Click to join', roomInfo.roomId);
+  await joinRoom(roomInfo.roomId); 
+};
+</script>
+
+<style scoped>
+.schedule-container{padding:24px;max-width:1000px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif}button{background-color:#006eff;color:#fff;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;font-size:14px;font-weight:500;transition:background-color .2s;margin-bottom:24px}button:hover{background-color:#0056cc}.list-container{background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.05);padding:16px}.modal-mask{position:fixed;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:1000}.modal-content{background-color:#fff;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.1);padding:24px;width:100%;max-width:480px}
+</style>
+```
+
+## Solution 2: Custom Integration Using Underlying API
+
+This section mainly introduces how to implement the core logic of scheduled rooms through atomicx-core SDK API useRoomState interface.
+
+Scheduled room sequence diagram
+
+### Step 1: Initiate Schedule
+
+Use the scheduleRoom method to create a new scheduled meeting. You need to specify the meeting's start time, end time, room name, and other information.
+``` typescript
+import { useRoomState } from 'tuikit-atomicx-vue3/room';
+
+const { scheduleRoom } = useRoomState();
+
+const createSchedule = async () => {
+  try {
+    // roomId restriction: string type, required parameter, recommended to generate randomly
+    const roomId = '123456'; 
+    
+    // Note: Timestamp unit must be **seconds** (Date.getTime() gets milliseconds, need to divide by 1000)
+    const startTime = Math.floor(new Date().getTime() / 1000) + 3600; // Start after 1 hour
+    const duration = 1800; // 30 minutes
+
+    const options = {
+      roomName: 'Product Requirements Review Meeting',
+      scheduleStartTime: startTime, // Unit: seconds
+      scheduleEndTime: startTime + duration, // Unit: seconds
+      scheduleAttendees: ['userA', 'userB'], // Invited participant ID list
+      password: '123', // Optional: Set entry password
+      isAllMicrophoneDisabled: false, // Optional: Mute all microphones
+      isAllCameraDisabled: false,     // Optional: Disable all cameras
+    };
+
+    await scheduleRoom({ roomId, options });
+    console.log('Schedule successful', roomId);
+  } catch (error) {
+    console.error('Schedule failed', error);
+  }
+};
+```
+
+### Step 2: Get Scheduled List
+
+Use the getScheduledRoomList method to retrieve the current user's scheduled meeting list. The list data will be reactively updated to the scheduledRoomList state.
+``` typescript
+import { onMounted, watch } from 'vue';
+import { useRoomState } from 'tuikit-atomicx-vue3/room';
+
+const { 
+  scheduledRoomList,      // Reactive data: scheduled meeting list
+  getScheduledRoomList    // Method: Retrieve list
+} = useRoomState();
+
+// Initialize and load list
+onMounted(async () => {
+  // cursor indicates where to start pulling data, empty string means start from beginning
+  // getScheduledRoomList return value includes new cursor
+  const { cursor } = await getScheduledRoomList({ cursor: '' }); 
+  // If cursor is not empty, it means there is more data, can continue calling to retrieve
+});
+
+// Listen for list changes and update UI in real-time
+watch(scheduledRoomList, (list) => {
+  console.log('Current scheduled list:', list);
+});
+```
+
+### Step 3: Modify Schedule
+
+If you need to adjust the time or topic of a scheduled meeting, you can use the updateScheduledRoom method.
+``` typescript
+import { useRoomState } from 'tuikit-atomicx-vue3/room';
+
+const { updateScheduledRoom } = useRoomState();
+
+const updateRoom = async (roomId: string) => {
+  try {
+    const newStartTime = Math.floor(new Date().getTime() / 1000) + 7200; // Postpone by 2 hours
+    const options = {
+      roomName: 'Product Requirements Review Meeting (Rescheduled)',
+      scheduleStartTime: newStartTime,
+      scheduleEndTime: newStartTime + 1800,
+    };
+
+    await updateScheduledRoom({ roomId, options });
+    console.log('Modification successful');
+  } catch (error) {
+    console.error('Modification failed', error);
+  }
+};
+```
+
+### Step 4: Cancel Schedule
+
+If you need to cancel a scheduled meeting, you can call the cancelScheduledRoom method.
+``` typescript
+import { useRoomState } from 'tuikit-atomicx-vue3/room';
+
+const { cancelScheduledRoom } = useRoomState();
+
+const cancelRoom = async (roomId: string) => {
+  try {
+    await cancelScheduledRoom({ roomId });
+    console.log('Cancellation successful');
+    // After successful cancellation, scheduledRoomList will automatically update, no need to manually retrieve again
+  } catch (error) {
+    console.error('Cancellation failed', error);
+  }
+};
+```
+
+### Step 5: Handle Entry Password
+
+For scheduled meetings with passwords, when calling the joinRoom interface to join, you need to catch authentication failure errors and guide users to enter the password.
+``` typescript
+import { useRoomState, TUIErrorCode } from 'tuikit-atomicx-vue3/room';
+
+const { joinRoom } = useRoomState();
+
+const enterRoom = async (roomId: string, password?: string) => {
+  try {
+    await joinRoom({ roomId, password });
+  } catch (error: any) {
+    // Catch specific error code, TUIErrorCode.ERR_NEED_PASSWORD (-2010)
+    if (error.code === TUIErrorCode.ERR_NEED_PASSWORD) {
+      console.log('This room requires a password, please guide user to enter');
+      // 1. Pop up password input box
+      // 2. Get user entered password inputPassword
+      // 3. Re-call enterRoom(roomId, inputPassword)
+    } else if (error.code === TUIErrorCode.ERR_WRONG_PASSWORD) {
+      console.error('Incorrect password, please re-enter');
+    } else {
+      console.error('Join failed', error);
+    }
+  }
+};
+```
+
+### Step 6: Listen for Schedule Events
+
+In addition to passively responding to data changes, you can also listen to specific schedule events to handle business logic, such as popping up reminders when meetings are about to start.
+``` typescript
+import { onMounted, onUnmounted } from 'vue';
+import { useRoomState, RoomEvent } from 'tuikit-atomicx-vue3/room';
+
+const { subscribeEvent, unsubscribeEvent } = useRoomState();
+
+// Meeting starting soon notification (default is 5 minutes before start)
+const handleRoomStartingSoon = (info: { roomInfo: any }) => {
+  console.log('Meeting starting soon:', info.roomInfo.roomName);
+  // Can implement Toast reminder or system notification here
+};
+
+// Meeting cancelled notification
+const handleRoomCancelled = (info: { roomInfo: any; operateUser: any }) => {
+  console.log(`Meeting ${info.roomInfo.roomName} has been cancelled by ${info.operateUser.userName}`);
+};
+
+// Received new meeting invitation notification
+const handleRoomAdded = (info: { roomInfo: any }) => {
+  console.log('Received new meeting invitation:', info.roomInfo.roomName);
+};
+
+// Removed from meeting notification
+const handleRemovedFromRoom = (info: { roomInfo: any; operateUser: any }) => {
+  console.log(`You have been removed from meeting ${info.roomInfo.roomName} by ${info.operateUser.userName}`);
+};
+
+onMounted(() => {
+  // Register event listeners
+  subscribeEvent(RoomEvent.onScheduledRoomStartingSoon, handleRoomStartingSoon);
+  subscribeEvent(RoomEvent.onScheduledRoomCancelled, handleRoomCancelled);
+  subscribeEvent(RoomEvent.onAddedToScheduledRoom, handleRoomAdded);
+  subscribeEvent(RoomEvent.onRemovedFromScheduledRoom, handleRemovedFromRoom);
+});
+
+onUnmounted(() => {
+  // Remove event listeners
+  unsubscribeEvent(RoomEvent.onScheduledRoomStartingSoon, handleRoomStartingSoon);
+  unsubscribeEvent(RoomEvent.onScheduledRoomCancelled, handleRoomCancelled);
+  unsubscribeEvent(RoomEvent.onAddedToScheduledRoom, handleRoomAdded);
+  unsubscribeEvent(RoomEvent.onRemovedFromScheduledRoom, handleRemovedFromRoom);
+});
+```
+
+## Development Notes
+
+1. **Timestamp Unit**: All time parameters involved in the SDK (e.g., `scheduleStartTime`, `scheduleEndTime`) are in **seconds**, not milliseconds as in JavaScript's `Date` object by default. Please make sure to perform `/ 1000` operation before passing parameters.
+
+2. **Style Import**: When using UI components, make sure to import `UIKitProvider`, otherwise component styles will not render properly.
+
+3. **RoomID Recommendation**: Although `scheduleRoom` allows the frontend to pass in `roomId`, to avoid ID conflicts, it is recommended that this ID be generated by the business backend and ensure global uniqueness.
+
+4. **Pagination Handling**: The scheduled list may be very long, and the `getScheduledRoomList` interface supports paginated retrieval. Please pay attention to the `cursor` field in the return value. If it is not empty, it means there is more data.
+
+## Common Questions
+
+1. **Schedule successful but list not updating?**
+
+   Please confirm that you are logged in and have called `getScheduledRoomList` on the first screen (e.g., `cursor: ''`). If the returned `cursor` is not empty, you need to continue retrieving; the list is reactive and UI will synchronize after updates.
+
+2. `joinRoom`** how to pass parameters?**
+
+   It is recommended to use object parameters uniformly: `joinRoom({ roomId, password })`, avoid directly passing strings which may cause type mismatch or limit subsequent extensions.
+
+3. **Using milliseconds for timestamp causes appointment failure?**
+
+   All time-related parameters must be in seconds, `Date.now()` needs `/ 1000`, otherwise it will return time conflict error.
+
+4. **How to handle rooms with passwords?**
+
+   Catch `TUIErrorCode.ERR_NEED_PASSWORD` / `ERR_WRONG_PASSWORD`, pop up password input box, re-call `joinRoom({ roomId, password })`; after multiple errors, you can prompt to contact room owner to reset.
+
+5. **roomId conflict or duplication?**
+
+   It is recommended that roomId be generated by the backend to ensure global uniqueness; if generated by the frontend, please check for conflicts before scheduling and have a retry strategy.
+
+6. **How to continue paginated retrieval?**
+
+   When the `cursor` returned by `getScheduledRoomList` is not empty, continue passing it in; empty means all data has been retrieved.
+
+## **Sample Project**
+
+Tencent Cloud provides a sample project [atomicx-vite-vue3-ts](https://github.com/Tencent-RTC/TUIRoomKit/tree/main/Web/example/atomicx-vite-vue3-ts) on GitHub, which you can refer to for implementing complete RoomKit functionality.
+
+## API Documentation
+
+| **State/Component** | **Feature Description** | **API Documentation** |
+| --- | --- | --- |
+| **useRoomState** | Room state management (create, join, schedule, etc.) | API Documentation |
+
+--------------------------------------------------------------------------------
+title: Implement Vue RoomKit Screen Sharing
+description: Use useDeviceState API for screen sharing, system audio sharing and permission control.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/roomkit/features/screen-share.md
+--------------------------------------------------------------------------------
+
+This document guides you on how to use Atomicx to implement screen sharing capabilities and handle room interactions based on screen sharing status.
+
+## Prerequisites
+
+- The user has completed login authentication through useLoginState, please refer to Integration Overview.
+
+- The user has entered a room through useRoomState, please refer to Room Management.
+
+- If integrating in `iframe`, permissions need to be declared in the tag.
+
+   ``` typescript
+   <iframe allow="display-capture; fullscreen;"></iframe>
+   ```
+
+## Implementing Screen Sharing Feature
+
+### Step 1: Start Screen Sharing
+
+Use the startScreenShare method to start screen sharing. In the Web environment, you will see the browser's screen selector where you can choose to share the entire screen, application window, or browser tab.
+
+``` typescript
+import { useDeviceState } from 'tuikit-atomicx-vue3/room';
+const { startScreenShare } = useDeviceState();
+
+// Try to start screen sharing and attempt to share system audio
+const handleStartShare = async () => {
+  try {
+    await startScreenShare({ screenAudio: true });
+  } catch (error) {
+    // Handle errors such as user rejection or browser not supporting
+    console.error('Failed to start screen sharing:', error);
+  }
+};
+```
+
+### Step 2: Share System Audio
+
+By setting the `screenAudio: true` parameter, you can share system audio while screen sharing. This is very useful when sharing videos, presentations, music, and other audio content.
+
+``` typescript
+import { useDeviceState } from 'tuikit-atomicx-vue3/room';
+const { startScreenShare } = useDeviceState();
+
+// Start screen sharing and share system audio
+const handleStartScreenShareWithAudio = async () => {
+  try {
+    await startScreenShare({ screenAudio: true });
+    console.log('Screen sharing (with audio) started');
+  } catch (error) {
+    console.error('Failed to start screen sharing:', error);
+  }
+};
+```
+
+**Browser Compatibility Notes:**
+| Browser | System Audio Sharing Support | Notes |
+| --- | --- | --- |
+| Chrome 74+ | Supported | Need to check **Share audio** in selector |
+| Edge 79+ | Supported | Based on Chromium, same experience as Chrome |
+| Firefox | Not Supported | System audio sharing not supported yet |
+| Safari | Not Supported | System audio sharing not supported yet |
+
+> **Note:**
+> 
+
+> System audio sharing requires browser support, and users need to check the **Share audio** option in the screen selector. If the browser doesn't support system audio sharing, the `screenAudio` parameter will be ignored, but screen video sharing will work normally.
+>
+
+### Step 3: Stop Screen Sharing
+
+Users can stop screen sharing through the following methods:
+1. **Call the ****stopScreenShare()**** interface**
+
+   ``` typescript
+   import { useDeviceState, DeviceStatus } from 'tuikit-atomicx-vue3/room';
+   const { screenStatus, stopScreenShare } = useDeviceState();
+   
+   // Stop screen sharing
+   const handleStopScreenShare = async () => {
+     try {
+       await stopScreenShare();
+       console.log('Screen sharing stopped');
+     } catch (error) {
+       console.error('Failed to stop screen sharing:', error);
+     }
+   };
+   ```
+2. **Click the browser's native "Stop sharing" button**
+
+   
+
+3. **Close the shared window or tab**
+   
+
+   > **Note:**
+   > 
+
+   > When users stop screen sharing using any method, Atomicx will automatically update the screenStatus state.
+   >
+
+### Step 4: Permission Control and State Listening
+
+#### **Set Screen Sharing Permissions**
+
+You can control screen management permissions in the room through member management interfaces provided by useRoomParticipantState.
+``` typescript
+import { useRoomParticipantState, DeviceType } from 'tuikit-atomicx-vue3/room';
+const { disableAllDevices } = useRoomParticipantState();
+
+// Restrict screen sharing to only room owner/admin
+async function handleDisableAllScreen() {
+  await disableAllDevices({
+    deviceType: DeviceType.Screen,
+    disable: true,
+  });
+}
+
+// Allow all users in the room to initiate screen sharing
+async function handleEnableAllScreen() {
+  await disableAllDevices({
+    deviceType: DeviceType.Screen,
+    disable: false,
+  });
+}
+```
+
+#### **Automatic Layout Switching**
+
+When detecting that a user in the room has started screen sharing, it is recommended to switch to sidebar layout (`RoomLayoutTemplate.SidebarLayout`), enlarging the shared screen while displaying other participants' screens in the sidebar.
+``` typescript
+<template>
+  <div class="room-container">
+    <RoomView :layout-template="layoutTemplate">
+      <template #participantViewUI="{ participant, streamType }">
+        <ParticipantViewUI 
+          :participant="participant" 
+          :stream-type="streamType" 
+        />
+      </template>
+    </RoomView>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, watch } from 'vue';
+import { 
+  RoomView, 
+  RoomLayoutTemplate,
+  useRoomParticipantState
+} from 'tuikit-atomicx-vue3/room';
+
+const layoutTemplate = ref(RoomLayoutTemplate.GridLayout);
+const { participantWithScreen } = useRoomParticipantState();
+
+// Listen for screen sharing state and automatically switch layout
+watch(participantWithScreen, (participant) => {
+  if (participant) {
+    // Someone is sharing screen, switch to sidebar layout
+    layoutTemplate.value = RoomLayoutTemplate.SidebarLayout;
+  } else {
+    // No one is sharing screen, switch back to grid layout
+    layoutTemplate.value = RoomLayoutTemplate.GridLayout;
+  }
+});
+</script>
+```
+
+#### **Restrict to One Person Screen Sharing**
+
+Only one person should be allowed to share screen in a room. When someone is sharing, disable other users' share buttons:
+``` typescript
+<script setup>
+import { computed } from 'vue';
+import { useRoomParticipantState } from 'tuikit-atomicx-vue3/room';
+
+const { participantWithScreen, localParticipant } = useRoomParticipantState();
+
+const isOtherSharing = computed(() => {
+  const sharer = participantWithScreen.value;
+  if (!sharer) return false;
+  return sharer.userId !== localParticipant.value?.userId;
+});
+
+const canStartScreenShare = computed(() => {
+  return !isOtherSharing.value;
+});
+</script>
+
+// Use in template
+<template>
+  <button :disabled="!canStartScreenShare" @click="handleStartShare">
+    Start Screen Sharing
+  </button>
+</template>
+```
+
+### Step 5: Handle Screen Sharing Errors
+
+When screen sharing encounters errors, provide appropriate prompts to users based on error messages.
+
+**Code Example:**
+``` typescript
+import { useDeviceState, DeviceError } from 'tuikit-atomicx-vue3/room';
+import { TUIToast } from '@tencentcloud/uikit-base-component-vue3';
+
+const { startScreenShare } = useDeviceState();
+
+try {
+  await startScreenShare();
+} catch (error: any) {
+  let message = '';
+  switch (error.name) {
+    case 'NotReadableError':
+      message = 'System prohibits current browser from accessing screen content, please enable screen sharing permission.';
+      break;
+    case 'NotAllowedError':
+      if (error.message.includes('Permission denied by system')) {
+        message = 'System prohibits current browser from accessing screen content, please enable screen sharing permission.';
+      } else {
+        message = 'User cancelled screen sharing';
+      }
+      break;
+    default:
+      message = 'Unknown error occurred during screen sharing, please try again.';
+      break;
+  }
+  TUIToast.warning({
+    message,
+  });
+}
+```
+
+## API Documentation
+
+| **State/Component** | **Feature Description** | **API Documentation** |
+| --- | --- | --- |
+| **useDeviceState** | Contains audio/video device status, audio/video device list, and operation interfaces. | API Documentation |
+| **useRoomParticipantState** | Contains room user data and user management interface. | API Documentation |
+
+## Common Questions
+
+### Why doesn't system audio sharing work?
+
+- **Platform Restriction:** Audio sharing is currently only supported on modern browsers like Chrome and Edge.
+
+- **Operational Details:** Users must manually select **Share audio** in the browser's screen selector.
+
+- **System Restriction:** Some operating systems do not support sharing audio from specific **application windows**. It is recommended to prioritize selecting **entire screen** or **browser tab**.
+
+### How to detect when users stop screen sharing by clicking the browser's "Stop sharing" button?
+
+Atomicx automatically listens for the browser's stop sharing event and updates the `screenStatus` state. You just need to listen for changes in `screenStatus`:
+``` typescript
+watch(screenStatus, (newStatus, oldStatus) => {
+  if (oldStatus === DeviceStatus.On && newStatus === DeviceStatus.Off) {
+    console.log('User has stopped screen sharing.');
+  }
+});
+```
+
+### Do mobile browsers support screen sharing?
+
+Only desktop browsers support screen sharing. Mobile browsers do not support screen sharing capabilities.
+
+### Why does the user's microphone status display as "on" when they enable screen sharing audio?
+
+This is expected system behavior for the following reasons:
+
+**Technical Principle:**`microphoneStatus` indicates whether the current device is transmitting audio signals externally. When screen sharing is enabled and **system audio capture is checked**, Atomicx SDK will start an audio transmission channel. Since the remote end receives a continuous audio data stream, the system cannot distinguish whether the audio source is from a physical microphone or system playback sound, so the audio capture status is uniformly marked as `DeviceStatus.On`.
+
+**Privacy Note:** Please rest assured, this does not mean your microphone is capturing voice. Whether the microphone voice is being pushed is only related to microphone control interfaces (`openLocalMicrophone` and `unmuteLocalMicrophone`), and is independent of screen sharing audio capture. Even if screen sharing audio is being transmitted, as long as microphone-related interfaces are not called, your microphone voice will not be captured and pushed.
+
+--------------------------------------------------------------------------------
+title: Use Vue RoomKit Virtual Background
+description: Use TUIRoomKit virtual background plugin for background blur and custom background image replacement.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/roomkit/features/virtual-background.md
+--------------------------------------------------------------------------------
+# Virtual Background
+
+Virtual background feature allows users to replace their real background with a custom image or apply blur effects during video calls or live streams. With this feature, users can effectively protect privacy, hide cluttered backgrounds, or showcase corporate image through specific backgrounds.
+
+## Use Cases
+
+- **Remote Work/Meetings:** When attending meetings at home or in public places, use background blur or virtual background to hide the real environment and protect personal privacy.
+
+- **Online Education:** Teachers use unified teaching backgrounds to create a professional classroom atmosphere.
+
+- **Brand Display:** Company employees use backgrounds with company logos in external meetings to enhance brand image.
+
+- **Fun Interaction:** In social scenarios, users can change to interesting background images to increase interaction fun.
+
+## Prerequisites
+
+- **User Status:** User has completed login authentication through useLoginState, refer to Integration Overview, and is in **logged in** state.
+
+- **Environment Dependencies:** The project has imported `tuikit-atomicx-vue3`.
+
+- **Device Requirements:** A camera device must be available, and the user has granted camera access permission. If the user denies authorization, the virtual background feature will not be available.
+
+- **Resource Dependencies:** Virtual background feature depends on AI model files. To ensure the browser can properly load and run these files, you need to complete the following steps:
+
+  - Publish the `node_modules/trtc-sdk-v5/assets` directory to CDN or static resource server, see [SDK Documentation](https://web.sdk.qcloud.com/trtc/webrtc/doc/zh-cn/tutorial-36-advanced-virtual-background.html) for details.
+
+  - If choosing Solution 1: Quick Integration Using UI Components, when using the [VirtualBackgroundPanel](https://github.com/Tencent-RTC/TUIKit_Vue3/tree/main/packages/tuikit-atomicx-vue3/src/components/VirtualBackgroundPanel) component, you need to pass the `assetsPath` static resource address through props.
+
+  - If choosing Solution 2: Custom Integration Using Underlying API, when using the initVirtualBackground interface, you need to pass the `assetsPath` static resource address.
+
+## Implementing Virtual Background Feature
+
+This feature provides two integration solutions, and you can choose the most suitable one based on your business requirements:
+
+- **Solution 1 (Recommended):** Quick integration using UI components. Directly import the virtual background panel component ([VirtualBackgroundPanel](https://github.com/Tencent-RTC/TUIKit_Vue3/tree/main/packages/tuikit-atomicx-vue3/src/components/VirtualBackgroundPanel)) provided by `tuikit-atomicx-vue3`, and embed it into your application's dialog or sidebar with the lowest development cost.
+
+- **Solution 2 (Advanced):** Custom integration using underlying API. Implement UI and interaction logic based on atomicx-core SDK API useVirtualBackgroundState state hook with the highest flexibility.
+
+   
+
+   Virtual Background
+
+## Solution 1: Quick Integration Using UI Components
+
+`tuikit-atomicx-vue3` provides core settings panel components:
+
+- [**VirtualBackgroundPanel**](https://github.com/Tencent-RTC/TUIKit_Vue3/tree/main/packages/tuikit-atomicx-vue3/src/components/VirtualBackgroundPanel)**:** Configuration panel for virtual background, including background blur, image selection, and preview functionality.
+
+### Step 1: Import Component
+
+```typescript
+import { VirtualBackgroundPanel } from 'tuikit-atomicx-vue3/room';
+```
+
+### Step 2: Use Component
+
+It is generally recommended to place [VirtualBackgroundPanel](https://github.com/Tencent-RTC/TUIKit_Vue3/tree/main/packages/tuikit-atomicx-vue3/src/components/VirtualBackgroundPanel) in a dialog or modal, triggered by clicking a button.
+
+**The following example demonstrates how to implement a complete interaction to open virtual background settings by clicking a button:**
+
+> **Note:**
+> - Publish the `node_modules/trtc-sdk-v5/assets` directory to CDN or static resource server, see [SDK Documentation](https://web.sdk.qcloud.com/trtc/webrtc/doc/zh-cn/tutorial-36-advanced-virtual-background.html) for details.
+> - When using the [VirtualBackgroundPanel](https://github.com/Tencent-RTC/TUIKit_Vue3/tree/main/packages/tuikit-atomicx-vue3/src/components/VirtualBackgroundPanel) component, pass the `assetsPath` static resource address through props.
+> - All TUIKit components must be wrapped inside UIKitProvider, otherwise they will not be able to obtain context dependencies, resulting in style abnormalities.
+
+```typescript
+<template>
+  <UIKitProvider theme="light" language="en-US">
+    <div class="toolbar-container">
+      <!-- 1. Trigger button -->
+      <button @click="openSettings">Set Virtual Background</button>
+
+      <!-- 2. Settings dialog -->
+      <div v-if="showSettings" class="modal-mask">
+        <div class="modal-content">
+          <div class="modal-header">
+            <span>Virtual Background</span>
+            <button @click="showSettings = false">Close</button>
+          </div>
+          
+          <div class="modal-body">
+            <!-- 3. Import panel component -->
+            <!-- @close event: triggered when user clicks close button inside panel (if any) -->
+            <VirtualBackgroundPanel assetsPath='' @close="showSettings = false" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </UIKitProvider>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import { UIKitProvider } from '@tencentcloud/uikit-base-component-vue3';
+import { VirtualBackgroundPanel, useVirtualBackgroundState, useDeviceState } from 'tuikit-atomicx-vue3/room';
+
+const showSettings = ref(false);
+const { isSupported } = useVirtualBackgroundState();
+const { cameraList } = useDeviceState();
+
+const openSettings = () => {
+  // 1. Check if browser supports virtual background
+  if (!isSupported()) {
+    alert('Current browser does not support virtual background');
+    return;
+  }
+  
+  // 2. Check if camera is available
+  if (cameraList.value.length === 0) {
+    alert('No camera detected, unable to set virtual background');
+    return;
+  }
+
+  // 3. Open settings panel
+  showSettings.value = true;
+};
+</script>
+
+<style scoped>
+.modal-mask{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:1000}.modal-content{background:white;width:600px;border-radius:8px;overflow:hidden}.modal-header{padding:16px;display:flex;justify-content:space-between;border-bottom:1px solid #eee}
+</style>
+```
+
+## Solution 2: Custom Integration Using Underlying API
+
+This section mainly introduces how to implement virtual background through atomicx-core SDK API **useVirtualBackgroundState** interface.
+
+### Step 1: Initialization and Detection
+
+Before calling the virtual background feature, you must first check if the browser supports it and initialize the resource path.
+
+> **Note:**
+> - Publish the node_modules/trtc-sdk-v5/assets directory to CDN or static resource server, see [SDK Documentation](https://web.sdk.qcloud.com/trtc/webrtc/doc/zh-cn/tutorial-36-advanced-virtual-background.html) for details.
+> - When using the initVirtualBackground interface, pass the assetsPath static resource address.
+> - Virtual background feature depends on camera devices. You can use useDeviceState to check device status.
+> - cameraList: List of currently available camera devices. If the list is empty, it means no camera is detected or camera permission is denied.
+
+```typescript
+import { onMounted } from 'vue';
+import { useVirtualBackgroundState } from 'tuikit-atomicx-vue3/room';
+
+const { isSupported, initVirtualBackground } = useVirtualBackgroundState();
+
+onMounted(async () => {
+  // 1. Check browser compatibility
+  if (!isSupported()) {
+    console.warn('Current browser does not support virtual background');
+    return;
+  }
+
+  // 2. Initialize resources
+  try {
+    await initVirtualBackground({ assetsPath: './assets' });
+    console.log('Virtual background initialized');
+  } catch (error) {
+    console.error('Initialization failed', error);
+  }
+});
+```
+
+### Step 2: Set Preview
+
+Before the user confirms applying the background, a preview effect is usually required. Using the setVirtualBackground method can set the preview effect, which will not be applied to the video stream visible to remote users.
+
+> **Note:**
+> 
+
+> Calling `setVirtualBackground` only takes effect in the local preview screen, remote users will not see the virtual background effect. You need to call `saveVirtualBackground` to synchronize it to the remote video stream.
+> 
+
+```typescript
+import { useVirtualBackgroundState } from 'tuikit-atomicx-vue3/room';
+
+const { setVirtualBackground } = useVirtualBackgroundState();
+
+// Enable background blur preview
+const previewBlur = async () => {
+  await setVirtualBackground({
+    enable: true,
+    type: 'blur',
+    level: 0.5 // Blur level, optional
+  });
+};
+
+// Enable background image preview
+const previewImage = async (imageUrl: string) => {
+  await setVirtualBackground({
+    enable: true,
+    type: 'image',
+    source: imageUrl // Image URL, supports local or network path
+  });
+};
+```
+
+### Step 3: Save and Apply
+
+After the user confirms the preview effect is satisfactory, call saveVirtualBackground to actually apply the configuration to the current video stream, at which point remote users will see the effect.
+
+```typescript
+import { useVirtualBackgroundState } from 'tuikit-atomicx-vue3/room';
+
+const { saveVirtualBackground } = useVirtualBackgroundState();
+
+const confirmSettings = async () => {
+  try {
+    await saveVirtualBackground();
+    console.log('Virtual background applied');
+  } catch (error) {
+    console.error('Save failed', error);
+  }
+};
+```
+
+### Step 4: Disable Virtual Background
+
+If you need to disable virtual background and restore the real background, you can set its `enable` property to `false` and save.
+
+```typescript
+import { useVirtualBackgroundState } from 'tuikit-atomicx-vue3/room';
+
+const { setVirtualBackground, saveVirtualBackground } = useVirtualBackgroundState();
+
+const disableVirtualBackground = async () => {
+  // 1. Set to disabled state
+  await setVirtualBackground({ enable: false });
+  // 2. Save and apply
+  await saveVirtualBackground();
+};
+```
+
+## Development Notes
+
+- **Resource File Path:** The `assetsPath` in `initVirtualBackground` must correctly point to the directory of AI model files. If the path is incorrect, virtual background will not start. Please refer to [SDK Documentation](https://web.sdk.qcloud.com/trtc/webrtc/doc/zh-cn/tutorial-36-advanced-virtual-background.html) to obtain the resource file package.
+
+- **Performance Consumption:** Enabling virtual background consumes high CPU and GPU resources. On low-end devices, it may cause video frame drops or overheating. It is recommended to prompt users to disable it when device performance is insufficient.
+
+- **Browser Compatibility:** Not all browsers support virtual background (depending on WebAssembly and SIMD features). Be sure to call `isSupported()` for checking before UI rendering.
+
+- **Image Format:** Custom background images are recommended to use `jpg` or `png` format, and resolution should not be too large (recommended within 1920x1080) to avoid affecting loading speed and memory consumption.
+
+## **Sample Project**
+
+Tencent Cloud provides a sample project [atomicx-vite-vue3-ts](https://github.com/Tencent-RTC/TUIRoomKit/tree/main/Web/example/atomicx-vite-vue3-ts) on GitHub, which you can refer to implement complete RoomKit features.
+
+## API Documentation
+
+| **State/Component** | **Feature Description** | **API Documentation** |
+| --- | --- | --- |
+| **useVirtualBackgroundState** | Virtual background management | API Documentation |
+
+--------------------------------------------------------------------------------
+title: Integrate RoomKit Video Conferencing (Android/iOS/Flutter/Vue)
+description: Cross-platform integration and project setup. Keywords: RoomStore / useRoomState, auth login, create/join room, device permissions, UI component integration.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/roomkit/integration.md
+--------------------------------------------------------------------------------
+
+TUIRoomKit is an audio/video room UI application launched by Tencent Cloud. This upgrade introduces a brand new atomic component integration solution, allowing developers to flexibly combine these atomic components to build personalized audio/video room interfaces.
+
+> **Recommended: Use More Efficient AI Integration Assistant**
+> 
+
+> We provide you with a brand new AI integration method. Simply describe your requirements to automatically generate integration code, greatly improving development efficiency.
+> 
+
+> [Click here to experience AI integration immediately](https://cloud.tencent.com/document/product/647/127873)
+> 
+
+This document describes how to integrate TUIRoomKit into existing Vue3 projects, and how to customize TUIRoomKit's styles, layouts, and functionality.
+- Desktop Multi-person Conference
+
+  
+
+- H5 Multi-person Conference
+
+  
+
+## Prerequisites
+
+### Service Activation
+
+Please refer to [Service Activation](https://cloud.tencent.com/document/product/647/104842) to get the TUIRoomKit trial version, and obtain the following information from the [Application Management](https://console.cloud.tencent.com/trtc) page:
+- **SDKAppID**: Application identifier, Tencent Cloud completes billing statistics based on `SDKAppID`.
+
+- **SDKSecretKey**: Application secret key, used for key information in initialization configuration files.
+
+### Environment Preparation
+
+- **Node.js**: ≥ 18.19.1 (Recommended to use official LTS version).
+
+- **Vue**: ≥ 3.4.21.
+
+- **Modern Browsers**: Modern browsers that support [WebRTC APIs](https://cloud.tencent.com/document/product/647/17249#.E6.94.AF.E6.8C.81.E7.9A.84.E5.B9.B3.E5.8F.B0).
+
+- **Devices**: Camera, microphone, speakers.
+
+## Source Code Integration
+
+### Step 1: Install Project Dependencies
+
+Install the following dependencies in your business project.
+
+【npm】
+``` bash
+npm install @tencentcloud/roomkit-web-vue3@latest tuikit-atomicx-vue3 @tencentcloud/uikit-base-component-vue3 @tencentcloud/universal-api 
+```
+
+【pnpm】
+``` bash
+pnpm install @tencentcloud/roomkit-web-vue3@latest tuikit-atomicx-vue3 @tencentcloud/uikit-base-component-vue3 @tencentcloud/universal-api
+```
+
+【yarn】
+``` bash
+yarn add @tencentcloud/roomkit-web-vue3@latest tuikit-atomicx-vue3 @tencentcloud/uikit-base-component-vue3 @tencentcloud/universal-api
+```
+
+### Step 2: **Import **TUIRoomKit** Components**
+
+``` typescript
+<template>
+  <ConferenceMainView v-if="isPC"></ConferenceMainView>
+  <ConferenceMainViewH5 v-else></ConferenceMainViewH5>
+</template>
+<script setup>
+import { ref } from 'vue';
+import { ConferenceMainView, ConferenceMainViewH5 } from '@tencentcloud/roomkit-web-vue3';
+import { getPlatform } from '@tencentcloud/universal-api';
+
+const isPC = ref(getPlatform() === 'pc');
+</script>
+
+```
+
+### Step 3: Configure App.vue File
+
+Merge the following content into your project's App.vue file to configure global UI styles and user login logic:
+- Configure global `UIKitProvider`: Import the `UIKitProvider` component and set default theme and language;
+
+- User Login: Execute `login` and `setSelfInfo` in the `onMounted` hook;
+
+  ``` typescript
+  <template>
+    <!-- Step 1: Configure global UIKitProvider -->
+    <UIKitProvider theme="light" language="en-US">
+      <!-- Your business component containing ConferenceMainView -->
+    </UIKitProvider>
+  </template>
+   
+  <script setup>
+  import { UIKitProvider } from '@tencentcloud/uikit-base-component-vue3';
+  import { onMounted } from 'vue';
+  import { useLoginState } from 'tuikit-atomicx-vue3/room';
+  
+  // step 2: User login
+  const { login, setSelfInfo } = useLoginState();
+  const SDKAppID = 0;    // Note: Please replace with SDKAppID obtained from TRTC Console
+  const userId = 'Enter your real userId';    // Note: Please replace with real userId
+  const userName = 'Enter your real userName';  // Note: Please replace with real userName
+  const userSig = 'Enter your real userSig';    // Note: For generating temporary userSig, please refer to https://cloud.tencent.com/document/product/647/17275#console
+  onMounted(async () => {
+    try {
+      await login({
+        userId,
+        userSig,
+        sdkAppId: SDKAppID,
+      });
+      await setSelfInfo({
+        userName,
+        avatarUrl: '',
+      });
+    } catch (error: any) {
+      console.error('Login failed:', error);
+    }
+  });
+  </script>
+  
+  <!-- Step 3: Configure global styles (These styles override default styles of scaffolded new projects, configure as needed)-->
+  <style>
+  html, body {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  #app {
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    text-align: left !important;
+    overflow: hidden;
+  }
+  </style>
+  ```
+
+### Step 4: Start New Conference
+
+Conference hosts can start a new conference by calling the `conference.start` interface. Other participants can refer to the description in Step 6 and call the `conference.join` interface to join the conference.
+
+> **Note:**
+> 
+
+> Please refer to Step 3 and call the `conference.start` interface to start a conference after successful user login.
+> 
+
+``` typescript
+import { conference } from '@tencentcloud/roomkit-web-vue3';
+const startConference = async () => {  
+  await conference.start({
+    roomId: '123456',   // Please replace with your real roomId
+    options: {
+      roomName: 'My Temporary Conference',
+    },
+  });
+}
+startConference();
+```
+
+### Step 5: Join Existing Conference
+
+Participants can join a conference started by the conference host in Step 4 by calling the `conference.join` interface and filling in the corresponding roomId parameter.
+
+> **Note:**
+> 
+
+> Please refer to Step 3 and call the `conference.join` interface to join a conference after successful user login.
+> 
+
+``` typescript
+import { conference } from '@tencentcloud/roomkit-web-vue3';
+const joinConference = async () => {
+  await conference.join({
+    roomId: '123456',   // Please replace with your real roomId
+  });
+}
+joinConference();
+```
+
+## Start Project
+
+【npm】
+``` bash
+npm run dev
+```
+
+【pnpm】
+``` bash
+pnpm run dev
+```
+
+【yarn】
+``` bash
+yarn run dev
+```
+
+After successful startup, please open the debug address (usually http://localhost:5173) in your browser to access the application. You will see the conference interface as shown below:
+
+## Quick UI Customization
+
+### Theme and Language
+
+Modify the default values of theme and language by configuring the parameters of `UIKitProvider` in App.vue.
+| UIKitProvider Parameter | Available Values | Default Value |
+| --- | --- | --- |
+| theme | "light" \\| "dark" | "light" |
+| language | "zh-CN" \\| "en-US" | "en-US" |
+
+``` typescript
+<UIKitProvider theme="light" language="en-US">
+  <router-view />
+</UIKitProvider>
+ 
+<script setup lang="ts">
+import { UIKitProvider } from '@tencentcloud/uikit-base-component-vue3';
+```
+
+### Configure User Contact List
+
+TUIRoomKit scheduled meeting user selection list and in-meeting call user selection list display user relationship chain list by default. Please refer to the following steps to batch import user relationship chains:
+
+Step 1: Use [Account Management > Import Multiple Accounts](https://cloud.tencent.com/document/product/269/4919) REST API interface to batch import user accounts;
+
+Step 2: Use [Friend Management > Import Friends](https://cloud.tencent.com/document/product/269/8301) REST API interface to batch import user relationship chains;
+
+## TUIRoomKit Interface Customization
+
+### Source Code Export
+
+【Vue3】
+1. Execute source code export script, default copy path is `./src/components/RoomKit`
+
+``` bash
+  node ./node_modules/@tencentcloud/roomkit-web-vue3/scripts/eject.js
+```
+2. Confirm according to script prompt whether to copy TUIRoomKit source code to `./src/components/RoomKit` directory. If you need to customize the copy directory, please enter 'y', otherwise enter 'n'.
+
+3. After source code export, TUIRoomKit source code will be added to your specified project path. At this time, you need to manually change the references of ConferenceMainView component, ConferenceMainViewH5 component and conference object from npm package address to the relative path address of TUIRoom source code.
+
+``` typescript
+- import { ConferenceMainView, conference } from '@tencentcloud/roomkit-web-vue3';
+// Replace reference path to the real path of TUIRoomKit source code
++ import { ConferenceMainView, ConferenceMainViewH5, conference } from './components/RoomKit/index.ts';
+```
+4. Configure ESLint Validation
+
+If you encounter ESLint errors when running the project after exporting TUIRoomKit source code, you can add the RoomKit folder to the `.eslintignore` file to ignore ESLint detection.
+``` javascript
+// Please replace with the real path of TUIRoomKit source code
+src/components/RoomKit
+```
+
+### Custom Room Stream Layout
+
+TUIRoomKit currently supports three stream layouts: grid, sidebar, and top bar, with grid layout as default.
+``` typescript
+// RoomKit/views/ConferenceMainView/index.vue
+import { RoomLayoutTemplate } from 'tuikit-atomicx-vue3/room';
+// Change default video stream layout to sidebar layout
+const participantViewLayout = ref(RoomLayoutTemplate.SidebarLayout);
+function handleLayoutUpdate(layout: RoomLayoutTemplate) {
+  participantViewLayout.value = layout;
+}
+
+// Change default video stream layout to top bar layout
+const participantViewLayout = ref(RoomLayoutTemplate.CinemaLayout);
+function handleLayoutUpdate(layout: RoomLayoutTemplate) {
+  participantViewLayout.value = layout;
+}
+```
+
+### Custom Video Stream Widgets
+
+TUIRoomKit default video stream widgets are shown in the figure. To customize video stream widgets, please modify the `RoomKit/components/RoomLayoutView/ParticipantViewUI/ParticipantViewUI.vue` component.
+
+## Frequently Asked Questions
+
+#### **TUIRoomKit works normally during local development, but cannot properly capture user's camera or microphone devices after deployment to online environment?**
+- **Root Cause Analysis:** Browsers have strict restrictions on the capture of audio and video devices (microphone, camera) for security and privacy protection considerations. Capture operations are only allowed in secure environments. Secure environment protocols include: https://, localhost, file://, etc. HTTP protocol is considered insecure, and browsers will prohibit access to media devices by default.
+
+- **Solution:** If everything works normally in your local (localhost) testing, but capture fails after deployment, please immediately check whether your webpage is deployed on HTTP protocol. You must use HTTPS protocol to deploy your webpage and ensure you have valid security certificates.
+
+- **Related Resources:** For more details about URL domain and protocol restrictions, please refer to [URL Domain and Protocol Restrictions](https://cloud.tencent.com/document/product/647/17249#URL-.E5.9F.9F.E5.90.8D.E5.8D.8F.E8.AE.AE.E9.99.90.E5.88.B6).
+
+#### **Does TUIRoomKit support iframe integration?**
+
+Yes. When integrating TUIRoomKit using iframe, you need to configure the allow attribute in the iframe tag to grant necessary browser permissions (microphone, camera, screen sharing, fullscreen, etc.), as shown in the example below: 
+``` typescript
+// Enable microphone, camera, screen sharing, fullscreen permissions
+<iframe allow="microphone; camera; display-capture; display; fullscreen;">
+```
+
+#### Does TUIRoomKit support setting internal network proxy?
+
+Yes. Please refer to the following guidance to set internal network proxy parameters. For more internal network proxy information, please refer to [Dealing with Firewall Restrictions](https://web.sdk.qcloud.com/trtc/webrtc/doc/zh-cn/tutorial-34-advanced-proxy.html).
+``` typescript
+// Please set internal network proxy parameters before entering room
+import TUIRoomEngine from '@tencentcloud/tuiroom-engine-js';
+import { useRoomEngine } from 'tuikit-atomicx-vue3/room';
+const { roomEngine } = useRoomEngine();
+
+TUIRoomEngine.once('ready', () => {
+  const trtcCloud = roomEngine.instance?.getTRTCCloud();
+  trtcCloud.callExperimentalAPI(JSON.stringify({
+    api: 'setNetworkProxy',
+    params: {
+      websocketProxy: "wss://proxy.example.com/ws/",
+      turnServer: [{
+        url: '14.3.3.3:3478',
+        username: 'turn',
+        credential: 'turn',
+      }],
+      iceTransportPolicy: 'relay',
+    },
+  }));
+});
+```
+
+--------------------------------------------------------------------------------
+title: RoomKit FAQ Aggregation
+description: Aggregated FAQ blocks extracted from RoomKit docs for easier retrieval.
+--------------------------------------------------------------------------------
+
+## FAQ Aggregation
+
+1. Why is there no image in the camera preview?
+
+Possible reasons include:
+- **Permission denied:** Check if the browser allows camera permissions.
+
+- **Device occupied:** Close other applications using the camera.
+
+- **Device not connected:** Check if the camera is properly connected.
+
+- **Browser not supported:** Use modern browsers such as Chrome, Edge, etc.
+
+2. How to handle Microphone test volume is always 0?
+
+Possible reasons include:
+- **Microphone permission not granted:** Check browser permission settings.
+
+- **Microphone is muted:** Check system microphone settings.
+
+- **Wrong device selected:** Switch to the correct microphone device.
+
+3. Can users enter an audio/video room if their computer has no microphone or speaker devices?
+
+Yes, they can enter the room. Users can still successfully call the `joinRoom` interface to enter an audio/video room even without a microphone, speaker, or camera. However, in this state, users will face the following interaction exceptions.
+
+**Feature Limitations:**
+- **Cannot enable media capture:** Since the system cannot drive the relevant hardware, calling openLocalMicrophone or openLocalCamera interfaces will trigger asynchronous errors. At this time, the microphoneLastError or cameraLastError property will return `DeviceError.NoDeviceDetected` (no device detected).
+
+- **Capture limitations:** Cannot capture and transmit audio (requires microphone) or video (requires camera) through local devices.
+
+- **Playback limitations:** Due to lack of speaker devices, users will not be able to hear audio from other participants in the room.
+
+   **Functions that can still be used:**
+
+   View-only mode: Users can still watch video streams or screen sharing from remote participants.
+
+4. How to implement device hot-plug detection?
+
+Atomicx has built-in device hot-plug detection. When media devices are plugged in or unplugged, the device list and current device data will be automatically updated.
+
+5. How to handle If there are no users in the room but the room has not been destroyed, will the room exist forever?
+
+6. When there are no users in the room for 6 consecutive hours, the backend will attempt to reclaim the room?
+
+7. How to handle If there are no users in the room but the room has not been destroyed, will there be any charges?
+
+Rooms without users but not yet destroyed only occupy package group count, do not consume minutes and do not generate additional charges.
+
+8. Can a user join multiple rooms simultaneously?
+
+The `useRoomState` provided by Atomicx is a singleton interface and only supports users joining one room at a time. If you need to support a user joining multiple rooms simultaneously, please feel free to [contact us](https://cloud.tencent.com/document/product/647/19906) to submit feedback.
+
+9. What is the maximum number of users that can join a room simultaneously?
+
+The upper limit on the number of users in a room is related to your package. For details, please check [TUIRoomKit Package Description](https://cloud.tencent.com/document/product/647/104842#function).
+
+10. How to handle Running Demo in Chrome shows flipped and laggy screen?
+
+Virtual background plugin uses GPU acceleration. You need to find and enable hardware acceleration mode in browser settings. You can copy `chrome://settings/system` to the browser address bar and enable hardware acceleration mode.
+
+11. Why does the computer overheat or the fan runs at high speed after enabling virtual background?
+
+Virtual background feature requires real-time recognition of human contours and image processing, which has certain requirements for CPU and GPU computing power. It is recommended to disable this feature when not needed, or avoid enabling it on low-end devices.
+
+12. How to handle Initialization failed with error "assets load failed", what to do?
+
+Please check if the `assetsPath` passed in `initVirtualBackground` is correct. Ensure that the path contains the necessary AI model files and can be directly accessed through the browser. If it is a cross-domain resource, CORS policy needs to be configured.
+
+13. Does virtual background support mobile browsers?
+
+Due to performance limitations of mobile browsers and differences in WebAssembly support, the experience may not be as stable as desktop. It is recommended to use it primarily on desktop Chrome (recommended 94+), Edge, and other mainstream browsers, and perform proper compatibility checks with `isSupported()`.
+
+14. How to handle Unable to use virtual background in local development?
+
+WebRTC-related features usually require running in an HTTPS environment, or `localhost` / `127.0.0.1`. Please ensure that your development environment meets secure context requirements.

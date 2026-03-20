@@ -1,0 +1,2106 @@
+--------------------------------------------------------------------------------
+title: TUICallEngine + TUICallKit Web/Mini Program API Reference
+description: Complete API reference covering 1v1/group calling, accept/hangup, media type switching for Web and WeChat Mini Programs.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/callkit/callkit-api-reference.md
+--------------------------------------------------------------------------------
+
+> The following content uses **React** as the baseline. React, Vue, Android SDK, Android SDK, iOS SDK, iOS SDK, Flutter SDK, Flutter SDK, Flutter SDK share identical steps and concepts; only code implementations differ. Alternative platform code is appended after each code block.
+
+## Important Notice
+
+**Documentation Content Description:**
+- The documentation covers two parts: `TUICallEngine` API and `TUICallKit` UI component API.
+- For `TUICallEngine` API documentation, please refer to **Part One**
+- For `TUICallKit` UI component API documentation, please refer to **Part Two**
+
+---
+
+## Part One: TUICallEngine API Documentation
+
+**TUICallEngine API Overview**
+- When users query `TUICallEngine` API, you must first consult the official TUICallEngine API documentation, then provide correct API usage examples. **Do not speculate on API usage.**
+- Below are the documentation links for each platform. Please access the documentation links directly to obtain API usage:
+  - [TUICallEngine Web API List Documentation](https://trtc.io/document/51016?product=call&menulabel=uikit&platform=web)
+  - [TUICallEngine Web API Usage Examples Documentation](https://web.sdk.qcloud.com/component/trtccalling/doc/TUICallEngine/web/en/TUICallEngine.html)
+
+---
+
+## Part Two: TUICallKit UI Component API Documentation
+
+The TUICallKit API is the **audio and video call component that includes a UI interface**. With the TUICallKit API, you can swiftly develop audio and video call scenarios reminiscent of WeChat through simple interfaces. For further comprehensive steps to access this, please refer to: [Integrating TUICallKit](https://trtc.io/document/50993).
+
+## API Overview
+| API | Description |
+| --- | --- |
+| [<TUICallKit/>](https://www.tencentcloud.com/document/product/647/51015#TUICallKit) | The core UI call component. |
+| [init](https://www.tencentcloud.com/document/product/647/51015#init) | Initialize TUICallKit. |
+| [calls](https://www.tencentcloud.com/document/product/647/51015#calls) | Initiate a one-to-one or multi-person call. |
+| [join](https://www.tencentcloud.com/document/product/647/51015#join) | Proactively join a call. |
+| [setCallingBell](https://www.tencentcloud.com/document/product/647/51015#setCallingBell) | Customize user's ringtone. |
+| [setSelfInfo](https://www.tencentcloud.com/document/product/647/51015#setSelfInfo) | Set your own nickname and avatar. |
+| [enableMuteMode](https://www.tencentcloud.com/document/product/647/51015#enableMuteMode) | Turn on/off ringtone. |
+| [enableFloatWindow](https://www.tencentcloud.com/document/product/647/51015#enableFloatWindow) | Turn on/off the floating window function. |
+| [enableVirtualBackground](https://www.tencentcloud.com/document/product/647/51015#enableVirtualBackground) | Turn on/off the blurred background function button. |
+| [setLanguage](https://www.tencentcloud.com/document/product/647/51015#setLanguage) | Set the call language for the TUICallKit component. |
+| [hideFeatureButton](https://www.tencentcloud.com/document/product/647/51015#hideFeatureButton) | Hidden Button. |
+| [setLocalViewBackgroundImage](https://www.tencentcloud.com/document/product/647/51015#setLocalViewBackgroundImage) | Set the background image for the local user's call interface. |
+| [setRemoteViewBackgroundImage](https://www.tencentcloud.com/document/product/647/51015#setRemoteViewBackgroundImage) | Set the background image for the remote user's call interface. |
+| [setLayoutMode](https://www.tencentcloud.com/document/product/647/51015#setLayoutMode) | Set the call interface layout mode. |
+| [setCameraDefaultState](https://www.tencentcloud.com/document/product/647/51015#setCameraDefaultState) | et whether the camera is opened by default. |
+| [destroyed](https://www.tencentcloud.com/document/product/647/51015#destroyed) | Destroy TUICallKit. |
+| [getTUICallEngineInstance](https://www.tencentcloud.com/document/product/647/51015#getTUICallEngineInstance) | Get TUICallEngine instance. |
+
+## `<TUICallKit/>` attributes
+
+### Attribute Overview
+| Attribute | Description | Type | Required | Default Value | Vue | React |
+| --- | --- | --- | --- | --- | --- | --- |
+| allowedMinimized | Is the floating window permitted? | boolean | No | false | √ | √ |
+| allowedFullScreen | Whether to permit full screen mode for the call interface | boolean | No | true | √ | √ |
+| [videoDisplayMode](https://www.tencentcloud.com/document/product/647/51015#videoDisplayMode) | Display mode for the call interface | VideoDisplayMode | No | VideoDisplayMode.COVER | √ | √ |
+| [videoResolution](https://www.tencentcloud.com/document/product/647/51015#videoResolution) | Call Resolution | VideoResolution | No | VideoResolution.RESOLUTION_480P | √ | √ |
+| beforeCalling | This function will be executed prior to making a call and before receiving an invitation to talk | function(type, error) | No | - | √ | √ |
+| afterCalling | This function will be executed after the termination of the call | function() | No | - | √ | √ |
+| onMinimized | This function will be executed when the component switches to a minimized state. The explanation for the STATUS value is | function(oldStatus, newStatus) | No | - | √ | √ |
+| kickedOut | The events thrown by the component occur when the current logged-in user is ejected. The call will also automatically terminate | function() | No | - | √ | × |
+| statusChanged | Event thrown by the component; this event is triggered when the call status changes. For detailed types of call status, refer to STATUS value description | function({oldStatus, newStatus}) | No | - | √ | × |
+
+### Sample code
+
+【React】
+``` bash
+import { TUICallKit, VideoDisplayMode, VideoResolution } from "@trtc/calls-uikit-react";
+
+<TUICallKit
+    videoDisplayMode={VideoDisplayMode.CONTAIN}
+    videoResolution={VideoResolution.RESOLUTION_1080P}
+    beforeCalling={handleBeforeCalling} 
+    afterCalling={handleAfterCalling} 
+/>
+
+function handleBeforeCalling(type: string, error: any) {
+  console.log("[TUICallkit Demo] handleBeforeCalling:", type, error);
+}
+function handleAfterCalling() {
+  console.log("[TUICallkit Demo] handleAfterCalling");
+}
+```
+
+**Vue:**
+``` bash
+import { TUICallKit, VideoDisplayMode, VideoResolution } from "@trtc/calls-uikit-react";
+
+<TUICallKit
+    videoDisplayMode={VideoDisplayMode.CONTAIN}
+    videoResolution={VideoResolution.RESOLUTION_1080P}
+    beforeCalling={handleBeforeCalling} 
+    afterCalling={handleAfterCalling} 
+/>
+
+function handleBeforeCalling(type: string, error: any) {
+  console.log("[TUICallkit Demo] handleBeforeCalling:", type, error);
+}
+function handleAfterCalling() {
+  console.log("[TUICallkit Demo] handleAfterCalling");
+}
+```
+
+**Android SDK:**
+
+``` java
+void onError(int code, String message);
+```
+
+**Android SDK:**
+``` java
+fun createInstance(context: Context): TUICallKit
+```
+
+**iOS SDK:**
+
+``` objc
+- (void)onError:(int)code message:(NSString * _Nullable)message;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onError: (int code, String message) { 
+     
+    },onCallCancelled: (String callerId) {  
+     
+    }, onCallBegin: (TUIRoomId roomId, TUICallMediaType callMediaType, TUICallRole callRole) {
+       
+    }, onCallEnd: (TUIRoomId roomId, TUICallMediaType callMediaType, TUICallRole callRole, double totalTime) {  
+     
+    }, onCallMediaTypeChanged: (TUICallMediaType oldCallMediaType, TUICallMediaType newCallMediaType) { 
+    
+    }, onUserReject: (String userId) {  
+  
+    }, onUserNoResponse: (String userId) { 
+    
+    }, onUserLineBusy: (String onUserLineBusy) { 
+   
+    }, onUserJoin: (String userId) {
+  
+    }, onUserLeave: (String userId) { 
+      
+    }, onUserVideoAvailable: (String userId, bool isVideoAvailable) { 
+         
+    }, onUserAudioAvailable: (String userId, bool isAudioAvailable) {  
+       
+    }, onUserNetworkQualityChanged: (List<TUINetworkQualityInfo> networkQualityList) {
+  
+    }, onCallReceived: (String callerId, List<String> calleeIdList, String groupId, TUICallMediaType callMediaType) {
+  
+    }, onUserVoiceVolumeChanged: (Map<String, int> volumeMap) {  
+  
+    }, onKickedOffline: () { 
+   
+    }, onUserSigExpired: () {  
+   
+    }  
+));
+```
+
+**Flutter SDK:**
+``` cpp
+Future<TUIResult> login(int sdkAppId, String userId, String userSig)
+```
+
+【Vue3】
+``` bash
+<template>
+   <TUICallKit
+    :allowedMinimized="true"
+    :allowedFullScreen="true"
+    :videoDisplayMode="VideoDisplayMode.CONTAIN"
+    :videoResolution="VideoResolution.RESOLUTION_1080P"
+    :beforeCalling="beforeCalling"
+    :afterCalling="afterCalling"
+    :onMinimized="onMinimized"
+    :kickedOut="handleKickedOut"
+    :statusChanged="handleStatusChanged"
+  />
+</template>
+<script lang="ts" setup>
+import { TUICallKit, TUICallKitAPI, VideoDisplayMode, VideoResolution, STATUS } from "@trtc/calls-uikit-vue";
+
+function beforeCalling(type: string, error: any) {
+  console.log("[TUICallkit Demo] beforeCalling:", type, error);
+}
+function afterCalling() {
+  console.log("[TUICallkit Demo] afterCalling");
+}
+function onMinimized(oldStatus: string, newStatus: string) {
+  console.log("[TUICallkit Demo] onMinimized: " + oldStatus + " -> " + newStatus);
+}
+function kickedOut() {
+  console.log("[TUICallkit Demo] kickedOut");
+}
+function statusChanged(args: { oldStatus: string; newStatus: string; }) {
+  const { oldStatus, newStatus } = args;
+  if (newStatus === STATUS.CALLING_C2C_VIDEO) {
+    console.log(`[TUICallkit Demo] statusChanged: ${oldStatus} -> ${newStatus}`);
+  }
+}
+</script>
+```
+
+**Vue:**
+``` bash
+<template>
+   <TUICallKit
+    :allowedMinimized="true"
+    :allowedFullScreen="true"
+    :videoDisplayMode="VideoDisplayMode.CONTAIN"
+    :videoResolution="VideoResolution.RESOLUTION_1080P"
+    :beforeCalling="beforeCalling"
+    :afterCalling="afterCalling"
+    :onMinimized="onMinimized"
+    :kickedOut="handleKickedOut"
+    :statusChanged="handleStatusChanged"
+  />
+</template>
+<script lang="ts" setup>
+import { TUICallKit, TUICallKitAPI, VideoDisplayMode, VideoResolution, STATUS } from "@trtc/calls-uikit-vue";
+
+function beforeCalling(type: string, error: any) {
+  console.log("[TUICallkit Demo] beforeCalling:", type, error);
+}
+function afterCalling() {
+  console.log("[TUICallkit Demo] afterCalling");
+}
+function onMinimized(oldStatus: string, newStatus: string) {
+  console.log("[TUICallkit Demo] onMinimized: " + oldStatus + " -> " + newStatus);
+}
+function kickedOut() {
+  console.log("[TUICallkit Demo] kickedOut");
+}
+function statusChanged(args: { oldStatus: string; newStatus: string; }) {
+  const { oldStatus, newStatus } = args;
+  if (newStatus === STATUS.CALLING_C2C_VIDEO) {
+    console.log(`[TUICallkit Demo] statusChanged: ${oldStatus} -> ${newStatus}`);
+  }
+}
+</script>
+```
+
+**Android SDK:**
+``` java
+void onCallReceived(String callId, String callerId, List<String> calleeIdList, 
+                    TUICallDefine.MediaType mediaType, TUICallDefine.CallObserverExtraInfo info);
+```
+
+**Android SDK:**
+``` java
+TUICallKit createInstance(Context context)
+```
+
+**iOS SDK:**
+``` objc
+- (void)onCallReceived:(NSString *)callId callerId:(NSString *)callerId calleeIdList:(NSArray<NSString *> *)calleeIdList mediaType:(TUICallMediaType)mediaType info:(TUICallObserverExtraInfo *)info;
+```
+
+**Flutter SDK:**
+
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onError: (int code, String message) {
+    }
+));
+```
+
+**Flutter SDK:**
+``` cpp
+Future<void> logout()
+```
+
+## Detailed information on TUICallKitAPI API
+
+【React】
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-react"; 
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-react"; 
+```
+
+**Android SDK:**
+``` java
+void onCallBegin(String callId, TUICallDefine.MediaType mediaType, TUICallDefine.CallObserverExtraInfo info);
+```
+
+**Android SDK:**
+``` java
+fun setSelfInfo(nickname: String?, avatar: String?, callback: TUICommonDefine.Callback?)
+```
+
+**iOS SDK:**
+``` swift
+- (void)onCallBegin:(NSString *)callId mediaType:(TUICallMediaType)mediaType info:(TUICallObserverExtraInfo *)info;
+```
+
+**Flutter SDK:**
+``` java
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserInviting: (String userId) {
+      // TODO
+    }
+));
+```
+
+**Flutter SDK:**
+``` cpp
+Future<TUIResult> setSelfInfo(String nickname, String avatar)
+```
+
+【Vue3】
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-vue"; 
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-vue"; 
+```
+
+**Android SDK:**
+``` java
+void onCallEnd(String callId, TUICallDefine.MediaType mediaType, TUICallDefine.CallEndReason reason, 
+               String userId, long totalTime, TUICallDefine.CallObserverExtraInfo info);
+```
+
+**Android SDK:**
+``` java
+void setSelfInfo(String nickname, String avatar, TUICommonDefine.Callback callback)
+```
+
+**iOS SDK:**
+``` swift
+- (void)onCallEnd:(NSString *)callId mediaType:(TUICallMediaType)mediaType reason:(TUICallEndReason)reason userId:(NSString *)userId totalTime:(float)totalTime info:(TUICallObserverExtraInfo *)info;
+```
+
+**Flutter SDK:**
+``` java
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onCallReceived: (String callId, String callerId, List<String> calleeIdList, TUICallMediaType mediaType, CallObserverExtraInfo info) {
+      // TODO
+    }
+));
+```
+
+**Flutter SDK:**
+``` java
+Future<TUIResult> calls(List<String> userIdList, TUICallMediaType mediaType, TUICallParams params)
+```
+
+### init
+
+Initialize TUICallKit.
+``` javascript
+try {
+  await TUICallKitAPI.init({ SDKAppID, userID, userSig });
+  // If you already have a tim instance in your project, you need to pass it in here
+  // await TUICallKitAPI.init({ tim, SDKAppID, userID, userSig}); 
+  console.log("[TUICallKit] Initialization succeeds.");
+} catch (error: any) {
+  console.error(`[TUICallKit] Initialization failed. Reason: ${error}`);
+}
+```
+
+**Vue:**
+``` javascript
+try {
+  await TUICallKitAPI.init({ SDKAppID, userID, userSig });
+  // If you already have a tim instance in your project, you need to pass it in here
+  // await TUICallKitAPI.init({ tim, SDKAppID, userID, userSig}); 
+  console.log("[TUICallKit] Initialization succeeds.");
+} catch (error: any) {
+  console.error(`[TUICallKit] Initialization failed. Reason: ${error}`);
+}
+```
+
+**Android SDK:**
+
+   ``` java
+   void onCallNotConnected(String callId, TUICallDefine.MediaType mediaType, TUICallDefine.CallEndReason reason, 
+                           String userId, TUICallDefine.CallObserverExtraInfo info);
+   ```
+
+**Android SDK:**
+``` java
+ fun calls(
+     userIdList: List<String?>?, mediaType: TUICallDefine.MediaType?, 
+     params: TUICallDefine.CallParams?, callback: TUICommonDefine.Callback?
+)
+```
+
+**iOS SDK:**
+
+   ``` objc
+   - (void)onCallNotConnected:(NSString *)callId mediaType:(TUICallMediaType)mediaType reason:(TUICallEndReason)reaso userId:(NSString *)userId info:(TUICallObserverExtraInfo *)info
+   ```
+
+**Flutter SDK:**
+``` java
+TUICallEngine.instance.addObserver(TUICallObserver(
+  onCallNotConnected: (String callId, TUICallMediaType mediaType, CallEndReason reason,
+    String userId, CallObserverExtraInfo info) {
+    // TODO
+  }
+));
+```
+
+**Flutter SDK:**
+``` java
+Future<void> join(String callId)
+```
+
+The parameters are described below:
+| Parameter | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| SDKAppID | Number | Yes | The SDKAppID of your app, you can find your SDKAppID in the Live Audio and Video console. For details, see Activating Services |
+| userID | String | Yes | The current user's ID is of string type, only allowing for the inclusion of English letters (a-z and A-Z), digits (0-9), hyphens (-) and underscores (_) |
+| userSig | String | Yes | Use SDKSecretKey to encrypt SDKAppID, UserID and other information to obtain userSig. It is an authentication ticket used by Tencent Cloud to identify whether the current user can use TRTC services. For how to obtain it, please refer to How to Calculate UserSig |
+| tim | TencentCloudChat | No | tim is an instance of [TencentCloudChat](https://www.npmjs.com/package/@tencentcloud/chat) SDK. |
+
+### calls
+
+Initiate a one-to-one or multi-person call.
+``` javascript
+try {
+  await TUICallKitAPI.calls({ 
+    userIDList: ['jack', 'tom'], 
+    type: CallMediaType.VIDEO 
+  });
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the groupCall API. Reason:${error}`);
+}
+```
+
+**Vue:**
+``` javascript
+try {
+  await TUICallKitAPI.calls({ 
+    userIDList: ['jack', 'tom'], 
+    type: CallMediaType.VIDEO 
+  });
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the groupCall API. Reason:${error}`);
+}
+```
+
+**Android SDK:**
+``` java
+void onUserReject(String userId);
+```
+
+**Android SDK:**
+``` java
+ void calls(List<String> userIdList, TUICallDefine.MediaType mediaType,
+            TUICallDefine.CallParams params, TUICommonDefine.Callback callback)
+```
+
+**iOS SDK:**
+``` swift
+- (void)onUserReject:(NSString *)userId;
+```
+
+**Flutter SDK:**
+``` java
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onCallBegin: (String callId, TUICallMediaType mediaType, CallObserverExtraInfo info) {
+    // TODO
+  }
+));
+```
+
+**Flutter SDK:**
+``` javascript
+Future<void> enableMuteMode(bool enable)
+```
+
+The parameters are described below:
+| **Parameter** | **Type** | **Required** | **Meaning** |
+| --- | --- | --- | --- |
+| userIDList | Array<String> | Yes | List of called users |
+| type | [CallMediaType](https://www.tencentcloud.com/document/product/647/51015#Type) | Yes | The type of media for the call, you can refer to CallMediaType for the explanation of parameter values |
+| chatGroupID | String | Yes | chat group Id. |
+| roomID | Number | No | Numerical Room ID, range [1, 2147483647] |
+| strRoomID | String | No | String room ID. **v3.3.1+ supported** **range：** Limited to 64 bytes in length. The supported character set range is as follows (a total of 89 characters): - Lowercase and uppercase English letters.（a-zA-Z）； - Number（0-9）； - `Spaces`、`!`、`#`、`$`、`%`、`&`、`(`、`)`、`+`、`-`、`:`、`;`、`<`、`=`、`.`、`>`、`?`、`@`、`[`、`]`、`^`、`_`、`{`、`}`、`\\|`、`~`、`,`。 1. roomID and strRoomID are mutually exclusive, if you use strRoomID, then roomID should be 0. If you use both, the SDK will prioritize the roomID. 2. 2. don't mix roomID and strRoomID, because they are not interchangeable, for example, the number 123 and the string "123" are two completely different rooms. |
+| timeout | Number | No | Call timeout, default: 30s, unit: seconds. timeout = 0, set to no timeout |
+| userData | String | No | Customize the extended fields when initiating a call. The called user has this parameter in the ON_CALL_RECEIVED event. |
+| [offlinePushInfo](https://www.tencentcloud.com/document/product/647/51015#offlinePushInfo) | Object | No | Customize offline message push parameters |
+
+### join
+
+Proactively join a call.
+``` javascript
+try {
+  await TUICallKitAPI.join({ 
+    callId: 'xx'
+  });
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the join API. Reason:${error}`);
+}
+```
+
+**Vue:**
+``` javascript
+try {
+  await TUICallKitAPI.join({ 
+    callId: 'xx'
+  });
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the join API. Reason:${error}`);
+}
+```
+
+**Android SDK:**
+``` java
+void onUserNoResponse(String userId);
+```
+
+**Android SDK:**
+``` java
+ fun join(callId: String?, callback: TUICommonDefine.Callback?) 
+```
+
+**iOS SDK:**
+``` swift
+- (void)onUserNoResponse:(NSString *)userId;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onCallEnd: (String callId, TUICallMediaType mediaType, CallEndReason reason,
+        String userId, double totalTime, CallObserverExtraInfo info) {
+    // TODO
+  }
+));
+```
+
+**Flutter SDK:**
+``` javascript
+Future<void> enableFloatWindow(bool enable)
+```
+
+The parameters are described below:
+| **Parameter** | **Type** | **Required** | **Meaning** |
+| --- | --- | --- | --- |
+| callId | String | Yes | Unique ID for this call |
+
+### setLanguage
+
+Set language, currently supports: Chinese, English, Japanese.
+``` javascript
+TUICallKitAPI.setLanguage("zh-cn"); // "en" | "zh-cn" | "ja_JP"
+```
+
+**Vue:**
+``` javascript
+TUICallKitAPI.setLanguage("zh-cn"); // "en" | "zh-cn" | "ja_JP"
+```
+
+**Android SDK:**
+``` java
+void onUserInviting(String userId);
+```
+
+**Android SDK:**
+``` java
+void join(String callId, TUICommonDefine.Callback callback)
+```
+
+**iOS SDK:**
+``` swift
+- (void)onUserLineBusy:(NSString *)userId;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onCallMediaTypeChanged: (TUICallMediaType oldCallMediaType, TUICallMediaType newCallMediaType) {  
+    }
+));
+```
+
+**Flutter SDK:**
+``` javascript
+Future<void> setCallingBell(String assetName)
+```
+
+The parameters are described below:
+| Parameter | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| lang | String | Yes | Language type `en`,`zh-cn` and `ja_JP`. |
+
+### setSelfInfo
+
+Set your own nickname and avatar.
+
+> **Note: **
+> 
+
+> **If you use this interface to modify user information during a call, the UI will not be updated immediately, and you will need to wait until the next call to see the changes.**
+> 
+
+``` javascript
+try {
+  await TUICallKitAPI.setSelfInfo({ nickName: "xxx", avatar: "" });
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the setSelfInfo API. Reason: ${error}`;
+}
+```
+
+**Vue:**
+
+``` javascript
+try {
+  await TUICallKitAPI.setSelfInfo({ nickName: "xxx", avatar: "" });
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the setSelfInfo API. Reason: ${error}`;
+}
+```
+
+**Android SDK:**
+``` java
+void onUserLineBusy(String userId);
+```
+
+**Android SDK:**
+``` java
+fun setCallingBell(filePath: String?)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserInviting:(NSString *)userId;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserReject: (String userId) {    
+    }
+));
+```
+
+**Flutter SDK:**
+``` javascript
+Future<void> enableVirtualBackground(bool enable)
+```
+
+The parameters are described below:
+| Parameter | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| nickName | String | Yes | own nickname |
+| avatar | String | Yes | own avatar address |
+
+### setCallingBell
+- Customize the user's incoming call ringtone.
+
+- The input is restricted to the local MP3 format file address. It is imperative to ensure that the application has access to this file directory.
+
+- Use the import method to import the ringtone file.
+
+- If you need to restore the default ringtone, just pass empty filePath.
+
+   ``` javascript
+   import filePath from '../assets/phone_ringing.mp3';
+   try {
+     await TUICallKitAPI.setCallingBell(filePath);
+   } catch (error: any) {
+     console.error(`[TUICallKit] Failed to call the setCallingBell API. Reason: ${error}`);
+   }
+   ```
+
+**Vue:**
+
+   ``` javascript
+   import filePath from '../assets/phone_ringing.mp3';
+   try {
+     await TUICallKitAPI.setCallingBell(filePath);
+   } catch (error: any) {
+     console.error(`[TUICallKit] Failed to call the setCallingBell API. Reason: ${error}`);
+   }
+   ```
+
+**Android SDK:**
+``` java
+void onUserJoin(String userId);
+```
+
+**Android SDK:**
+``` java
+void setCallingBell(String filePath);
+```
+
+**iOS SDK:**
+``` swift
+- (void)onUserJoin:(NSString *)userId;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserNoResponse: (String userId) { 
+    }
+));
+```
+
+**Flutter SDK:**
+
+``` cpp
+Future<void> call(String userId, TUICallMediaType callMediaType, [TUICallParams? params])
+```
+
+   The parameters are described below:
+
+| Parameter | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| filePath | String | Yes | Ringtone file path |
+
+### enableFloatWindow
+
+Turn on/off the floating window function. The default is false. The floating window button in the upper left corner of the call interface is hidden. It will be displayed after setting it to true.
+``` javascript
+try {
+  const enable = true;
+  await TUICallKitAPI.enableFloatWindow(enable);
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the enableFloatWindow API. Reason: ${error}`);
+}
+```
+
+**Vue:**
+``` javascript
+try {
+  const enable = true;
+  await TUICallKitAPI.enableFloatWindow(enable);
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the enableFloatWindow API. Reason: ${error}`);
+}
+```
+
+**Android SDK:**
+``` java
+void onUserLeave(String userId);
+```
+
+**Android SDK:**
+``` java
+fun enableMuteMode(enable: Boolean)
+```
+
+**iOS SDK:**
+``` swift
+- (void)onUserLeave:(NSString *)userId;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserLineBusy: (String onUserLineBusy) {   
+    },
+));
+```
+
+**Flutter SDK:**
+
+``` javascript
+Future<void> groupCall(String groupId, List<String> userIdList, TUICallMediaType callMediaType,[TUICallParams? params])
+```
+
+The parameters are described below:
+| Parameter | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| enable | Boolean | Yes | Turn on/off the floating window function. default false. |
+
+### enableMuteMode
+
+Turn on/off the ringtone for incoming calls. When turned on, the incoming call ringtone will not be played when a call request is received.
+``` javascript
+try {
+  const enable = true;
+  await TUICallKitAPI.enableMuteMode(enable);
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the enableMuteMode API. Reason: ${error}`);
+}
+```
+
+**Vue:**
+``` javascript
+try {
+  const enable = true;
+  await TUICallKitAPI.enableMuteMode(enable);
+} catch (error: any) {
+  console.error(`[TUICallKit] Failed to call the enableMuteMode API. Reason: ${error}`);
+}
+```
+
+**Android SDK:**
+``` java
+void onUserVideoAvailable(String userId, boolean isVideoAvailable);
+```
+
+**Android SDK:**
+``` java
+void enableMuteMode(boolean enable);
+```
+
+**iOS SDK:**
+``` swift
+- (void)onUserVideoAvailable:(NSString *)userId isVideoAvailable:(BOOL)isVideoAvailable;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserJoin: (String userId) {  
+    }
+));
+```
+
+**Flutter SDK:**
+
+``` javascript
+Future<void> joinInGroupCall(TUIRoomId roomId, String groupId, TUICallMediaType callMediaType)
+```
+
+### enableVirtualBackground
+
+Turn on/off the blurred background function. If you want to set the picture background to be blurry see Web. By calling the interface, you can display the blurred background function button on the UI, and click the button to directly enable the blurred background function.
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-react";
+const enable = true;
+TUICallKitAPI.enableVirtualBackground(enable);
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI } from "@trtc/calls-uikit-react";
+const enable = true;
+TUICallKitAPI.enableVirtualBackground(enable);
+```
+
+**Android SDK:**
+``` java
+void onUserAudioAvailable(String userId, boolean isAudioAvailable);
+```
+
+**Android SDK:**
+``` java
+fun enableFloatWindow(enable: Boolean)
+```
+
+**iOS SDK:**
+``` swift
+- (void)onUserAudioAvailable:(NSString *)userId isAudioAvailable:(BOOL)isAudioAvailable;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserLeave: (String userId) {     
+    }
+));
+```
+
+The parameters are described below:
+| Parameter | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| enable | boolean | Yes | - enable = true, show blur background button - enable = false, don't show blur background button |
+
+### destroyed
+- Terminate the TUICallKit instance.
+
+- This method won't automatically log out of `tim`, manual logging out is required: `tim.logout();`.
+
+   ``` javascript
+   try {
+     await TUICallKitAPI.destroyed();
+   } catch (error: any) {
+     console.error(`[TUICallKit] Failed to call the destroyed API. Reason: ${error}`);
+   }
+   ```
+
+**Vue:**
+
+   ``` javascript
+   try {
+     await TUICallKitAPI.destroyed();
+   } catch (error: any) {
+     console.error(`[TUICallKit] Failed to call the destroyed API. Reason: ${error}`);
+   }
+   ```
+
+**Android SDK:**
+``` java
+void onUserVoiceVolumeChanged(Map<String, Integer> volumeMap);
+```
+
+**Android SDK:**
+``` java
+void enableFloatWindow(boolean enable);
+```
+
+**iOS SDK:**
+``` swift
+- (void)onUserVoiceVolumeChanged:(NSDictionary <NSString *, NSNumber *> *)volumeMap;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserVideoAvailable: (String userId, bool isVideoAvailable) {   
+    }
+));
+```
+
+### hideFeatureButton
+
+Hidden feature buttons, currently only support Camera, Microphone, and Switch Camera Button.
+``` typescript
+TUICallKitAPI.hideFeatureButton(buttonName: FeatureButton);
+```
+
+**Vue:**
+``` typescript
+TUICallKitAPI.hideFeatureButton(buttonName: FeatureButton);
+```
+
+**Android SDK:**
+``` java
+void onUserNetworkQualityChanged(List<TUICallDefine.NetworkQualityInfo> networkQualityList);
+```
+
+**Android SDK:**
+``` java
+fun enableIncomingBanner(enable: Boolean)
+```
+
+**iOS SDK:**
+``` swift
+- (void)onUserNetworkQualityChanged:(NSArray<TUINetworkQualityInfo *> *)networkQualityList;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserAudioAvailable: (String userId, bool isAudioAvailable) {       
+    }
+));
+```
+
+The parameters are described below:
+| **Parameter** | **Type** | **Required** | **Meaning** |
+| --- | --- | --- | --- |
+| buttonName | [FeatureButton](https://www.tencentcloud.com/document/product/647/51015#FeatureButton) | Yes | Button Name |
+
+### setLocalViewBackgroundImage
+
+Set the background image for the local user's call interface.
+``` typescript
+TUICallKitAPI.setLocalViewBackgroundImage(url: string);
+```
+
+**Vue:**
+``` typescript
+TUICallKitAPI.setLocalViewBackgroundImage(url: string);
+```
+
+**Android SDK:**
+``` java
+void onKickedOffline();
+```
+
+**Android SDK:**
+``` java
+fun call(userId: String, callMediaType: TUICallDefine.MediaType)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onKickedOffline;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserVoiceVolumeChanged: (Map<String, int> volumeMap) {  
+    }
+));
+```
+
+The parameters are described below:
+| **Parameter** | **Type** | **Required** | **Meaning** |
+| --- | --- | --- | --- |
+| url | string | Yes | Image Address (supports Local Path and Network Address) |
+
+### setRemoteViewBackgroundImage
+
+Set the background image for the remote user's call interface.
+``` typescript
+TUICallKitAPI.setRemoteViewBackgroundImage(userId: string, url: string);
+```
+
+**Vue:**
+``` typescript
+TUICallKitAPI.setRemoteViewBackgroundImage(userId: string, url: string);
+```
+
+**Android SDK:**
+``` java
+void onUserSigExpired();
+```
+
+**Android SDK:**
+``` java
+ void call(String userId, TUICallDefine.MediaType callMediaType)
+```
+
+**iOS SDK:**
+``` objectivec
+- (void)onUserSigExpired;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserNetworkQualityChanged: (List<TUINetworkQualityInfo> networkQualityList) {
+    }
+));
+
+class TUINetworkQualityInfo {    
+    String userId;  
+    TUINetworkQuality quality;  
+    TUINetworkQualityInfo({required this.userId, required this.quality});
+}
+
+enum TUINetworkQuality {  
+  unknown,  
+  excellent,
+  good,  
+  poor,  
+  bad,  
+  vBad,  
+  down
+}
+```
+
+The parameters are described below:
+| **Parameter** | **Type** | **Required** | **Meaning** |
+| --- | --- | --- | --- |
+| userId | string | Yes | Remote User userId, setting to '*' means it applies to all Remote Users |
+| url | string | Yes | Image Address (supports Local Path and Network Address) |
+
+### setLayoutMode
+
+Set the call interface layout mode.
+
+【Vue】
+``` javascript
+import { TUICallKitAPI, LayoutMode } from "@trtc/calls-uikit-vue";
+TUICallKitAPI.setLayoutMode(LayoutMode.LocalInLargeView);
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI, LayoutMode } from "@trtc/calls-uikit-vue";
+TUICallKitAPI.setLayoutMode(LayoutMode.LocalInLargeView);
+```
+
+**Android SDK:**
+
+   ``` java
+   void onCallCancelled(String userId);
+   ```
+
+**Android SDK:**
+``` java
+fun call(
+    userId: String, callMediaType: TUICallDefine.MediaType,
+    params: CallParams?, callback: TUICommonDefine.Callback?
+)
+```
+
+**iOS SDK:**
+
+   ``` objc
+   - (void)onCallCancelled:(NSString *)callerId;
+   ```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onKickedOffline: () { 
+    }
+));
+```
+
+【React】
+``` javascript
+import { TUICallKitAPI, LayoutMode } from "@trtc/calls-uikit-react";
+TUICallKitAPI.setLayoutMode(LayoutMode.LocalInLargeView);
+```
+
+**Vue:**
+``` javascript
+import { TUICallKitAPI, LayoutMode } from "@trtc/calls-uikit-react";
+TUICallKitAPI.setLayoutMode(LayoutMode.LocalInLargeView);
+```
+
+**Android SDK:**
+``` java
+void onCallMediaTypeChanged(TUICallDefine.MediaType oldCallMediaType,TUICallDefine.MediaType newCallMediaType);
+```
+
+**Android SDK:**
+``` java
+ void call(String userId, TUICallDefine.MediaType callMediaType, 
+           TUICallDefine.CallParams params, TUICommonDefine.Callback callback)
+```
+
+**iOS SDK:**
+``` swift
+- (void)onCallMediaTypeChanged:(TUICallMediaType)oldCallMediaType newCallMediaType:(TUICallMediaType)newCallMediaType;
+```
+
+**Flutter SDK:**
+``` cpp
+TUICallEngine.instance.addObserver(TUICallObserver(
+    onUserSigExpired: () {    
+    }  
+));
+```
+
+Parameter list:
+| **Parameter** | **Type** | **Required** | **Meaning** |
+| --- | --- | --- | --- |
+| layoutMode | [LayoutMode](https://www.tencentcloud.com/document/product/647/51015#LayoutMode) | Yes | User flow layout mode |
+
+### setCameraDefaultState
+
+Set whether the camera is on by default.
+``` javascript
+TUICallKitAPI.setCameraDefaultState(true);
+```
+
+**Vue:**
+``` javascript
+TUICallKitAPI.setCameraDefaultState(true);
+```
+
+**Android SDK:**
+``` java
+fun groupCall(groupId: String, userIdList: List<String?>?, callMediaType: TUICallDefine.MediaType)
+```
+
+**Flutter SDK:**
+
+   ``` cpp
+   TUICallEngine.instance.addObserver(TUICallObserver(
+       onCallCancelled: (String userId) {    
+       }
+   ));
+   ```
+
+Parameter list:
+| Parameter | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| isOpen | boolean | Yes | Whether to enable the camera |
+
+### getTUICallEngineInstance
+
+Get TUICallEngine instance.
+``` javascript
+TUICallKitAPI.getTUICallEngineInstance();
+```
+
+**Vue:**
+``` javascript
+TUICallKitAPI.getTUICallEngineInstance();
+```
+
+**Android SDK:**
+``` java
+void groupCall(String groupId, List<String> userIdList, TUICallDefine.MediaType callMediaType);
+```
+
+## TUICallKit Type Definition
+
+### videoDisplayMode
+
+There are three values for the `videoDisplayMode` display mode:
+- `VideoDisplayMode.CONTAIN`
+
+- `VideoDisplayMode.COVER`
+
+- `VideoDisplayMode.FILL`, the default value is `VideoDisplayMode.COVER`.
+
+| Attribute | Value | Description |
+| --- | --- | --- |
+| videoDisplayMode | VideoDisplayMode.CONTAIN | - Ensuring the full display of video content is our top priority. - The dimensions of the video are scaled proportionally until one side aligns with the frame of the viewing window. - In case of discrepancy in sizes between the video and the display window, the video is scaled - on the premise of maintaining the aspect ratio - to fill the window, resulting in a black border around the scaled video. |
+| VideoDisplayMode.COVER | - Priority is given to ensure that the viewing window is filled. - The video size is scaled proportionally until the entire window is filled. - If the video's dimensions are different from those of the display window, the video stream will be cropped or stretched to match the window's ratio. |  |
+| VideoDisplayMode.FILL | - Ensuring that the entire video content is displayed while filling the window does not guarantee preservation of the original video's proportion. - The dimensions of the video will be stretched to match those of the window. |  |
+
+### videoResolution
+
+The resolution `videoResolution` has three possible values:
+- `VideoResolution.RESOLUTION_480P`
+
+- `VideoResolution.RESOLUTION_720P`
+
+- `VideoResolution.RESOLUTION_1080P`, the default value is `VideoResolution.RESOLUTION_480P`.
+
+   **Resolution Explanation:**
+
+| Video Profile | Resolution (W x H) | Frame Rate (fps) | Bitrate (Kbps) |
+| --- | --- | --- | --- |
+| 480p | 640 × 480 | 15 | 900 |
+| 720p | 1280 × 720 | 15 | 1500 |
+| 1080p | 1920 × 1080 | 15 | 2000 |
+
+   **Frequently Asked Questions:**
+
+- iOS 13&14 does not support encoding videos higher than 720P. It is suggested to limit the highest collection to 720P on these two system versions. Refer to [iOS Safari known issue case 12](https://web.sdk.qcloud.com/trtc/webrtc/doc/en/tutorial-02-info-webrtc-issues.html#h2-4).
+
+- Firefox does not permit the customization of video frame rates (default is set to 30fps).
+
+- Due to the influence of system performance usage, camera collection capabilities, browser restrictions, and other factors, the actual values of video resolution, frame rate, and bit rate may not necessarily match the set values exactly. In such scenarios, the browser will automatically adjust the Profile to get as close to the set values as feasible.
+
+### STATUS
+| STATUS attribute value | Description |
+| --- | --- |
+| STATUS.IDLE | Idle status |
+| STATUS.BE_INVITED | Received an Audio/Video Call Invite |
+| STATUS.DIALING_C2C | Initiating a one-to-one call |
+| STATUS.DIALING_GROUP | Initiating a group call |
+| STATUS.CALLING_C2C_AUDIO | Engaged in a 1v1 Audio Call |
+| STATUS.CALLING_C2C_VIDEO | In the midst of a one-to-one video call |
+| STATUS.CALLING_GROUP_AUDIO | Engaged in Group Audio Communication |
+| STATUS.CALLING_GROUP_VIDEO | Engaged in group video call |
+
+### **CallMediaType**
+| CallMediaType Type | Description |
+| --- | --- |
+| CallMediaType.AUDIO_CALL | Audio Call |
+| CallMediaType.VIDEO | Video Call |
+
+### **offlinePushInfo**
+| Parameter | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| offlinePushInfo.title | String | No | Offline Push Title (Optional) |
+| offlinePushInfo.description | String | No | Offline Push Content (Optional) |
+| offlinePushInfo.androidOPPOChannelID | String | No | Setting the channel ID for OPPO phones with 8.0 system and above for offline pushes (Optional) |
+| offlinePushInfo.extension | String | No | Offline push through content. Can be used to set Android Notification mode and VoIP mode.** Default**: Notification mode, it will be a notification from the system; VoIP mode is required to pass the field. |
+| offlinePushInfo.ignoreIOSBadge | Boolean | No | Ignore badge count for offline push (only for iOS), if set to true, the message will not increase the unread count of the app icon on the iOS receiver's side. |
+| offlinePushInfo.iOSSound | String | No | Offline push sound setting (only for iOS). |
+| offlinePushInfo.androidSound | String | No | Offline push sound setting. |
+| offlinePushInfo.androidVIVOClassification | Number | No | Classification of VIVO push messages (deprecated interface, VIVO push service will optimize message classification rules on April 3, 2023. It is recommended to use setAndroidVIVOCategory to set the message category). 0: Operational messages, 1: System messages. The default value is 1. |
+| offlinePushInfo.androidXiaoMiChannelID | String | No | Set the channel ID for Xiaomi phones with Android 8.0 and above systems. |
+| offlinePushInfo.androidFCMChannelID | String | No | Set the channel ID for google phones with Android 8.0 and above systems. |
+| offlinePushInfo.androidHuaWeiCategory | String | No | Classification of Huawei push messages. |
+| offlinePushInfo.isDisablePush | Boolean | No | Whether to turn off push notifications (default is on). |
+| offlinePushInfo.iOSPushType | Number | No | iOS offline push type，default is 0。0-APNs；1-VoIP. |
+
+#### Android Notification Mode
+``` javascript
+const extension = {
+  timPushFeatures: {        
+    fcmPushType: 0, // 0, VoIP; 1, notification
+  }
+};
+offlinePushInfo.extension = JSON.stringify(extension);
+```
+
+**Vue:**
+``` javascript
+const extension = {
+  timPushFeatures: {        
+    fcmPushType: 0, // 0, VoIP; 1, notification
+  }
+};
+offlinePushInfo.extension = JSON.stringify(extension);
+```
+
+**Android SDK:**
+``` java
+fun groupCall(
+    groupId: String, userIdList: List<String?>?,
+    callMediaType: TUICallDefine.MediaType, params: CallParams?,
+    callback: TUICommonDefine.Callback?
+)
+```
+
+#### Android VoIP Mode
+``` javascript
+const extension = {
+  timPushFeatures: {        
+    fcmPushType: 0, // 0, data; 1, notification
+    fcmNotificationType: 1, // 0, TIMPush implementation； 1, business implementation after transparent transmission 
+  }
+};
+offlinePushInfo.extension = JSON.stringify(extension);
+```
+
+**Vue:**
+``` javascript
+const extension = {
+  timPushFeatures: {        
+    fcmPushType: 0, // 0, data; 1, notification
+    fcmNotificationType: 1, // 0, TIMPush implementation； 1, business implementation after transparent transmission 
+  }
+};
+offlinePushInfo.extension = JSON.stringify(extension);
+```
+
+**Android SDK:**
+``` java
+void groupCall(String groupId, List<String> userIdList, TUICallDefine.MediaType callMediaType, 
+               TUICallDefine.CallParams params, TUICommonDefine.Callback callback);
+```
+
+### FeatureButton
+| FeatureButton Type | Description |
+| --- | --- |
+| FeatureButton.Camera | Camera Button |
+| FeatureButton.Microphone | Microphone Button |
+| FeatureButton.SwitchCamera | Switches between the front and rear cameras. |
+| FeatureButton.InviteUser | Invite users button |
+
+### LayoutMode
+| LayoutMode type | Description |
+| --- | --- |
+| LayoutMode.LocalInLargeView | Local user in large window display |
+| LayoutMode.RemoteInLargeView | Remote user in large window display |
+
+---
+
+--------------------------------------------------------------------------------
+title: Integrate TUICallKit Audio/Video Calling (Android/iOS/Flutter/React/Vue)
+description: Cross-platform integration overview for incoming call, accept/hangup, media switch, and call UI integration. Keywords: TUICallKit, TUICallEngine, @trtc/calls-uikit.
+source: https://raw.githubusercontent.com/Tencent-RTC/docs/main/en/callkit/integration.md
+--------------------------------------------------------------------------------
+
+> The following content uses **Android** as the baseline. Android, iOS, Flutter, React, Vue share identical steps and concepts; only code implementations differ. Alternative platform code is appended after each code block.
+
+This document describes how to rapidly integrate the TUICallKit component. You can complete the following key steps within 10 minutes and obtain a complete audio and video call interface.
+
+## Preparations
+
+### **Environmental Requirements**
+- **Android Version Requirements**: Android 5.0 (SDK API Level 21) and above.
+
+- **Gradle Version Requirements**: Gradle 4.2.1 and above.
+
+- **Device Requirements**: Mobile devices running Android 5.0 or higher.
+
+- **Networking Requirements**: The device must be able to connect to the public network.
+
+### Service Activation
+
+Please refer to the Service Activation documentation to obtain your SDKAppID and SDKSecretKey. These credentials will be required in the subsequent login step.
+
+## Implementation
+
+### Step 1.Importing Components
+
+Clone or download the code from [GitHub](https://github.com/Tencent-RTC/TUIKit_Android). Then, copy the `atomic_x` directory (under `TUIKit_Android`) and the `tuicallkit-kt` subdirectory (under `call`) to the directory at the same level as your project's app directory, as shown below.
+
+### Step 2.Project Configuration
+1. Locate the `settings.gradle.kts` (or s`ettings.gradle`) file in the project root directory. Add the following code to import the `tuicallkit-kt` and `atomic_x` components into your project.
+
+   
+
+【setting.gradle.kts】
+``` java
+include(":tuicallkit-kt")
+include(":atomic_x")
+```
+
+**iOS:**
+
+   ``` bash
+   target 'xxxx' do
+     ...
+     pod 'TUICallKit_Swift/Professional'
+   end
+   ```
+
+**Flutter:**
+``` bash
+flutter pub add tencent_calls_uikit
+```
+
+**React:**
+
+```bash
+pnpm create vite@latest
+# skip some settings
+cd ${your-vue-project-name}
+pnpm install
+```
+
+**Vue:**
+
+```bash
+pnpm create vite@latest
+# skip some settings
+cd ${your-vue-project-name}
+pnpm install
+```
+
+【settings.gradle】
+``` java
+include ':tuicallkit-kt'
+include ':atomic_x'
+```
+
+**iOS:**
+
+   ``` bash
+   pod install
+   ```
+
+**Flutter:**
+
+``` java
+  android {
+    ......    
+    buildTypes {  
+        release {  
+            ......
+            minifyEnabled true  
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'  
+        } 
+    }
+}
+```
+
+**React:**
+
+```bash
+npm install @trtc/calls-uikit-react@latest --legacy-peer-deps
+```
+
+**Vue:**
+
+```vue
+<template>
+  <div>
+    <span> caller's ID: </span>
+    <input type="text" v-model="callerUserID"> 
+    <button @click="init"> step1. init </button> <br>
+    <span> callee's ID: </span>
+    <input type="text" v-model="calleeUserID">
+    <button @click="call"> step2. call </button>
+    <Teleport to="body">
+      <TUICallKit style="
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) !important;
+        z-index: 1000;"
+      />
+    </Teleport>
+  </div>
+</template>
+<script setup>
+import { ref } from 'vue';
+import { TUICallKit, TUICallKitAPI, CallMediaType } from "@trtc/calls-uikit-vue";
+
+const callerUserID = ref('');
+const calleeUserID = ref('');
+const SDKAppID = 0;  // TODO: Replace with your SDKAppID (Notice: SDKAppID is of type number)
+const userSig = ''; // TODO: Replace with your userSig
+
+// init TUICallKit
+const init = async () => {
+  await TUICallKitAPI.init({
+    userID: callerUserID.value, 
+    userSig, 
+    SDKAppID,
+  });
+}
+
+// Start a video call
+const call = async () => {
+  await TUICallKitAPI.calls({
+    userIDList: [calleeUserID.value],
+    type: CallMediaType.VIDEO,
+  }); 
+};
+</script>
+```
+
+2. Locate the `build.gradle.kts (or build.gradle)` file under the app directory, and add the following code in `dependencies` to declare the app's dependency on the component.
+
+   
+
+【build.gradle.kts】
+``` java
+dependencies {
+    api(project(":tuicallkit-kt"))
+}
+```
+
+**iOS:**
+``` swift
+import TUICore
+import TUICallKit_Swift
+
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+    let userID = "denny"       // Please replace with your UserId
+    let sdkAppID: Int32 = 0    // Please replace with the SDKAppID obtained from the console in the step 1
+    let secretKey = "****"     // Please replace with the SecretKey obtained from the console in the step 1
+
+    let userSig = GenerateTestUserSig.genTestUserSig(userID: userID, sdkAppID: sdkAppID, secretKey: secretKey)
+
+    TUILogin.login(sdkAppID, userID: userID, userSig: userSig) {
+      print("login success")
+    } fail: { code, message in
+      print("login failed, code: \(code), error: \(message ?? "nil")")
+    }
+
+    return true
+}
+```
+
+**Flutter:**
+
+``` java
+-keep class com.tencent.** { *; }
+```
+
+**React:**
+
+```tsx
+import { useState } from 'react';
+import { TUICallKit, TUICallKitAPI, CallMediaType } from "@trtc/calls-uikit-react";
+
+return (
+  <>
+    <span> caller's ID: </span>
+    <input type="text" placeholder='input caller userID' value={callerUserID} onChange={(event) => setCallerUserID(event.target.value)} />
+    <button onClick={init}> step1. init </button> <br />
+    <span> callee's ID: </span>
+    <input type="text" placeholder='input callee userID' value={calleeUserID} onChange={(event) => setCalleeUserID(event.target.value)} />
+    <button onClick={call}> step2. call </button>
+    <TUICallKit
+      style={{ 
+        position: 'fixed', 
+        top: '50%', 
+        left: '50%', 
+        transform: 'translate(-50%, -50%)',
+        width: '960px',
+        minHeight: '640px',
+        zIndex: 1000
+      }}
+    />
+  </>
+);
+
+const [callerUserID, setCallerUserID] = useState('');
+const [calleeUserID, setCalleeUserID] = useState('');
+const SDKAppID = 0;  // TODO: Replace with your SDKAppID (Notice: SDKAppID is of type number)
+const userSig = ''; // TODO: Replace with your userSig
+
+// init TUICallKit
+const init = async () => {
+  await TUICallKitAPI.init({
+    userID: callerUserID,
+    userSig,
+    SDKAppID,
+  });
+}
+// Start a video call
+const call = async () => {
+  await TUICallKitAPI.calls({
+    userIDList: [calleeUserID],
+    type: CallMediaType.VIDEO,
+  }); 
+};
+</script>
+```
+
+【build.gradle】
+``` java
+dependencies {
+    api project(':tuicallkit-kt')
+}
+```
+
+**iOS:**
+``` objectivec
+#import <TUICore/TUILogin.h>
+#import <TUICallKit_Swift/TUICallKit_Swift-Swift.h>
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    NSString *userID = @"denny";     // Please replace with your UserId
+    int sdkAppID = 0;                // Please replace with the SDKAppID obtained from the console in the first step
+    NSString *secretKey = @"****";   // Please replace with the SecretKey obtained from the console in the first step
+
+    NSString *userSig = [GenerateTestUserSig genTestUserSigWithUserID:userID sdkAppID:sdkAppID secretKey:secretKey];
+
+    [TUILogin login:sdkAppID
+             userID:userID
+            userSig:userSig
+               succ:^{
+        NSLog(@"login success");
+    } fail:^(int code, NSString * _Nullable msg) {
+        NSLog(@"login failed, code: %d, error: %@", code, msg);
+    }];
+    
+    return YES;
+}
+```
+
+**Flutter:**
+
+``` java
+  android {  
+    ......
+    defaultConfig {
+      ......
+      multiDexEnabled true
+    } 
+}
+```
+   
+
+   > **Note:**
+   > 
+
+   > The TUICallKit project internally depends on `TRTC SDK`,`IM SDK`,`tuicallengine` and public library `tuicore` by default. Developers do not need to configure them separately. If needed, just modify the version number in `tuicallkit-kt/build.gradle` file to upgrade.
+   > 
+
+3. `proguard-rules.pro`**Configuration**:Since the SDK internally uses Java reflection, certain classes must be added to the non-obfuscation list (ProGuard exclusion list). Please add the following configuration to the end of the `proguard-rules.pro` file:
+
+   ``` java
+   -keep class com.tencent.** { *; }
+   ```
+
+**iOS:**
+``` swift
+import TUICallKit_Swift
+import RTCRoomEngine
+
+// Initiating a 1-to-1 audio call (assuming userId is mike)
+TUICallKit.createInstance().calls(userIdList: ["mike"], callMediaType: .audio, params: nil) {
+
+} fail: { code, message in
+
+}
+```
+
+**Flutter:**
+``` java
+<key>NSCameraUsageDescription</key>
+<string>CallingApp needs to access your camera to capture video.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>CallingApp needs to access your microphone to capture audio.</string>
+```
+4. `AndroidManifest.xml`**Configuration**:In the AndroidManifest.xml file within the app directory, add `tools:replace="android:allowBackup"` within the <application> node to overwrite the component's default settings and apply your own configuration.
+
+   ``` java
+     // app/src/main/AndroidManifest.xml
+      <application
+       android:name=".BaseApplication"
+       android:allowBackup="false"
+       android:icon="@drawable/app_ic_launcher"
+       android:label="@string/app_name"
+       android:largeHeap="true"
+       android:theme="@style/AppTheme"
+       tools:replace="android:allowBackup">
+   ```
+
+**iOS:**
+``` objectivec
+#import <TUICallKit_Swift/TUICallKit_Swift-Swift.h>
+#import <RTCRoomEngine/TUICallEngine.h>
+
+// Initiating a 1-to-1 audio call (assuming userId is mike)
+[[TUICallKit createInstance] calls:@[@"mike"] callMediaType:TUICallMediaTypeAudio params:NULL succ:^{
+} fail:^(int code, NSString * _Nullable errMsg) {
+}];
+```
+
+**Flutter:**
+
+   ``` java
+   import 'package:tencent_calls_uikit/tencent_calls_uikit.dart';
+   
+    ......
+   
+   class XXX extends StatelessWidget {
+     const XXX({super.key});
+   
+    @override
+     Widget build(BuildContext context) {
+       return MaterialApp(
+         navigatorObservers: [TUICallKit.navigatorObserver],
+         ......
+       );
+     }
+   }
+   ```
+
+### Step 3.Login
+
+Add the following code in your project. It enables logging in to the TUI component by calling the relevant APIs in TUICore. This procedure is critical. Only after a successful login can you properly use the features provided by TUICallKit.
+
+【Android（Kotlin）】
+``` java
+import com.tencent.qcloud.tuicore.TUILogin
+import com.tencent.qcloud.tuicore.interfaces.TUICallback
+import com.tencent.qcloud.tuikit.tuicallkit.debug.GenerateTestUserSig
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val userId = "denny"     // replace with your UserId
+        val sdkAppId = 0         // replace with the SDKAppID obtained from the console
+        val secretKey = "****"   // replace with the SecretKey obtained from the console
+        val userSig = GenerateTestUserSig.genTestUserSig(userId, sdkAppId, secretKey) 
+        TUILogin.login(this, sdkAppId, userId, userSig, object : TUICallback() {
+            override fun onSuccess() {
+            }
+            override fun onError(errorCode: Int, errorMessage: String) {
+            }
+         }) 
+    }
+}
+```
+
+**Flutter:**
+``` java
+import 'package:tencent_calls_uikit/tencent_calls_uikit.dart';
+import 'package:tencent_calls_uikit/debug/generate_test_user_sig.dart';
+......
+
+final String userID    = 'xxxxx'; // Please replace with your UserId
+final int    sdkAppID  = 0;       // Please replace with the SDKAppID you got from the console in step 1
+final String secretKey = 'xxxx';  // Please replace with the SecretKey you got from the console in step 1
+
+void login() async {
+    String userSig  = GenerateTestUserSig.genTestSig(userID, sdkAppID, secretKey);
+    TUIResult result = await TUICallKit.instance.login(sdkAppID, userID, userSig);
+    if (result.code.isEmpty) {
+      print('Login success');
+    } else {
+      print('Login failed: ${result.code} ${result.message}');
+    }
+}
+```
+
+【Android（Java）】
+``` java
+import com.tencent.qcloud.tuicore.TUILogin;
+import com.tencent.qcloud.tuicore.interfaces.TUICallback;
+import com.tencent.qcloud.tuikit.tuicallkit.debug.GenerateTestUserSig;
+
+public class MainActivity extends AppCompatActivity {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        String userId = "denny";     // replace with your UserId
+        int sdkAppId = 0;            // replace with the SDKAppID obtained in step 1 on the console
+        String secretKey = "****";   // replace with the SecretKey obtained in step 1 on the console
+        String userSig = GenerateTestUserSig.genTestUserSig(userId, sdkAppId, secretKey);
+        TUILogin.login(this, sdkAppId, userId, userSig, new TUICallback() {
+            @Override
+            public void onSuccess() {
+            }
+            
+            @Override
+            public void onError(int errorCode, String errorMessage) {
+            }
+        });
+    }
+}
+
+```
+
+**Flutter:**
+``` java
+
+import 'package:tencent_calls_uikit/tencent_calls_uikit.dart';
+......
+
+void call() {
+    List<String> userIdList = ['Android'];
+    TUICallKit.instance.calls(userIdList, TUICallMediaType.audio);
+}
+```
+| Parameter | Type | Description |
+| --- | --- | --- |
+| userId | String | Only allowing a combination of uppercase and lowercase letters (a-z A-Z), numbers (0-9), hyphens, and underscores. |
+| sdkAppId | int | The unique identifier SDKAppID of the audio and video application created in the [Tencent Real-Time Communication (TRTC) Console](https://trtc.io/login?fro=gt&s_url=https%3A%2F%2Fconsole.trtc.io%2F). |
+| secretKey | String | The SDKSecretKey of the audio/video application created in the [Tencent Real-Time Communication (TRTC) Console](https://trtc.io/login?fro=gt&s_url=https%3A%2F%2Fconsole.trtc.io%2F). |
+| userSig | String | A security protection signature used to authenticate user login, confirm whether the user is genuine, and prevent malicious attackers from misappropriating your cloud service usage rights. |
+
+> **Note :**
+> - **Development environment**: If you are in the local development and debugging stage, you can adopt the local [GenerateTestUserSig.genTestUserSig](https://github.com/Tencent-RTC/TUIKit_Android/blob/main/application/debug/src/main/java/com/tencent/qcloud/tuikit/debug/GenerateTestUserSig.java) function to generate userSig. In this method, the SDKSecretKey is very easy to decompile and reverse engineer. Once your key is leaked, attackers can steal your Tencent Cloud traffic.
+> - **Production environment**: If your project is ready to launch, use server-side generation of UserSig.
+
+### Step 4.Set Nickname and Avatar [Optional]
+
+After a successful login, you can call the `setSelfInfo` function to set your nickname and avatar. The set nickname and avatar will be displayed on the caller/callee interface.
+
+【Android（Kotlin）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+
+val nickname = "jack"
+val avatar = "https:/****/user_avatar.png"
+TUICallKit.createInstance(context).setSelfInfo(nickname, avatar, null)
+```
+
+【Android（Java）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+
+String nickname = "jack";
+String avatar = "https:/****/user_avatar.png";
+TUICallKit.createInstance(context).setSelfInfo(nickname, avatar, null);
+```
+| Parameter | Type | Description |
+| --- | --- | --- |
+| nickname | String | Target user's nickname |
+| avatar | String | Target user's avatar |
+
+### Step 5.Initiating a Call
+
+The caller initiates a call by invoking the `calls` function and specifying the media type (voice or video) and the callee's User ID list (userIdList). The calls interface supports both one-to-one and group calls. A one-to-one call is initiated when the userIDList contains only a single User ID; a group call is initiated when it contains multiple User IDs.
+
+【Kotlin】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+import io.trtc.tuikit.atomicxcore.api.call.CallMediaType
+import io.trtc.tuikit.atomicxcore.api.call.CallParams
+
+val userIdList = mutableListOf<String>()
+userIdList.add("mike")
+val mediaType = CallMediaType.Audio
+val callParams = CallParams()
+TUICallKit.createInstance(context).calls(userIdList, mediaType, params, null)
+```
+
+【Java】
+``` java
+
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+import io.trtc.tuikit.atomicxcore.api.call.CallMediaType;
+import io.trtc.tuikit.atomicxcore.api.call.CallParams;
+
+List<String> userIdList = new ArrayList<>();
+userIdList.add("mike");
+CallMediaType mediaType = CallMediaType.Audio;
+CallParams params = new CallParams();
+TUICallKit.createInstance(this).calls(userIdList, mediaType, params, null);
+```
+| Parameter | Type | Description |
+| --- | --- | --- |
+| userIdList | List<String> | Target user ID list |
+| mediaType | CallMediaType | Media type of the call, such as video call, voice call |
+| params | CallParams | Call extension parameters, such as room number, call invitation timeout. |
+
+### Step 6.Answering a Call
+
+Once the callee successfully logs in, the caller can initiate a call, and the callee will receive the call invitation, accompanied by a ringtone and vibration.
+
+## More Features
+
+### Enabling Floating Window
+
+You can enable/disable the floating window feature by calling enableFloatWindow. This feature should be enabled when initializing the TUICallKit component, with the default status being Off (false).
+
+【Kotlin】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+
+TUICallKit.createInstance(this).enableFloatWindow(true)
+```
+
+【Java】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+
+TUICallKit.createInstance(this).enableFloatWindow(true);
+```
+
+**Details:** Default false, the floating window button in the top-left corner of the call interface is hidden. Set to true to display.
+
+### Enabling Banner
+
+You can enable or disable the incoming call banner display by calling `enableIncomingBanner`. By default, this feature is disabled (false). When the callee receives an inbound call, the full-screen call waiting interface is shown first. When the banner is enabled, a notification banner will display initially, switching to the full-screen view as required. Note that displaying the banner requires floating window permission. The exact display behavior depends on permission settings and whether the app is running in the foreground or background. For details, refer to the incoming call display policy for the callee.
+
+【Android（Kotlin）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+
+TUICallKit.createInstance(context).enableIncomingBanner(true)
+```
+
+【Android（Java）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+
+TUICallKit.createInstance(context).enableIncomingBanner(true);
+```
+
+**Details:** Default false. The callee side pops up the full-screen call waiting interface by default when receiving an invitation. When enabled, a banner is displayed first, then the full-screen call interface is pulled up as needed.
+
+### Multi-Person Calling
+
+When the caller uses the `calls` method to initiate a call, if the list of called users exceeds one person, it is automatically recognized as a multi-person call. Other members can then join this multi-person call using the `join` method.
+- **Initiating a Multi-person Call:** When the `calls` method is used to initiate a call, if the callee User ID list (userIdList) contains more than one user, it will be automatically deemed a multi-person call.
+
+   
+
+【Android（Kotlin）】
+``` java
+import com.tencent.cloud.tuikit.engine.call.TUICallDefine
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+import io.trtc.tuikit.atomicxcore.api.call.CallMediaType
+import io.trtc.tuikit.atomicxcore.api.call.CallParams
+
+val userIdList = mutableListOf<String>()
+userIdList.add("mike")
+userIdList.add("tate")
+val mediaType = CallMediaType.Audio
+val params = CallParams()
+TUICallKit.createInstance(context).calls(userIdList, mediaType, params, null)
+```
+
+【Android（Java）】
+``` java
+import com.tencent.cloud.tuikit.engine.call.TUICallDefine;
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+import io.trtc.tuikit.atomicxcore.api.call.CallMediaType;
+import io.trtc.tuikit.atomicxcore.api.call.CallParams;
+
+List<String> userIdList = new ArrayList<>();
+userIdList.add("mike");
+userIdList.add("tate");
+CallMediaType mediaType = CallMediaType.Audio;
+CallParams params = new CallParams();
+TUICallKit.createInstance(context).calls(userIdList, mediaType, params, null);
+```
+| Parameter | Type | Description |
+| --- | --- | --- |
+| userIdList | List<String> | Target user ID list |
+| mediaType | CallMediaType | Media type of the call, such as video call, voice call |
+| params | CallParams | Call extension parameters, such as room number, call invitation timeout. |
+
+- **Joining a Multi-person Call:** You can use the `join` method to enter the specified multi-person call.
+
+   
+
+【Android（Kotlin）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+
+val callId = "123456"
+TUICallKit.createInstance(this).join(callId, null)
+```
+
+【Android（Java）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+
+String callId = "123456";
+TUICallKit.createInstance(this).join(callId, null);
+```
+| Parameter | Type | Description |
+| --- | --- | --- |
+| callId | String | The unique ID for this call. |
+
+### Language Settings
+- **Supported Languages:** We currently support Simplified Chinese, Traditional Chinese, English, Japanese, and Arabic.
+
+- **Switching Languages:** By default, the language of TUICallKit is consistent with the mobile operating system's language setting. To switch the language, you can use the `TUIThemeManager.getInstance().changeLanguage` method.
+
+   
+
+【Android（Kotlin）】
+``` java
+import com.tencent.qcloud.tuicore.TUIThemeManager;
+
+public class MainActivity extends BaseActivity {
+    @Override
+  public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState)
+      
+      val language = TUIThemeManager.LANGUAGE_ZH_CN
+      TUIThemeManager.getInstance().changeLanguage(applicationContext, language)
+    }
+}
+```
+
+【Android（Java）】
+``` java
+import com.tencent.qcloud.tuicore.TUIThemeManager;
+
+public class MainActivity extends BaseActivity {
+    @Override
+  public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      String language = TUIThemeManager.LANGUAGE_EN;
+      TUIThemeManager.getInstance().changeLanguage(getApplicationContext(), language);
+    }
+}
+```
+| Parameter | Type | Description |
+| --- | --- | --- |
+| language | String | - TUIThemeManager.LANGUAGE_EN: English. - TUIThemeManager.LANGUAGE_AR: Arabic. - TUIThemeManager.LANGUAGE_ZH_HK: Traditional Chinese. - TUIThemeManager.LANGUAGE_ZH_CN: Simplified Chinese. |
+
+> **Note：**
+> 
+
+> If you need to set up other languages, please contact us at **info_rtc@tencent.com** for assistance.
+> 
+
+### Ringtone Setting
+
+You can set the default ringtone, incoming call silent mode, and Offline Push Ringtone in the following ways:
+- **Setting Default Ringtone (Method 1):** If you include TUICallKit component via source code, you can replace the resource file ([ringtone when initiating a call](https://github.com/Tencent-RTC/TUIKit_Android/tree/main/call/tuicallkit-kt/src/main/res/raw), [ringtone when receiving a call](https://github.com/Tencent-RTC/TUIKit_Android/blob/main/call/tuicallkit-kt/src/main/res/raw/phone_ringing.mp3)) to set a custom default ringtone.
+
+- **Setting Default Ringtone (Method 2):** Use the `setCallingBell` interface to set the incoming call ringtone received by the callee.
+
+   
+
+【Android（Kotlin）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+
+val filePath = "***/callingBell.mp3"
+TUICallKit.createInstance(context).setCallingBell(filePath)
+```
+
+【Android（Java）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+
+String filePath = "***/callingBell.mp3";
+TUICallKit.createInstance(context).setCallingBell(filePath);
+```
+
+**Details:**The local file path of the ringtone. Only local file paths can be imported here. Ensure the file directory is accessible to the app. The ringtone setting is bound to the device. Replacing the user will not affect the ringtone. To restore the default ringtone, pass an empty string ("") as the filePath.
+| Parameter | Type | Description |
+| --- | --- | --- |
+| filePath | String | ringtone file path |
+
+- **Incoming call silent mode:** You can set mute mode through `enableMuteMode`.
+
+   
+
+【Android（Kotlin）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
+
+TUICallKit.createInstance(context).enableMuteMode(true)
+```
+
+【Android（Java）】
+``` java
+import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit;
+
+TUICallKit.createInstance(context).enableMuteMode(true);
+```
+
+**Details:** When set to true, incoming call requests will not trigger ringtone playback (silent mode).
+
+- **Custom offline push ringtone**: Please refer to: FCM Offline Push customizes incoming call ringtone.
+
+## Customizing Your UI
+
+### Replacing Icon Button
+
+You can directly replace the icons under the [res\drawable-xxhdpi](https://github.com/Tencent-RTC/TUIKit_Android/tree/main/atomic_x/src/main/res-callview/drawable-xxhdpi) folder to ensure the icon color and style remain consistent throughout the entire App. The following list shows basic feature buttons. You can replace the corresponding icons to fit your own business scenario.
+
+Commonly Used Icon File Name List
+| Icon | File name | Description |
+| --- | --- | --- |
+|  | callview_ic_dialing.png | Answer incoming call icon |
+|  | callview_ic_hangup.png | Hang Up Call icon |
+|  | callview_ic_mic_unmute.png | Turn off the mic icon |
+|  | callview_ic_handsfree_disable.png | Turn off the speaker icon |
+|  | callview_ic_camera_disable.png | Camera Off icon |
+|  | callview_ic_add_user_black.png | Invite user icon during call |
+
+## FAQs
+
+If you encounter any issues during integration and use, please refer to Frequently Asked Questions.
+
+---

@@ -1,0 +1,4630 @@
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLiveCode 错误码 (Android/iOS/Flutter)
+description: 错误码完整列表, 用于定位推流失败、拉流异常、音视频采集等问题。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/error-codes.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 Android 接口为基准。Android (V2TXLiveCode)、iOS (V2TXLiveCode)、Flutter (V2TXLiveCode) 的核心方法名称和参数语义一致，仅签名风格不同。
+> - Android: Java 风格（如 `startLivePlay(String url)`）
+> - iOS: ObjC 风格（如 `startLivePlay:(NSString *)url`）
+> - Flutter: Dart 异步风格（如 `Future<V2TXLiveCode> startLivePlay(String url)`），所有方法返回 Future
+
+# 腾讯云直播 SDK V2TXLiveCode 错误码定义 文档（Android/iOS/Flutter）
+
+适用平台：Android/iOS/Flutter。
+
+## V2TXLIVE_OK
+
+```java
+public static final int V2TXLIVE_OK = 0;
+```
+```objc
+V2TXLIVE_OK = 0
+```
+```dart
+static const int V2TXLIVE_OK = 0;
+```
+
+**含义**: 没有错误，操作成功完成
+
+**使用场景**:
+- API调用成功返回
+- 操作执行成功确认
+- 状态检查正常
+
+## V2TXLIVE_ERROR_FAILED
+
+```java
+public static final int V2TXLIVE_ERROR_FAILED = -1;
+```
+```objc
+V2TXLIVE_ERROR_FAILED = -1
+```
+```dart
+static const int V2TXLIVE_ERROR_FAILED = -1;
+```
+
+**含义**: 暂未归类的通用错误
+
+**触发场景**:
+- 内部处理异常
+
+## V2TXLIVE_ERROR_INVALID_PARAMETER
+
+```java
+public static final int V2TXLIVE_ERROR_INVALID_PARAMETER = -2;
+```
+```objc
+V2TXLIVE_ERROR_INVALID_PARAMETER = -2
+```
+```dart
+static const int V2TXLIVE_ERROR_INVALID_PARAMETER = -2;
+```
+
+**含义**: 调用API时传入的参数不合法
+
+**常见场景**:
+- 推流地址格式错误
+- 设置的参数不支持
+
+## V2TXLIVE_ERROR_REFUSED
+
+```java
+public static final int V2TXLIVE_ERROR_REFUSED = -3;
+```
+```objc
+V2TXLIVE_ERROR_REFUSED = -3
+```
+```dart
+static const int V2TXLIVE_ERROR_REFUSED = -3;
+```
+
+**含义**: API调用被拒绝
+
+**触发场景**:
+- 调用时机不正确
+
+## V2TXLIVE_ERROR_NOT_SUPPORTED
+
+```java
+public static final int V2TXLIVE_ERROR_NOT_SUPPORTED = -4;
+```
+```objc
+V2TXLIVE_ERROR_NOT_SUPPORTED = -4
+```
+```dart
+static const int V2TXLIVE_ERROR_NOT_SUPPORTED = -4;
+```
+
+**含义**: 当前API不支持调用
+
+**常见场景**:
+- 平台不支持的功能
+- SDK版本过低
+- 硬件不支持的特性
+
+## V2TXLIVE_ERROR_INVALID_LICENSE
+
+```java
+public static final int V2TXLIVE_ERROR_INVALID_LICENSE = -5;
+```
+```objc
+V2TXLIVE_ERROR_INVALID_LICENSE = -5
+```
+```dart
+static const int V2TXLIVE_ERROR_INVALID_LICENSE = -5;
+```
+
+**含义**: License不合法，调用失败
+
+**触发场景**:
+- License文件未设置
+- License已过期
+- License与包名不匹配
+
+## V2TXLIVE_ERROR_REQUEST_TIMEOUT
+
+```java
+public static final int V2TXLIVE_ERROR_REQUEST_TIMEOUT = -6;
+```
+```objc
+V2TXLIVE_ERROR_REQUEST_TIMEOUT = -6
+```
+```dart
+static const int V2TXLIVE_ERROR_REQUEST_TIMEOUT = -6;
+```
+
+**含义**: 请求服务器超时
+
+**常见场景**:
+- 网络连接不稳定
+- 服务器响应缓慢
+
+## V2TXLIVE_ERROR_SERVER_PROCESS_FAILED
+
+```java
+public static final int V2TXLIVE_ERROR_SERVER_PROCESS_FAILED = -7;
+```
+```objc
+V2TXLIVE_ERROR_SERVER_PROCESS_FAILED = -7
+```
+```dart
+static const int V2TXLIVE_ERROR_SERVER_PROCESS_FAILED = -7;
+```
+
+**含义**: 服务器无法处理您的请求
+
+**触发场景**:
+- 服务器内部错误
+- 请求格式不正确
+- 服务器资源不足
+
+## V2TXLIVE_ERROR_DISCONNECTED
+
+```java
+public static final int V2TXLIVE_ERROR_DISCONNECTED = -8;
+```
+```objc
+V2TXLIVE_ERROR_DISCONNECTED = -8
+```
+```dart
+static const int V2TXLIVE_ERROR_DISCONNECTED = -8;
+```
+
+**含义**: 网络连接断开
+
+**常见场景**:
+- 推流网络断开
+- 拉流网络断开
+
+## V2TXLIVE_ERROR_NO_AVAILABLE_HEVC_DECODERS
+
+```java
+public static final int V2TXLIVE_ERROR_NO_AVAILABLE_HEVC_DECODERS = -2304;
+```
+```objc
+V2TXLIVE_ERROR_NO_AVAILABLE_HEVC_DECODERS = -2304
+```
+```dart
+static const int V2TXLIVE_ERROR_NO_AVAILABLE_HEVC_DECODERS = -2304;
+```
+
+**含义**: 找不到可用的HEVC解码器
+
+**触发场景**:
+- 设备不支持HEVC硬解
+- HEVC解码器初始化失败
+- 系统版本过低
+
+## V2TXLIVE_WARNING_NETWORK_BUSY
+
+```java
+public static final int V2TXLIVE_WARNING_NETWORK_BUSY = 1101;
+```
+```objc
+V2TXLIVE_WARNING_NETWORK_BUSY = 1101
+```
+```dart
+static const int V2TXLIVE_WARNING_NETWORK_BUSY = 1101;
+```
+
+**含义**: 网络状况不佳，上行带宽太小，上传数据受阻
+
+**监控指标**:
+- 上行带宽限制
+- 网络延迟增加
+- 数据包丢失率升高
+
+## V2TXLIVE_WARNING_VIDEO_BLOCK
+
+```java
+public static final int V2TXLIVE_WARNING_VIDEO_BLOCK = 2105;
+```
+```objc
+V2TXLIVE_WARNING_VIDEO_BLOCK = 2105
+```
+```dart
+static const int V2TXLIVE_WARNING_VIDEO_BLOCK = 2105;
+```
+
+**含义**: 当前视频播放出现卡顿
+
+**卡顿原因分析**:
+- 网络带宽不足
+- 解码性能瓶颈
+- 渲染性能问题
+
+## V2TXLIVE_WARNING_CAMERA_START_FAILED
+
+```java
+public static final int V2TXLIVE_WARNING_CAMERA_START_FAILED = -1301;
+```
+```objc
+V2TXLIVE_WARNING_CAMERA_START_FAILED = -1301
+```
+```dart
+static const int V2TXLIVE_WARNING_CAMERA_START_FAILED = -1301;
+```
+
+**含义**: 摄像头打开失败
+
+**失败原因**:
+- 硬件故障
+- 驱动问题
+- 资源冲突
+
+## V2TXLIVE_WARNING_CAMERA_OCCUPIED
+
+```java
+public static final int V2TXLIVE_WARNING_CAMERA_OCCUPIED = -1316;
+```
+```objc
+V2TXLIVE_WARNING_CAMERA_OCCUPIED = -1316
+```
+```dart
+static const int V2TXLIVE_WARNING_CAMERA_OCCUPIED = -1316;
+```
+
+**含义**: 摄像头正在被占用中
+
+**占用场景**:
+- 其他应用正在使用摄像头
+- 系统相机应用运行中
+- 视频通话进行中
+
+## V2TXLIVE_WARNING_CAMERA_NO_PERMISSION
+
+```java
+public static final int V2TXLIVE_WARNING_CAMERA_NO_PERMISSION = -1314;
+```
+```objc
+V2TXLIVE_WARNING_CAMERA_NO_PERMISSION = -1314
+```
+```dart
+static const int V2TXLIVE_WARNING_CAMERA_NO_PERMISSION = -1314;
+```
+
+**含义**: 摄像头设备未授权，通常在移动设备出现，可能是权限被用户拒绝了
+
+## V2TXLIVE_WARNING_MICROPHONE_START_FAILED
+
+```java
+public static final int V2TXLIVE_WARNING_MICROPHONE_START_FAILED = -1302;
+```
+```objc
+V2TXLIVE_WARNING_MICROPHONE_START_FAILED = -1302
+```
+```dart
+static const int V2TXLIVE_WARNING_MICROPHONE_START_FAILED = -1302;
+```
+
+**含义**: 麦克风打开失败
+
+**故障原因**:
+- 硬件连接问题
+- 系统音频设置异常
+- 音频会话初始化失败
+
+## V2TXLIVE_WARNING_MICROPHONE_OCCUPIED
+
+```java
+public static final int V2TXLIVE_WARNING_MICROPHONE_OCCUPIED = -1319;
+```
+```objc
+V2TXLIVE_WARNING_MICROPHONE_OCCUPIED = -1319
+```
+```dart
+static const int V2TXLIVE_WARNING_MICROPHONE_OCCUPIED = -1319;
+```
+
+**含义**: 麦克风正在被占用中，例如移动设备正在通话时，打开麦克风会失败
+
+**占用场景**:
+- 设备正在通话中
+- 其他音频应用占用麦克风
+- 音频会话冲突
+
+## V2TXLIVE_WARNING_MICROPHONE_NO_PERMISSION
+
+```java
+public static final int V2TXLIVE_WARNING_MICROPHONE_NO_PERMISSION = -1317;
+```
+```objc
+V2TXLIVE_WARNING_MICROPHONE_NO_PERMISSION = -1317
+```
+```dart
+static const int V2TXLIVE_WARNING_MICROPHONE_NO_PERMISSION = -1317;
+```
+
+**含义**: 麦克风设备未授权，通常在移动设备出现，可能是权限被用户拒绝了
+
+## V2TXLIVE_WARNING_SCREEN_CAPTURE_NOT_SUPPORTED
+
+```java
+public static final int V2TXLIVE_WARNING_SCREEN_CAPTURE_NOT_SUPPORTED = -1309;
+```
+```objc
+V2TXLIVE_WARNING_SCREEN_CAPTURE_NOT_SUPPORTED = -1309
+```
+```dart
+static const int V2TXLIVE_WARNING_SCREEN_CAPTURE_NOT_SUPPORTED = -1309;
+```
+
+**含义**: 当前系统不支持屏幕分享
+
+## V2TXLIVE_WARNING_SCREEN_CAPTURE_START_FAILED
+
+```java
+public static final int V2TXLIVE_WARNING_SCREEN_CAPTURE_START_FAILED = -1308;
+```
+```objc
+V2TXLIVE_WARNING_SCREEN_CAPTURE_START_FAILED = -1308
+```
+```dart
+static const int V2TXLIVE_WARNING_SCREEN_CAPTURE_START_FAILED = -1308;
+```
+
+**含义**: 开始录屏失败，如果在移动设备出现，可能是权限被用户拒绝了
+
+## V2TXLIVE_WARNING_SCREEN_CAPTURE_INTERRUPTED
+
+```java
+public static final int V2TXLIVE_WARNING_SCREEN_CAPTURE_INTERRUPTED = -7001;
+```
+```objc
+V2TXLIVE_WARNING_SCREEN_CAPTURE_INTERRUPTED = -7001
+```
+```dart
+static const int V2TXLIVE_WARNING_SCREEN_CAPTURE_INTERRUPTED = -7001;
+```
+
+**含义**: 录屏被系统中断
+
+## V2TXLIVE_WARNING_CURRENT_ENCODE_TYPE_CHANGED
+
+```java
+public static final int V2TXLIVE_WARNING_CURRENT_ENCODE_TYPE_CHANGED = 1104;
+```
+```objc
+V2TXLIVE_WARNING_CURRENT_ENCODE_TYPE_CHANGED = 1104
+```
+```dart
+static const int V2TXLIVE_WARNING_CURRENT_ENCODE_TYPE_CHANGED = 1104;
+```
+
+**含义**: 表示编码器发生改变，可以通过onWarning函数的扩展信息中的codec_type字段来获取当前的编码格式
+
+## V2TXLIVE_WARNING_CURRENT_DECODE_TYPE_CHANGED
+
+```java
+public static final int V2TXLIVE_WARNING_CURRENT_DECODE_TYPE_CHANGED = 2008;
+```
+```objc
+V2TXLIVE_WARNING_CURRENT_DECODE_TYPE_CHANGED = 2008
+```
+```dart
+static const int V2TXLIVE_WARNING_CURRENT_DECODE_TYPE_CHANGED = 2008;
+```
+
+**含义**: 表示解码器发生改变，可以通过onWarning函数的扩展信息中的codec_type字段来获取当前的解码格式
+
+**注意**: Windows端不支持此错误码的扩展信息
+
+## V2TXLIVE_WARNING_ENCODER_START_FAILED
+> **适用平台：** Flutter
+
+```dart
+static const int V2TXLIVE_WARNING_ENCODER_START_FAILED = -1303;
+```
+
+**含义**: 视频编码器启动失败
+
+**触发场景**:
+- 编码器硬件资源不足
+- 编码参数设置不当
+- 系统编解码器异常
+
+**处理建议**:
+- 检查编码参数设置
+- 降低视频分辨率或码率
+- 重启编码器或应用
+
+## V2TXLIVE_WARNING_DECODER_START_FAILED
+> **适用平台：** Flutter
+
+```dart
+static const int V2TXLIVE_WARNING_DECODER_START_FAILED = -1304;
+```
+
+**含义**: 视频解码器启动失败
+
+**触发场景**:
+- 解码器硬件资源不足
+- 视频格式不支持
+- 系统解码器异常
+
+**处理建议**:
+- 检查视频格式兼容性
+- 降低视频分辨率或帧率
+- 重启解码器或应用
+
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLivePremier 全局配置 (Android/iOS/Flutter)
+description: SDK 全局配置接口, 涵盖 License 设置、日志级别、控制台输出等初始化选项。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/global-config-api.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 Android 接口为基准。Android (V2TXLivePremier)、iOS (V2TXLivePremier)、Flutter (V2TXLivePremier) 的核心方法名称和参数语义一致，仅签名风格不同。
+> - Android: Java 风格（如 `startLivePlay(String url)`）
+> - iOS: ObjC 风格（如 `startLivePlay:(NSString *)url`）
+> - Flutter: Dart 异步风格（如 `Future<V2TXLiveCode> startLivePlay(String url)`），所有方法返回 Future
+
+# 腾讯云直播 SDK V2TXLivePremier 全局配置 API 文档（Android/iOS/Flutter）
+
+适用平台：Android/iOS/Flutter。
+
+## getSDKVersionStr
+
+```java
+public static String getSDKVersionStr()
+```
+```objc
++ (NSString *)getSDKVersionStr;
+```
+```dart
+static Future<String> getSDKVersionStr() async
+```
+
+```java
+String version = V2TXLivePremier.getSDKVersionStr();
+Log.i(TAG, "当前SDK版本：" + version);
+```
+
+**返回值**: SDK 版本字符串，格式如 "10.7.0.12345"
+
+**使用时机**: 无限制
+**使用场景**:
+- 版本兼容性检查
+- 问题排查时提供版本信息
+- 统计和监控
+
+## setObserver
+
+```java
+public static void setObserver(V2TXLivePremierObserver observer)
+```
+```objc
++ (void)setObserver:(id<V2TXLivePremierObserver>)observer;
+```
+```dart
+static Future<void> setObserver(V2TXLivePremierObserver? observer) async
+```
+
+**注意事项**:
+- 建议在应用启动时设置一次即可
+- 观察者对象需要在整个应用生命周期内保持有效
+
+**参数**:
+- `observer`: 实现V2TXLivePremierObserver协议的对象
+
+**使用时机**: 在应用启动时设置，全局生效
+
+## setLogConfig
+> **适用平台：** Android / iOS
+
+```java
+public static void setLogConfig(V2TXLiveDef.V2TXLiveLogConfig config)
+```
+```objc
++ (V2TXLiveCode)setLogConfig:(V2TXLiveLogConfig *)config;
+```
+
+```java
+V2TXLiveLogConfig logConfig = new V2TXLiveDef.V2TXLiveLogConfig();
+logConfig.enableConsole = true;
+logConfig.enableLogFile = true;
+logConfig.enableObserver = true;
+logConfig.logLevel = V2TXLiveLogLevel.V2TXLiveLogLevelAll;
+V2TXLivePremier.setObserver(new V2TXLivePremier.V2TXLivePremierObserver() {
+    @Override
+    public void onLog(int level, String log) {
+        // doSomething
+    }
+});
+```
+
+**参数**:
+- `config`: 日志配置对象，包含日志级别、存储路径等
+
+**使用时机**: 在应用启动时设置，全局生效
+**使用场景**:
+- 调试阶段开启详细日志
+- 生产环境减少日志输出
+- 自定义日志存储路径
+
+## setEnvironment
+
+```java
+public static void setEnvironment(String env)
+```
+```objc
++ (V2TXLiveCode)setEnvironment:(const char *)env;
+```
+```dart
+static Future<V2TXLiveCode> setEnvironment(String env) async
+```
+
+**参数**:
+- `env`: 环境标识，支持：
+  - `"default"`: 默认环境，SDK 在全球寻找最佳接入点
+  - `"GDPR"`: GDPR 环境，音视频数据不经过中国大陆服务器
+
+**注意**: 如无特殊需求，请不要调用此接口
+
+## setLicence
+
+```java
+public static void setLicence(Context context, String url, String key)
+```
+```objc
++ (void)setLicence:(NSString *)url key:(NSString *)key;
+```
+```dart
+static Future<void> setLicence(String url, String key) async
+```
+
+**文档地址**: https://cloud.tencent.com/document/product/454/34750
+```java
+public class MyApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        V2TXLivePremier.setObserver(new V2TXLivePremierObserver() {
+            @Override
+            public void onLicenceLoaded(int result, String reason) {
+                if (result == 0) {
+                    Log.i(TAG, "licence 加载成功, " + reason);
+                } else if (result == -4) {
+                    Log.e(TAG, "licence 包名不匹配，" + reason);
+                } else if (result == -11) {
+                    Log.e(TAG, "licence 过期，" + reason);
+                } else {
+                    Log.e(TAG, "licence 其它错误，" + reason);
+                }
+            }
+        });
+        V2TXLivePremier.setLicence(this, "url", "key");
+    }
+}
+```
+
+**参数**:
+- `context`: Android 上下文
+- `url`: licence 地址
+- `key`: licence 秘钥
+
+**使用时机**: 应用启动时调用，必须在推流/播放前设置
+
+## setSocks5Proxy
+> **适用平台：** Android / iOS
+
+```java
+public static void setSocks5Proxy(String host, int port, String username, String password, V2TXLiveDef.V2TXLiveSocks5ProxyConfig config)
+```
+```objc
++ (V2TXLiveCode)setSocks5Proxy:(NSString *)host 
+                          port:(NSInteger)port 
+                      username:(NSString *)username 
+                      password:(NSString *)password 
+                        config:(V2TXLiveSocks5ProxyConfig *)config;
+```
+
+**参数**:
+- `host`: socks5 代理服务器地址
+- `port`: socks5 代理服务器端口
+- `username`: 代理服务器用户名
+- `password`: 代理服务器密码
+- `config`: socks5 代理配置
+
+**使用时机**: 应用启动时调用
+
+## enableAudioCaptureObserver
+> **适用平台：** Android / iOS
+
+```java
+public static void enableAudioCaptureObserver(boolean enable, V2TXLiveDef.V2TXLiveAudioFrameObserverFormat format)
+```
+```objc
++ (V2TXLiveCode)enableAudioCaptureObserver:(BOOL)enable 
+                                   format:(V2TXLiveAudioFrameObserverFormat *)format;
+```
+
+**参数**:
+- `enable`: 是否开启（默认 false）
+- `format`: 音频帧回调格式
+
+**使用时机**: 需要在 `V2TXLivePusher#startPush` 之前调用
+---
+
+## enableAudioPlayoutObserver
+> **适用平台：** Android / iOS
+
+```java
+public static void enableAudioPlayoutObserver(boolean enable, V2TXLiveDef.V2TXLiveAudioFrameObserverFormat format)
+```
+```objc
++ (V2TXLiveCode)enableAudioPlayoutObserver:(BOOL)enable 
+                                  format:(V2TXLiveAudioFrameObserverFormat *)format;
+```
+
+**技术规格**:
+- 音频时间帧长固定为0.02s
+- PCM格式音频数据
+- 混合各路待播放音频后的数据
+
+**参数**:
+- `enable`: 是否开启（默认 false）
+- `format`: 音频帧回调格式
+
+## enableVoiceEarMonitorObserver
+> **适用平台：** Android / iOS
+
+```java
+public static void enableVoiceEarMonitorObserver(boolean enable)
+```
+```objc
++ (V2TXLiveCode)enableVoiceEarMonitorObserver:(BOOL)enable;
+```
+
+**参数**:
+- `enable`: 是否开启（默认 false）
+
+## setUserId
+> **适用平台：** Android / iOS
+
+```java
+public static void setUserId(String userId)
+```
+```objc
++ (void)setUserId:(NSString *)userId;
+```
+
+**参数**:
+- `userId`: 业务侧维护的用户/设备 ID
+
+**使用时机**: 应用启动时调用
+
+## callExperimentalAPI
+
+```java
+public static int callExperimentalAPI(String jsonStr)
+```
+```objc
++ (V2TXLiveCode)callExperimentalAPI:(NSString *)jsonStr;
+```
+```dart
+static Future<V2TXLiveCode> callExperimentalAPI(String jsonStr) async
+```
+
+**参数**:
+- `jsonStr`: 接口及参数描述的 JSON 字符串
+
+**返回值**:
+- `V2TXLIVE_OK`: 成功
+- `V2TXLIVE_ERROR_INVALID_PARAMETER`: 参数非法
+
+## onLog
+
+```java
+public void onLog(int level, String log)
+```
+```objc
+- (void)onLog:(V2TXLiveLogLevel)level log:(NSString *)log;
+```
+```dart
+void Function(V2TXLivePremierObserverType type, Map<String, dynamic>? params)
+```
+
+**参数**:
+- `level`: 日志级别
+- `log`: 日志内容
+
+**使用场景**:
+- 自定义日志处理
+- 日志重定向到自有系统
+- 日志过滤和格式化
+
+## onLicenceLoaded
+
+```java
+public void onLicenceLoaded(int result, String reason)
+```
+```objc
+- (void)onLicenceLoaded:(int)result Reason:(NSString *)reason;
+```
+```dart
+void Function(V2TXLivePremierObserverType type, Map<String, dynamic>? params)
+```
+
+**参数**:
+- `result`: 设置结果（0 成功，负数失败）
+- `reason`: 失败原因
+
+## onCaptureAudioFrame
+> **适用平台：** Android / iOS
+
+```java
+public void onCaptureAudioFrame(V2TXLiveDef.V2TXLiveAudioFrame frame)
+```
+```objc
+- (void)onCaptureAudioFrame:(V2TXLiveAudioFrame *)frame;
+```
+
+**重要说明**:
+- 不要在此回调中做耗时操作
+- 音频数据支持修改
+- 时间帧长固定为 0.02s
+- 不包含背景音、音效等前处理效果
+- 延迟极低
+
+**参数**:
+- `frame`: 音频数据帧
+
+## onPlayoutAudioFrame
+> **适用平台：** Android / iOS
+
+```java
+public void onPlayoutAudioFrame(V2TXLiveDef.V2TXLiveAudioFrame frame)
+```
+```objc
+- (void)onPlayoutAudioFrame:(V2TXLiveAudioFrame *)frame;
+```
+
+**重要说明**:
+- 时间帧长固定为 0.02s
+- 数据可读写，但需保证处理耗时
+- 不包含耳返音频数据
+
+**参数**:
+- `frame`: PCM 格式音频数据帧
+
+## onVoiceEarMonitorAudioFrame
+> **适用平台：** Android / iOS
+
+```java
+public void onVoiceEarMonitorAudioFrame(V2TXLiveDef.V2TXLiveAudioFrame frame)
+```
+```objc
+- (void)onVoiceEarMonitorAudioFrame:(V2TXLiveAudioFrame *)frame;
+```
+
+**重要说明**:
+- 时间帧长不固定
+- 数据可读写，但需保证处理耗时
+
+**参数**:
+- `frame`: PCM 格式音频数据帧
+
+## Licence设置最佳实践
+> **适用平台：** Flutter
+
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLivePlayer API 参考 (Android/iOS/Flutter)
+description: 核心方法：setRenderView、startLivePlay、stopPlay、setPlayoutVolume。用于拉流播放、渲染与音量控制。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/live-player-api.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 Android 接口为基准。Android (V2TXLivePlayer)、iOS (V2TXLivePlayer)、Flutter (V2TXLivePlayer) 的核心方法名称和参数语义一致，仅签名风格不同。
+> - Android: Java 风格（如 `startLivePlay(String url)`）
+> - iOS: ObjC 风格（如 `startLivePlay:(NSString *)url`）
+> - Flutter: Dart 异步风格（如 `Future<V2TXLiveCode> startLivePlay(String url)`），所有方法返回 Future
+
+**跨平台 API 命名对照（仅列出名称不一致的 API）：**
+| 通用名 | Android | iOS | Flutter |
+| --- | --- | --- | --- |
+| setObserver | setObserver(observer) | setObserver: | addListener(listener) |
+| setRenderView | setRenderView(view) | setRenderView:(TXView *)view | setRenderViewID(viewID) |
+
+# 腾讯云直播 SDK V2TXLivePlayer 播放器 API 文档（Android/iOS/Flutter）
+
+适用平台：Android/iOS/Flutter。
+
+## setObserver
+
+```java
+public abstract void setObserver(V2TXLivePlayerObserver observer)
+```
+```objc
+- (void)setObserver:(id<V2TXLivePlayerObserver>)observer;
+```
+```dart
+void addListener(V2TXLivePlayerObserver observer)
+```
+
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+  // ...
+});
+```
+
+**参数**:
+- `observer`: 播放器回调目标对象，需实现 `V2TXLivePlayerObserver` 协议
+
+**使用时机**: 播放器初始化后立即设置
+**说明**: 通过设置回调，可以监听播放器状态、播放音量回调、音视频首帧回调、统计数据、警告和错误信息等
+
+## setRenderView
+
+```java
+public abstract int setRenderView(TXCloudVideoView view)
+public abstract int setRenderView(TextureView view)
+public abstract int setRenderView(SurfaceView view)
+```
+```objc
+- (V2TXLiveCode)setRenderView:(TXView *)view;
+```
+```dart
+Future<V2TXLiveCode> setRenderViewID(int viewID)
+```
+
+```java
+player.setRenderView(videoView);
+```
+
+**参数**:
+- `view`: 播放器渲染 View，支持 TXCloudVideoView、TextureView、SurfaceView（HDR播放必须为 SurfaceView）
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 必须在开始播放前设置渲染视图
+
+## setRenderRotation
+
+```java
+public abstract int setRenderRotation(V2TXLiveRotation rotation)
+```
+```objc
+- (V2TXLiveCode)setRenderRotation:(V2TXLiveRotation)rotation;
+```
+```dart
+Future<V2TXLiveCode> setRenderRotation(V2TXLiveRotation rotation)
+```
+
+```java
+// 设置视频画面旋转0度
+player.setRenderRotation(V2TXLiveDef.V2TXLiveRotation.V2TXLiveRotation0);
+// 设置视频画面旋转90度
+player.setRenderRotation(V2TXLiveDef.V2TXLiveRotation.V2TXLiveRotation90);
+// 设置视频画面旋转180度
+player.setRenderRotation(V2TXLiveDef.V2TXLiveRotation.V2TXLiveRotation180);
+// 设置视频画面旋转270度
+player.setRenderRotation(V2TXLiveDef.V2TXLiveRotation.V2TXLiveRotation270);
+```
+
+**参数**:
+- `rotation`: 旋转角度 `V2TXLiveDef#V2TXLiveRotation`
+  - `V2TXLiveRotation0`【默认值】: 0度, 不旋转
+  - `V2TXLiveRotation90`: 顺时针旋转90度
+  - `V2TXLiveRotation180`: 顺时针旋转180度
+  - `V2TXLiveRotation270`: 顺时针旋转270度
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 无限制
+
+## setRenderFillMode
+
+```java
+public abstract int setRenderFillMode(V2TXLiveFillMode mode)
+```
+```objc
+- (V2TXLiveCode)setRenderFillMode:(V2TXLiveFillMode)mode;
+```
+```dart
+Future<V2TXLiveCode> setRenderFillMode(V2TXLiveFillMode mode)
+```
+
+```java
+// 图像铺满屏幕
+player.setRenderFillMode(V2TXLiveDef.V2TXLiveFillMode.V2TXLiveFillModeFill);
+// 图像适应屏幕
+player.setRenderFillMode(V2TXLiveDef.V2TXLiveFillMode.V2TXLiveFillModeFit);
+// 图像拉伸铺满
+player.setRenderFillMode(V2TXLiveDef.V2TXLiveFillMode.V2TXLiveFillModeScaleFill);
+```
+
+**参数**:
+- `mode`: 填充模式 `V2TXLiveDef#V2TXLiveFillMode`
+  - `V2TXLiveFillModeFill`:【默认值】: 图像铺满屏幕，不留黑边，如果图像宽高比不同于屏幕宽高比，部分画面内容会被裁剪掉
+  - `V2TXLiveFillModeFit`: 图像适应屏幕，保持画面完整，但如果图像宽高比不同于屏幕宽高比，会有黑边的存在
+  - `V2TXLiveFillModeScaleFill`: 图像拉伸铺满，因此长度和宽度可能不会按比例变化
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 无限制
+
+## setRenderMirrorMode
+> **适用平台：** Android / iOS
+
+```java
+public abstract int setRenderMirrorMode(boolean enable)
+```
+```objc
+- (V2TXLiveCode)setRenderMirrorMode:(BOOL)enable;
+```
+
+```java
+// 开启镜像模式
+player.setRenderMirrorMode(true);
+// 关闭镜像模式
+player.setRenderMirrorMode(false);
+```
+
+**参数**:
+- `enable`: 是否开启播放端镜像模式【默认值】：false
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**说明**: 开启镜像模式后，视频画面将左右翻转，您可以根据需要随时切换观看效果
+**使用时机**: 无限制
+
+## startLivePlay
+
+```java
+public abstract int startLivePlay(String url)
+```
+```objc
+- (V2TXLiveCode)startLivePlay:(NSString *)url;
+```
+```dart
+Future<V2TXLiveCode> startLivePlay(String url)
+```
+
+**重要说明**: 
+- 10.7 版本开始，需要通过 `V2TXLivePremier#setLicence` 设置 Licence 后方可成功播放，否则将播放失败（黑屏），全局仅设置一次即可
+- 直播 Licence、短视频 Licence 和视频播放 Licence 均可使用
+```java
+int result = player.startLivePlayer("");
+if (result == V2TXLiveCode.V2TXLIVE_OK) {
+    Log.i(TAG, "开始播放成功");
+} else if (result == V2TXLiveCode.V2TXLIVE_ERROR_INVALID_PARAMETER) {
+    Log.w(TAG, "播放地址不合法");
+} else if (result == V2TXLiveCode.V2TXLIVE_ERROR_REFUSED) {
+    Log.w(TAG, "调用被拒绝");
+} else if (result == V2TXLiveCode.V2TXLIVE_ERROR_INVALID_LICENSE) {
+    Log.w(TAG, "Licence 不合法，请检查 Licence");
+}
+```
+
+**参数**:
+- `url`: 音视频流的播放地址，支持 HTTP-FLV、WebRTC、TRTC、HLS、RTMP
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 操作成功，开始连接并播放
+- `V2TXLIVE_ERROR_INVALID_PARAMETER`: 操作失败，url 不合法
+- `V2TXLIVE_ERROR_REFUSED`: RTC 不支持同一设备上同时推拉同一个 StreamId
+- `V2TXLIVE_ERROR_INVALID_LICENSE`: licence 不合法，播放失败
+
+**使用时机**: 无限制
+
+## stopPlay
+
+```java
+public abstract int stopPlay()
+```
+```objc
+- (V2TXLiveCode)stopPlay;
+```
+```dart
+Future<V2TXLiveCode> stopPlay()
+```
+
+```java
+player.stopPlay();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 开始播放后
+
+## isPlaying
+
+```java
+public abstract int isPlaying()
+```
+```objc
+- (int)isPlaying;
+```
+```dart
+Future<int> isPlaying()
+```
+
+```java
+int isPlaying = player.isPlaying();
+if (isPlaying == 1) {
+    Log.i(TAG, "正在播放中");
+} else {
+    Log.i(TAG, "播放停止");
+}
+```
+
+**返回值**:
+- `1`: 正在播放中
+- `0`: 已经停止播放
+
+**使用时机**: 无限制
+
+## pauseAudio
+> **适用平台：** Android / iOS
+
+```java
+public abstract int pauseAudio()
+```
+```objc
+- (V2TXLiveCode)pauseAudio;
+```
+
+```java
+player.pauseAudio();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 无限制，若在开始播放前调用，则开始播放后，仅有视频画面，无音频播放
+
+## resumeAudio
+> **适用平台：** Android / iOS
+
+```java
+public abstract int resumeAudio()
+```
+```objc
+- (V2TXLiveCode)resumeAudio;
+```
+
+```java
+player.resumeAudio();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 无限制
+
+## pauseVideo
+> **适用平台：** Android / iOS
+
+```java
+public abstract int pauseVideo()
+```
+```objc
+- (V2TXLiveCode)pauseVideo;
+```
+
+```java
+player.pauseVideo();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 无限制，若在开始播放前调用，则开始播放后，仅有音频播放，无视频播放
+
+## resumeVideo
+> **适用平台：** Android / iOS
+
+```java
+public abstract int resumeVideo()
+```
+```objc
+- (V2TXLiveCode)resumeVideo;
+```
+
+```java
+player.resumeVideo();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 无限制
+
+## setPlayoutVolume
+> **适用平台：** Android / iOS
+
+```java
+public abstract int setPlayoutVolume(int volume)
+```
+```objc
+- (V2TXLiveCode)setPlayoutVolume:(NSUInteger)volume;
+```
+
+```java
+player.setPlayoutVolume(50);
+```
+
+**参数**:
+- `volume`: 音量大小，取值范围0 - 100【默认值】: 100
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 无限制
+
+## setCacheParams
+
+```java
+public abstract int setCacheParams(float minTime, float maxTime)
+```
+```objc
+- (V2TXLiveCode)setCacheParams:(CGFloat)minTime maxTime:(CGFloat)maxTime;
+```
+```dart
+Future<V2TXLiveCode> setCacheParams(double minTime, double maxTime)
+```
+
+**优化建议**:
+- 网络稳定：设置较小缓存（1-3秒）
+- 网络波动：设置较大缓存（3-5秒）
+- 无特殊要求，建议使用默认值
+```java
+player.setCacheParams(1, 5);
+```
+
+**参数**:
+- `minTime`: 缓存自动调整的最小时间，取值需要大于0【默认值】：1
+- `maxTime`: 缓存自动调整的最大时间，取值需要大于0【默认值】：5
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+- `V2TXLIVE_ERROR_INVALID_PARAMETER`: 操作失败，minTime 和 maxTime 需要大于0
+
+**使用时机**: 无限制
+
+## switchStream
+
+```java
+public abstract int switchStream(String newUrl)
+```
+```objc
+- (V2TXLiveCode)switchStream:(NSString *)newUrl;
+```
+```dart
+Future<V2TXLiveCode> switchStream(String newUrl)
+```
+
+```java
+player.startLivePlayer("");
+
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onStreamSwitched(V2TXLivePlayer player, String url, int code) {
+        if (code == 0) {
+            Log.i(TAG, "切换成功");
+        } else if (code == -1) {
+            Log.i(TAG, "切换超时");
+        } else if (code == -2) {
+            Log.i(TAG, "切换失败，服务端错误");
+        } else if (code == -3) {
+            Log.i(TAG, "切换失败，客户端错误");
+        }
+    }
+});
+player.switchStream("";
+```
+
+**参数**:
+- `newUrl`: 新分辨率拉流地址
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 开始播放后
+
+## getStreamList
+> **适用平台：** Android / iOS
+
+```java
+public abstract ArrayList<V2TXLiveDef.V2TXLiveStreamInfo> getStreamList()
+```
+```objc
+- (NSArray<V2TXLiveStreamInfo *> *)getStreamList;
+```
+
+```java
+player.startLivePlayer("");
+
+ArrayList<V2TXLiveStreamInfo> streamList = player.getStreamList();
+```
+
+**返回值**: 码流信息数组，包含不同清晰度的流信息
+
+**使用时机**: 开始播放后
+
+## enableVolumeEvaluation
+
+```java
+public abstract int enableVolumeEvaluation(int intervalMs)
+```
+```objc
+- (V2TXLiveCode)enableVolumeEvaluation:(NSUInteger)intervalMs;
+```
+```dart
+Future<V2TXLiveCode> enableVolumeEvaluation(int intervalMs)
+```
+
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onPlayoutVolumeUpdate(V2TXLivePlayer player, int volume) {
+        // 音频播放音量回调，可以更新音量大小
+        Log.i(TAG, "音频播放音量，音量：" + volume);
+    }
+});
+player.enableVolumeEvaluation(300);
+```
+
+**参数**:
+- `intervalMs`: 决定了 `onPlayoutVolumeUpdate` 回调的触发间隔，单位为ms，最小间隔为100ms，如果小于等于0则会关闭回调，建议设置为300ms【默认值】：0，不开启
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**说明**: 开启后可以在 `V2TXLivePlayerObserver` 回调中获取到 SDK 对音量大小值的评估
+**使用时机**: 无限制
+
+## snapshot
+
+```java
+public abstract int snapshot()
+```
+```objc
+- (V2TXLiveCode)snapshot;
+```
+```dart
+Future<V2TXLiveCode> snapshot()
+```
+
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onSnapshotComplete(V2TXLivePlayer player, Bitmap image) {
+        // doSomething
+    }
+});
+player.snapshot();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+- `V2TXLIVE_ERROR_REFUSED`: 播放器处于停止状态，不允许调用截图操作
+
+**使用时机**: 开始播放后
+
+## enableObserveVideoFrame
+
+```java
+public abstract int enableObserveVideoFrame(boolean enable, V2TXLivePixelFormat pixelFormat, V2TXLiveBufferType bufferType)
+```
+```objc
+- (V2TXLiveCode)enableObserveVideoFrame:(BOOL)enable 
+                          pixelFormat:(V2TXLivePixelFormat)pixelFormat 
+                           bufferType:(V2TXLiveBufferType)bufferType;
+```
+```dart
+Future<V2TXLiveCode> enableObserveVideoFrame(bool enable, int pixelFormat, int bufferType)
+```
+
+```java
+// 开启自定义渲染
+player.enableObserveVideoFrame(true, V2TXLiveDef.V2TXLivePixelFormat.V2TXLivePixelFormatTexture2D, V2TXLiveDef.V2TXLiveBufferType.V2TXLiveBufferTypeTexture);
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onRenderVideoFrame(V2TXLivePlayer player, V2TXLiveVideoFrame videoFrame) {
+        // 自定义渲染
+    }
+});
+```
+
+**参数**:
+- `enable`: 是否开启自定义渲染【默认值】：false
+- `pixelFormat`: 自定义渲染回调的视频像素格式 `V2TXLiveDef#V2TXLivePixelFormat`
+- `bufferType`: 自定义渲染回调的视频数据格式 `V2TXLiveDef#V2TXLiveBufferType`
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+- `V2TXLIVE_ERROR_NOT_SUPPORTED`: 像素格式或者数据格式不支持
+
+**说明**: 
+- SDK 在您开启此开关后将不再渲染视频画面，您可以通过 `V2TXLivePlayerObserver` 获得视频帧，并执行自定义的渲染逻辑
+- 支持的类型组合：
+  V2TXLiveDef.V2TXLivePixelFormat.V2TXLivePixelFormatTexture2D, V2TXLiveDef.V2TXLiveBufferType.V2TXLiveBufferTypeTexture（推荐）
+  V2TXLiveDef.V2TXLivePixelFormat.V2TXLivePixelFormatI420, V2TXLiveDef.V2TXLiveBufferType.V2TXLiveBufferTypeByteArray
+  V2TXLiveDef.V2TXLivePixelFormat.V2TXLivePixelFormatI420, V2TXLiveDef.V2TXLiveBufferType.V2TXLiveBufferTypeByteBuffer
+**使用时机**: 开始播放前
+
+## enableObserveAudioFrame
+
+```java
+public abstract int enableObserveAudioFrame(boolean enable)
+```
+```objc
+- (V2TXLiveCode)enableObserveAudioFrame:(BOOL)enable;
+```
+```dart
+Future<V2TXLiveCode> enableObserveAudioFrame(bool enable)
+```
+
+```java
+// 开启音频数据监听
+player.enableObserveAudioFrame(true);
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onPlayoutAudioFrame(V2TXLivePlayer player, V2TXLiveAudioFrame audioFrame) {
+        // doSomething
+    }
+});
+```
+
+**参数**:
+- `enable`: 是否开启音频数据回调【默认值】：false
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**说明**: 如果您开启此开关，您可以通过 `V2TXLivePlayerObserver` 获得音频数据，并执行自定义的逻辑
+**使用时机**: 开始播放前
+
+## enableReceiveSeiMessage
+
+```java
+public abstract int enableReceiveSeiMessage(boolean enable, int payloadType)
+```
+```objc
+- (V2TXLiveCode)enableReceiveSeiMessage:(BOOL)enable payloadType:(int)payloadType;
+```
+```dart
+Future<V2TXLiveCode> enableReceiveSeiMessage(bool enable, int payloadType)
+```
+
+```java
+// 开启音频数据监听
+player.enableReceiveSeiMessage(true, 5);
+player.enableReceiveSeiMessage(true, 242);
+player.enableReceiveSeiMessage(true, 243);
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onReceiveSeiMessage(V2TXLivePlayer player, int payloadType, byte[] data) {
+        // doSomething
+    }
+});
+```
+
+**参数**:
+- `enable`: true: 开启接收 SEI 消息; false: 关闭接收 SEI 消息【默认值】: false
+- `payloadType`: 指定接收 SEI 消息的 payloadType，支持 5、242、243，请与发送端的 payloadType 保持一致
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 开始播放前
+
+## startLocalRecording
+
+```java
+public abstract int startLocalRecording(V2TXLiveLocalRecordingParams params)
+```
+```objc
+- (V2TXLiveCode)startLocalRecording:(V2TXLiveLocalRecordingParams *)params;
+```
+```dart
+Future<V2TXLiveCode> startLocalRecording(V2TXLiveLocalRecordingParams params)
+```
+
+**重要说明**:
+- 拉流开启后才能开始录制，非拉流状态下开启录制无效
+- 录制过程中不要动态切换软/硬解，生成的视频极有可能出现异常
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onLocalRecordBegin(V2TXLivePlayer player, int code, String storagePath) {
+        Log.i(TAG, "开始录制");
+    }
+
+    @Override
+    public void onLocalRecording(V2TXLivePlayer player, long durationMs, String storagePath) {
+        Log.i(TAG, "录制中..., durationMs: " + durationMs);
+    }
+
+    @Override
+    public void onLocalRecordComplete(V2TXLivePlayer player, int code, String storagePath) {
+        Log.i(TAG, "录制完成");
+    }
+});
+
+V2TXLiveDef.V2TXLiveLocalRecordingParams params = new V2TXLiveDef.V2TXLiveLocalRecordingParams();
+params.filePath = "filepath";
+params.interval = 2000;
+int code = player.startLocalRecording(params);
+if (code == V2TXLIVE_OK) {
+    Log.i(TAG, "录制开启成功");
+} else if (code == V2TXLIVE_ERROR_INVALID_PARAMETER) {
+    Log.i(TAG, "录制参数不合法");
+} else if (code == V2TXLIVE_ERROR_REFUSED) {
+    Log.i(TAG, "录制调用被拒绝");
+}
+```
+
+**参数**:
+- `params`: 请参考 `V2TXLiveDef.java` 中关于 `V2TXLiveLocalRecordingParams` 的介绍
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+- `V2TXLIVE_ERROR_INVALID_PARAMETER`: 参数不合法，例如 filePath 为空
+- `V2TXLIVE_ERROR_REFUSED`: API被拒绝，拉流尚未开始
+
+**使用时机**: 开始播放后
+
+## stopLocalRecording
+
+```java
+public abstract void stopLocalRecording()
+```
+```objc
+- (void)stopLocalRecording;
+```
+```dart
+Future<void> stopLocalRecording()
+```
+
+```java
+player.stopLocalRecording();
+```
+
+**说明**: 当停止拉流后，如果视频还在录制中，SDK 内部会自动结束录制
+**使用时机**: 开始播放并且开启录制后
+
+## showDebugView
+
+```java
+public abstract void showDebugView(boolean isShow)
+```
+```objc
+- (void)showDebugView:(BOOL)isShow;
+```
+```dart
+Future<void> showDebugView(bool isShow)
+```
+
+```java
+player.showDebugView(true);
+```
+
+**参数**:
+- `isShow`: 是否显示【默认值】：false
+
+**使用时机**: 无限制
+
+## setProperty
+
+```java
+public abstract int setProperty(String key, Object value)
+```
+```objc
+- (V2TXLiveCode)setProperty:(NSString *)key value:(NSObject *)value;
+```
+```dart
+Future<V2TXLiveCode> setProperty(String key, Object value)
+```
+
+调用 V2TXLivePlayer 的高级 API 接口
+
+**参数**:
+- `key`: 高级 API 对应的 key
+- `value`: 调用 key 所对应的高级 API 时，需要的参数
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+- `V2TXLIVE_ERROR_INVALID_PARAMETER`: 操作失败，key 不允许为 null
+
+**说明**: 该接口用于调用一些高级功能，有特殊需求，请于商务或架构师联系
+
+## enablePictureInPicture
+> **适用平台：** Android / iOS
+
+```objc
+- (V2TXLiveCode)enablePictureInPicture:(BOOL)enable;
+```
+
+**参数**: 
+- `enable`: 是否启用画中画模式，默认: false
+
+## getTextureId
+> **适用平台：** Android
+
+**参数**: 
+- `width`: 纹理宽度
+- `height`: 纹理高度
+
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLivePusher API 参考 (Android/iOS/Flutter)
+description: 核心方法：startCamera、startMicrophone、startPush、stopPush。用于预览采集、设备控制与推流启停。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/live-pusher-api.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 Android 接口为基准。Android (V2TXLivePusher)、iOS (V2TXLivePusher)、Flutter (V2TXLivePusher) 的核心方法名称和参数语义一致，仅签名风格不同。
+> - Android: Java 风格（如 `startLivePlay(String url)`）
+> - iOS: ObjC 风格（如 `startLivePlay:(NSString *)url`）
+> - Flutter: Dart 异步风格（如 `Future<V2TXLiveCode> startLivePlay(String url)`），所有方法返回 Future
+
+**跨平台 API 命名对照（仅列出名称不一致的 API）：**
+| 通用名 | Android | iOS | Flutter |
+| --- | --- | --- | --- |
+| constructor | new V2TXLivePusherImpl(context, mode) | initWithLiveMode:(V2TXLiveMode)liveMode | V2TXLivePusher.create(mode) |
+| setObserver | setObserver(observer) | setObserver: | addListener(listener) |
+| setRenderView | setRenderView(view) | setRenderView:(TXView *)view | setRenderViewID(viewID) |
+
+# 腾讯云直播 SDK V2TXLivePusher 推流器 API 文档（Android/iOS/Flutter）
+
+适用平台：Android/iOS/Flutter。
+
+## setObserver
+
+```java
+public abstract void setObserver(V2TXLivePusherObserver observer);
+```
+```objc
+- (void)setObserver:(id<V2TXLivePusherObserver>)observer;
+```
+```dart
+void addListener(V2TXLivePusherObserver observer)
+```
+
+```java
+pusher.setObserver(new V2TXLivePusherObserver(){
+  // ...
+});
+```
+
+**参数**:
+- `observer`: 推流器回调目标对象，需实现 `V2TXLivePusherObserver` 协议
+
+**使用时机**: 推流器初始化后立即设置
+**说明**: 通过设置回调，可以监听推流器状态、音量回调、统计数据、警告和错误信息等
+
+## setRenderView
+
+```java
+public abstract int setRenderView(TXCloudVideoView view);
+public abstract int setRenderView(TextureView view);
+public abstract int setRenderView(SurfaceView view);
+```
+```objc
+- (V2TXLiveCode)setRenderView:(TXView *)view;
+```
+```dart
+Future<V2TXLiveCode> setRenderViewID(int viewID)
+```
+
+```java
+pusher.setRenderView(videoView);
+```
+
+**参数**:
+- `view`: 本地摄像头预览View，支持三种类型
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 必须在开始推流前设置预览视图
+**说明**: 本地摄像头采集到的画面，经过美颜、脸型调整、滤镜等多种效果叠加之后，最终会显示View上
+
+## setRenderMirror
+
+```java
+public abstract int setRenderMirror(V2TXLiveMirrorType mirrorType);
+```
+```objc
+- (V2TXLiveCode)setRenderMirror:(V2TXLiveMirrorType)mirrorType;
+```
+```dart
+Future<V2TXLiveCode> setRenderMirror(V2TXLiveMirrorType mirrorType)
+```
+
+```java
+// 前置摄像头镜像，后置摄像头不镜像
+pusher.setRenderMirror(V2TXLiveDef.V2TXLiveMirrorType.V2TXLiveMirrorTypeAuto);
+// 所有摄像头都镜像
+pusher.setRenderMirror(V2TXLiveDef.V2TXLiveMirrorType.V2TXLiveMirrorTypeEnable);
+// 所有摄像头都不镜像
+pusher.setRenderMirror(V2TXLiveDef.V2TXLiveMirrorType.V2TXLiveMirrorTypeDisable);
+```
+
+**参数**:
+- `mirrorType`: 摄像头镜像类型 `V2TXLiveDef#V2TXLiveMirrorType`
+  - `V2TXLiveMirrorTypeAuto`【默认值】: 前置摄像头镜像，后置摄像头不镜像
+  - `V2TXLiveMirrorTypeEnable`: 前置和后置摄像头都镜像
+  - `V2TXLiveMirrorTypeDisable`: 前置和后置摄像头都不镜像
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 无限制
+
+## setEncoderMirror
+
+```java
+public abstract int setEncoderMirror(boolean mirror);
+```
+```objc
+- (V2TXLiveCode)setEncoderMirror:(BOOL)mirror;
+```
+```dart
+Future<V2TXLiveCode> setEncoderMirror(bool mirror)
+```
+
+```java
+// 观众端看到镜像画面
+pusher.setEncoderMirror(true);
+// 观众端看到非镜像画面
+pusher.setEncoderMirror(false);
+```
+
+**参数**:
+- `mirror`: 是否镜像【默认值】：false
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**说明**: 编码镜像只影响观众端看到的视频效果
+**使用时机**: 无限制
+
+## setRenderRotation
+
+```java
+public abstract int setRenderRotation(V2TXLiveRotation rotation);
+```
+```objc
+- (V2TXLiveCode)setRenderRotation:(V2TXLiveRotation)rotation;
+```
+```dart
+Future<V2TXLiveCode> setRenderRotation(V2TXLiveRotation rotation)
+```
+
+```java
+// 设置预览画面旋转0度
+pusher.setRenderRotation(V2TXLiveDef.V2TXLiveRotation.V2TXLiveRotation0);
+// 设置预览画面旋转90度
+pusher.setRenderRotation(V2TXLiveDef.V2TXLiveRotation.V2TXLiveRotation90);
+// 设置预览画面旋转180度
+pusher.setRenderRotation(V2TXLiveDef.V2TXLiveRotation.V2TXLiveRotation180);
+// 设置预览画面旋转270度
+pusher.setRenderRotation(V2TXLiveDef.V2TXLiveRotation.V2TXLiveRotation270);
+```
+
+**参数**:
+- `rotation`: 预览画面的旋转角度 `V2TXLiveDef#V2TXLiveRotation`
+  - `V2TXLiveRotation0`【默认值】: 0度，不旋转
+  - `V2TXLiveRotation90`: 顺时针旋转90度
+  - `V2TXLiveRotation180`: 顺时针旋转180度
+  - `V2TXLiveRotation270`: 顺时针旋转270度
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**说明**: 只旋转本地预览画面，不影响推流出去的画面
+**使用时机**: 无限制
+
+## setRenderFillMode
+
+```java
+public abstract int setRenderFillMode(V2TXLiveFillMode mode);
+```
+```objc
+- (V2TXLiveCode)setRenderFillMode:(V2TXLiveFillMode)mode;
+```
+```dart
+Future<V2TXLiveCode> setRenderFillMode(V2TXLiveFillMode mode)
+```
+
+```java
+// 图像铺满屏幕
+pusher.setRenderFillMode(V2TXLiveDef.V2TXLiveFillMode.V2TXLiveFillModeFill);
+// 图像适应屏幕
+pusher.setRenderFillMode(V2TXLiveDef.V2TXLiveFillMode.V2TXLiveFillModeFit);
+// 图像拉伸铺满
+pusher.setRenderFillMode(V2TXLiveDef.V2TXLiveFillMode.V2TXLiveFillModeScaleFill);
+```
+
+**参数**:
+- `mode`: 画面填充模式 `V2TXLiveDef#V2TXLiveFillMode`
+  - `V2TXLiveFillModeFill`【默认值】: 图像铺满屏幕，不留黑边，部分画面内容可能被裁剪
+  - `V2TXLiveFillModeFit`: 图像适应屏幕，保持画面完整，可能有黑边
+  - `V2TXLiveFillModeScaleFill`: 图像拉伸铺满，长度和宽度可能不会按比例变化
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 无限制
+
+## startCamera
+
+```java
+public abstract int startCamera(boolean frontCamera);
+public abstract int stopCamera();
+```
+```dart
+Future<V2TXLiveCode> startCamera(bool frontCamera)
+```
+
+**重要说明**: 
+- **推流前必须开启至少一个采集源**，否则推流将失败
+- `startVirtualCamera`, `startCamera`, `startScreenCapture`在同一Pusher实例下，仅有一个采集源可以上行
+- 不同采集源之间切换，请先关闭前一采集源，再开启后一采集源
+```java
+// 开启前置摄像头
+pusher.startCamera(true);
+// 开启后置摄像头
+pusher.startCamera(false);
+// 停止摄像头采集
+pusher.stopCamera();
+```
+
+**参数**:
+- `frontCamera`: 指定摄像头方向是否为前置【默认值】：true
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 必须推流前调用
+
+## startMicrophone
+
+```java
+public abstract int startMicrophone();
+public abstract int stopMicrophone();
+```
+```objc
+- (V2TXLiveCode)startMicrophone;
+```
+```dart
+Future<V2TXLiveCode> startMicrophone()
+```
+
+**注意事项**:
+- **推流前必须调用此方法开启麦克风采集**，否则推流将只有视频没有音频
+- 纯音频推流场景下，可以单独使用麦克风采集
+- 推流过程中可以动态开启/关闭麦克风采集
+```java
+// 开启麦克风采集
+pusher.startMicrophone();
+// 停止麦克风采集
+pusher.stopMicrophone();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用场景**:
+- **音视频直播**: 配合摄像头采集提供音频
+- **纯音频直播**: 单独使用麦克风进行音频推流
+- **屏幕分享**: 配合屏幕采集提供系统声音和麦克风声音
+**使用时机**: 推流前必须调用
+
+## startVirtualCamera
+> **适用平台：** Android / iOS
+
+```java
+public abstract int startVirtualCamera(Bitmap image);
+public abstract int stopVirtualCamera();
+```
+```objc
+- (V2TXLiveCode)startVirtualCamera:(TXImage *)image;
+```
+
+**注意事项**:
+- **推流前必须调用此方法开启图片推流**，否则推流将失败
+- 图片会被编码为视频流进行推送，消耗带宽
+- 通常需要配合麦克风采集提供音频
+- 图片推流和摄像头采集不能同时开启
+```java
+// 开启图片推流
+Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.live_image);
+pusher.startVirtualCamera(image);
+// 停止图片推流
+pusher.stopVirtualCamera();
+```
+
+**参数**:
+- `image`: 推流的图片
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用场景**:
+- **图片直播**: 将静态图片作为视频源进行推流
+- **维护页面**: 系统维护时显示维护页面
+- **广告展示**: 展示广告图片
+**使用时机**: 推流前必须调用
+
+## startScreenCapture
+
+```java
+public abstract int startScreenCapture();
+public abstract int stopScreenCapture();
+```
+```objc
+- (V2TXLiveCode)startScreenCapture:(NSString *)appGroup;
+```
+```dart
+Future<V2TXLiveCode> startScreenCapture(String appGroup)
+```
+
+**注意事项**:
+- **推流前必须调用此方法开启屏幕采集**，否则推流将失败
+- Android系统需要申请屏幕录制权限
+- 可以配合`startSystemAudioLoopback()`采集系统声音
+- 屏幕采集和摄像头采集不能同时开启
+```java
+// 开启屏幕采集
+pusher.startScreenCapture();
+// 停止屏幕采集
+pusher.stopScreenCapture();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用场景**:
+- **屏幕分享**: 分享设备屏幕内容进行直播
+- **远程教学**: 教师分享屏幕进行在线教学
+- **游戏直播**: 分享游戏画面进行游戏直播
+- **应用演示**: 演示App操作流程
+**使用时机**: 推流前必须调用
+
+## startPush
+
+```java
+public abstract int startPush(String url);
+```
+```objc
+- (V2TXLiveCode)startPush:(NSString *)url;
+```
+```dart
+Future<V2TXLiveCode> startPush(String url)
+```
+
+**重要注意事项**:
+- **必须在调用startPush()之前开启至少一个采集源**，否则推流将失败
+- 支持的采集源类型：摄像头采集、麦克风采集、屏幕采集、图片推流、自定义采集
+- 推流过程中可以切换采集源，但需要先关闭当前采集源再开启新采集源
+```java
+int result = pusher.startPush("rtmp://example.com/live/stream");
+if (result == V2TXLiveCode.V2TXLIVE_OK) {
+    Log.i(TAG, "开始推流成功");
+} else if (result == V2TXLiveCode.V2TXLIVE_ERROR_INVALID_PARAMETER) {
+    Log.w(TAG, "推流地址不合法");
+} else if (result == V2TXLiveCode.V2TXLIVE_ERROR_INVALID_LICENSE) {
+    Log.w(TAG, "Licence不合法，请检查Licence");
+} else if (result == V2TXLiveCode.V2TXLIVE_ERROR_REFUSED) {
+    Log.w(TAG, "调用被拒绝");
+}
+```
+
+**参数**:
+- `url`: 推流的目标地址，支持任意推流服务端
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 操作成功，开始连接推流目标地址
+- `V2TXLIVE_ERROR_INVALID_PARAMETER`: 操作失败，url不合法
+- `V2TXLIVE_ERROR_INVALID_LICENSE`: 操作失败，license不合法，鉴权失败
+- `V2TXLIVE_ERROR_REFUSED`: 操作失败，RTC不支持同一设备上同时推拉同一个StreamId
+
+**使用时机**: 采集源开启后
+
+## stopPush
+
+```java
+public abstract int stopPush();
+```
+```objc
+- (V2TXLiveCode)stopPush;
+```
+```dart
+Future<V2TXLiveCode> stopPush()
+```
+
+```java
+pusher.stopPush();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 开始推流后
+
+## isPushing
+
+```java
+public abstract int isPushing();
+```
+```objc
+- (int)isPushing;
+```
+```dart
+Future<V2TXLiveCode> isPushing()
+```
+
+```java
+int isPushing = pusher.isPushing();
+if (isPushing == 1) {
+    Log.i(TAG, "正在推流中");
+} else {
+    Log.i(TAG, "推流停止");
+}
+```
+
+**返回值**:
+- `1`: 正在推流中
+- `0`: 已经停止推流
+
+**使用时机**: 无限制
+
+## pauseAudio
+
+```java
+public abstract int pauseAudio();
+public abstract int resumeAudio();
+```
+```objc
+- (V2TXLiveCode)pauseAudio;
+- (V2TXLiveCode)resumeAudio;
+```
+```dart
+Future<V2TXLiveCode> pauseAudio()
+```
+
+```java
+// 暂停音频流
+pusher.pauseAudio();
+// 恢复音频流
+pusher.resumeAudio();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 无限制
+
+## pauseVideo
+
+```java
+public abstract int pauseVideo();
+public abstract int resumeVideo();
+```
+```objc
+- (V2TXLiveCode)pauseVideo;
+- (V2TXLiveCode)resumeVideo;
+```
+```dart
+Future<V2TXLiveCode> pauseVideo()
+```
+
+```java
+// 暂停视频流
+pusher.pauseVideo();
+// 恢复视频流
+pusher.resumeVideo();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 无限制
+
+## setAudioQuality
+
+```java
+public abstract int setAudioQuality(V2TXLiveAudioQuality quality);
+```
+```objc
+- (V2TXLiveCode)setAudioQuality:(V2TXLiveAudioQuality)quality;
+```
+```dart
+Future<V2TXLiveCode> setAudioQuality(V2TXLiveAudioQuality quality)
+```
+
+```java
+// 设置通用音质
+pusher.setAudioQuality(V2TXLiveDef.V2TXLiveAudioQuality.V2TXLiveAudioQualityDefault);
+// 设置语音音质
+pusher.setAudioQuality(V2TXLiveDef.V2TXLiveAudioQuality.V2TXLiveAudioQualitySpeech);
+// 设置音乐音质
+pusher.setAudioQuality(V2TXLiveDef.V2TXLiveAudioQuality.V2TXLiveAudioQualityMusic);
+```
+
+**参数**:
+- `quality`: 音频质量 `V2TXLiveDef#V2TXLiveAudioQuality`
+  - `V2TXLiveAudioQualityDefault`【默认值】: 通用音质
+  - `V2TXLiveAudioQualitySpeech`: 语音音质
+  - `V2TXLiveAudioQualityMusic`: 音乐音质
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+- `V2TXLIVE_ERROR_REFUSED`: 推流过程中，不允许调整音质
+
+**使用时机**: 推流开始前
+
+## setVideoQuality
+
+```java
+public abstract int setVideoQuality(V2TXLiveVideoEncoderParam param);
+```
+```objc
+- (V2TXLiveCode)setVideoQuality:(V2TXLiveVideoEncoderParam *)param;
+```
+```dart
+Future<V2TXLiveCode> setVideoQuality(V2TXLiveVideoEncoderParam param)
+```
+
+```java
+V2TXLiveVideoEncoderParam param = new V2TXLiveVideoEncoderParam();
+param.videoResolution = V2TXLiveVideoResolution.V2TXLiveVideoResolution1280x720;
+param.videoFps = 15;
+param.videoBitrate = 1200;
+pusher.setVideoQuality(param);
+```
+
+**参数**:
+- `param`: 视频编码参数
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 推流开始前
+
+## getAudioEffectManager
+
+```java
+public abstract TXAudioEffectManager getAudioEffectManager();
+```
+```objc
+- (TXAudioEffectManager *)getAudioEffectManager;
+```
+
+```java
+TXAudioEffectManager audioEffectManager = pusher.getAudioEffectManager();
+// 设置人声音量
+audioEffectManager.setVoiceVolume(100);
+// 设置背景音乐音量
+audioEffectManager.setAllMusicVolume(50);
+```
+
+**返回值**: `TXAudioEffectManager` 音效管理对象
+
+**功能说明**:
+- 调整麦克风收集的人声音量
+- 设置混响和变声效果
+- 开启耳返，设置耳返音量
+- 添加背景音乐，调整背景音乐的播放效果
+**使用时机**: 无限制
+
+## getBeautyManager
+> **适用平台：** Android / iOS
+
+```java
+public abstract TXBeautyManager getBeautyManager();
+```
+```objc
+- (TXBeautyManager *)getBeautyManager;
+```
+
+```java
+TXBeautyManager beautyManager = pusher.getBeautyManager();
+// 设置美颜风格
+beautyManager.setBeautyStyle(TXBeautyManager.TXBeautyStyleNature);
+// 设置美白级别
+beautyManager.setWhitenessLevel(5);
+// 设置红润级别
+beautyManager.setRuddyLevel(5);
+```
+
+**返回值**: `TXBeautyManager` 美颜管理对象
+
+**功能说明**:
+- 设置"美颜风格"、美白、红润、大眼、瘦脸等美容效果
+- 调整发际线、眼间距、眼角、嘴形等面部特征
+- 设置人脸挂件等动态效果
+- 添加美妆
+- 进行手势识别
+**使用时机**: 无限制
+
+## getDeviceManager
+
+```java
+public abstract TXDeviceManager getDeviceManager();
+```
+```objc
+- (TXDeviceManager *)getDeviceManager;
+```
+
+```java
+TXDeviceManager deviceManager = pusher.getDeviceManager();
+// 切换摄像头
+deviceManager.switchCamera(true);
+// 设置自动聚焦
+deviceManager.setAutoFocusEnabled(true);
+// 设置闪光灯
+deviceManager.enableTorch(true);
+```
+
+**返回值**: `TXDeviceManager` 设备管理对象
+
+**功能说明**:
+- 切换前后摄像头
+- 设置自动聚焦
+- 设置摄像头缩放倍数
+- 打开或关闭闪光灯
+- 切换耳机或者扬声器
+- 修改音量类型(媒体音量或者通话音量)
+**使用时机**: 无限制
+
+## snapshot
+
+```java
+public abstract int snapshot();
+```
+```objc
+- (V2TXLiveCode)snapshot;
+```
+```dart
+Future<V2TXLiveCode> snapshot()
+```
+
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onSnapshotComplete(Bitmap image) {
+        // 处理截图结果
+    }
+});
+pusher.snapshot();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+- `V2TXLIVE_ERROR_REFUSED`: 已经停止推流，不允许调用截图操作
+
+**使用时机**: 开始推流后
+
+## setWatermark
+> **适用平台：** Android / iOS
+
+```java
+public abstract int setWatermark(Bitmap image, float x, float y, float scale);
+```
+```objc
+- (V2TXLiveCode)setWatermark:(TXImage *)image x:(float)x y:(float)y scale:(float)scale;
+```
+
+```java
+Bitmap watermark = BitmapFactory.decodeResource(getResources(), R.drawable.watermark);
+pusher.setWatermark(watermark, 0.1f, 0.1f, 0.2f);
+// 禁用水印
+pusher.setWatermark(null, 0, 0, 0);
+```
+
+**参数**:
+- `image`: 水印图片，如果为null则禁用水印
+- `x`: 水印的横坐标，取值范围为0-1的浮点数
+- `y`: 水印的纵坐标，取值范围为0-1的浮点数
+- `scale`: 水印图片的缩放比例，取值范围为0-1的浮点数
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用时机**: 无限制
+
+## enableVolumeEvaluation
+
+```java
+public abstract int enableVolumeEvaluation(int intervalMs);
+```
+```objc
+- (V2TXLiveCode)enableVolumeEvaluation:(NSUInteger)intervalMs;
+```
+```dart
+Future<V2TXLiveCode> enableVolumeEvaluation(int intervalMs)
+```
+
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onMicrophoneVolumeUpdate(int volume) {
+        // 处理音量更新
+    }
+});
+pusher.enableVolumeEvaluation(300);
+```
+
+**参数**:
+- `intervalMs`: 回调触发间隔，单位为ms，最小间隔为100ms，如果小于等于0则关闭回调【默认值】：0
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**说明**: 开启后可以在`onMicrophoneVolumeUpdate`回调中获取到SDK对音量大小值的评估
+**使用时机**: 无限制
+
+## enableCustomVideoProcess
+
+```java
+public abstract int enableCustomVideoProcess(boolean enable, V2TXLivePixelFormat pixelFormat, V2TXLiveBufferType bufferType);
+```
+```objc
+- (V2TXLiveCode)enableCustomVideoProcess:(BOOL)enable 
+                            pixelFormat:(V2TXLivePixelFormat)pixelFormat 
+                            bufferType:(V2TXLiveBufferType)bufferType;
+```
+```dart
+Future<V2TXLiveCode> enableCustomVideoProcess(bool enable, V2TXLivePixelFormat pixelFormat, V2TXLiveBufferType bufferType)
+```
+
+**支持的格式组合**:
+- `V2TXLivePixelFormatTexture2D + V2TXLiveBufferTypeTexture`
+- `V2TXLivePixelFormatI420 + V2TXLiveBufferTypeByteBuffer`
+```java
+pusher.enableCustomVideoProcess(true, 
+    V2TXLiveDef.V2TXLivePixelFormat.V2TXLivePixelFormatTexture2D,
+    V2TXLiveDef.V2TXLiveBufferType.V2TXLiveBufferTypeTexture);
+```
+
+**参数**:
+- `enable`: true开启，false关闭【默认值: false】
+- `pixelFormat`: 像素格式 `V2TXLiveDef#V2TXLivePixelFormat`
+- `bufferType`: 缓冲区类型 `V2TXLiveDef#V2TXLiveBufferType`
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+- `V2TXLIVE_ERROR_NOT_SUPPORTED`: 不支持的格式
+
+**使用时机**: 推流开始前
+
+## enableCustomVideoCapture
+
+```java
+public abstract int enableCustomVideoCapture(boolean enable);
+```
+```objc
+- (V2TXLiveCode)enableCustomVideoCapture:(BOOL)enable;
+```
+```dart
+Future<V2TXLiveCode> enableCustomVideoCapture(bool enable)
+```
+
+**注意事项**:
+- **推流前必须调用此方法开启自定义采集**，否则推流将失败
+- 必须在`startPush`之前调用才会生效
+- 自定义采集模式下，SDK只负责编码和发送，不进行实际采集
+```java
+// 开启自定义视频采集
+pusher.enableCustomVideoCapture(true);
+pusher.startPush(url);
+
+// 发送自定义视频帧
+V2TXLiveVideoFrame videoFrame = new V2TXLiveVideoFrame();
+videoFrame.width = 1920;
+videoFrame.height = 1080;
+videoFrame.pixelFormat = V2TXLivePixelFormat.V2TXLivePixelFormatI420;
+videoFrame.bufferType = V2TXLiveBufferType.V2TXLiveBufferTypeByteBuffer;
+pusher.sendCustomVideoFrame(videoFrame);
+```
+
+**参数**:
+- `enable`: true开启自定义采集，false关闭【默认值: false】
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用场景**:
+- **外部设备采集**: 连接外部摄像头、采集卡等设备
+- **视频处理**: 对视频进行特殊处理后再推流
+- **多路合成**: 将多路视频源合成为一路推流
+- **特殊格式**: 支持特殊视频格式的推流
+**使用时机**: 推流开始前
+
+## enableCustomAudioCapture
+
+```java
+public abstract int enableCustomAudioCapture(boolean enable);
+```
+```objc
+- (V2TXLiveCode)enableCustomAudioCapture:(BOOL)enable;
+```
+```dart
+Future<V2TXLiveCode> enableCustomAudioCapture(bool enable)
+```
+
+**注意事项**:
+- **推流前必须调用此方法开启自定义采集**，否则推流将失败
+- 必须在`startPush`之前调用才会生效
+- 自定义采集模式下，SDK只负责编码和发送，不进行实际采集
+```java
+// 开启自定义音频采集
+pusher.enableCustomAudioCapture(true);
+pusher.startPush(url);
+
+// 发送自定义音频帧
+V2TXLiveAudioFrame audioFrame = new V2TXLiveAudioFrame();
+audioFrame.data = audioData; // PCM音频数据
+audioFrame.sampleRate = 44100; // 采样率
+audioFrame.channel = 1; // 声道数
+pusher.sendCustomAudioFrame(audioFrame);
+```
+
+**参数**:
+- `enable`: true开启自定义采集，false关闭【默认值: false】
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**使用场景**:
+- **外部音频设备**: 连接外部麦克风、音频接口等设备
+- **音频处理**: 对音频进行特殊处理后再推流
+- **多路音频**: 将多路音频源合成为一路推流
+**使用时机**: 推流开始前
+
+## sendSeiMessage
+
+```java
+public abstract int sendSeiMessage(int payloadType, byte[] data);
+```
+```objc
+- (V2TXLiveCode)sendSeiMessage:(int)payloadType data:(NSData *)data;
+```
+```dart
+Future<V2TXLiveCode> sendSeiMessage(int payloadType, Uint8List data)
+```
+
+```java
+byte[] seiData = "Hello SEI".getBytes();
+pusher.sendSeiMessage(242, seiData);
+```
+
+**参数**:
+- `payloadType`: 数据类型，支持5、242，推荐填242
+- `data`: 待发送的数据
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**说明**: 播放端通过`onReceiveSeiMessage`回调来接收该消息
+**使用时机**: 推流过程中
+
+## startSystemAudioLoopback
+> **适用平台：** Android
+
+```java
+public abstract int startSystemAudioLoopback();
+public abstract int stopSystemAudioLoopback();
+// 开启系统声音采集
+pusher.startSystemAudioLoopback();
+// 停止系统声音采集
+pusher.stopSystemAudioLoopback();
+```
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+
+**说明**:
+- 开启后可以采集整个操作系统的播放声音，并将其混入到当前麦克风采集的声音中一起发送到云端
+- 只在Android API 29及以上的版本生效
+- 需要先使用该接口来开启系统声音采集，当使用屏幕分享接口开启屏幕分享时才会真正生效
+- 需要添加前台服务确保系统声音采集不被静默
+**使用时机**: 推流开始前
+
+## setMixTranscodingConfig
+
+```java
+public abstract int setMixTranscodingConfig(V2TXLiveTranscodingConfig config);
+```
+```objc
+- (V2TXLiveCode)setMixTranscodingConfig:(V2TXLiveTranscodingConfig *)config;
+```
+```dart
+Future<V2TXLiveCode> setMixTranscodingConfig(V2TXLiveTranscodingConfig? config)
+```
+
+**注意事项**:
+- **仅支持RTC协议混流**：该接口只能在RTC协议下使用，不支持RTMP等其他推流协议
+- 云端转码会引入1-2秒的CDN观看延时
+- 及时传入null取消混流，避免不必要的计费损失
+```java
+V2TXLiveTranscodingConfig config = new V2TXLiveTranscodingConfig();
+config.videoWidth = 1280;
+config.videoHeight = 720;
+config.videoBitrate = 1500;
+config.videoFps = 15;
+pusher.setMixTranscodingConfig(config);
+
+// 取消混流
+pusher.setMixTranscodingConfig(null);
+```
+
+**参数**:
+- `config`: 混流转码配置，传入null则取消云端混流转码
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+- `V2TXLIVE_ERROR_REFUSED`: 未开启推流时，不允许设置混流转码参数
+
+**混流原理**:
+```
+【画面1】=> 解码 ====> \
+                        \
+【画面2】=> 解码 =>  画面混合 => 编码 => 【混合后的画面】
+                        /
+【画面3】=> 解码 ====> /
+
+【声音1】=> 解码 ====> \
+                        \
+【声音2】=> 解码 =>  声音混合 => 编码 => 【混合后的声音】
+                        /
+【声音3】=> 解码 ====> /
+```
+**使用时机**: 推流过程中
+
+## startLocalRecording
+> **适用平台：** Android / iOS
+
+```java
+public abstract int startLocalRecording(V2TXLiveLocalRecordingParams params);
+public abstract void stopLocalRecording();
+```
+```objc
+- (V2TXLiveCode)startLocalRecording:(V2TXLiveLocalRecordingParams *)params;
+```
+
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onLocalRecordBegin(int code, String storagePath) {
+        Log.i(TAG, "开始录制");
+    }
+
+    @Override
+    public void onLocalRecording(long durationMs, String storagePath) {
+        Log.i(TAG, "录制中..., durationMs: " + durationMs);
+    }
+
+    @Override
+    public void onLocalRecordComplete(int code, String storagePath) {
+        Log.i(TAG, "录制完成");
+    }
+});
+
+V2TXLiveLocalRecordingParams params = new V2TXLiveLocalRecordingParams();
+params.filePath = "filepath";
+params.interval = 2000;
+int code = pusher.startLocalRecording(params);
+if (code == V2TXLIVE_OK) {
+    Log.i(TAG, "录制开启成功");
+} else if (code == V2TXLIVE_ERROR_INVALID_PARAMETER) {
+    Log.i(TAG, "录制参数不合法");
+} else if (code == V2TXLIVE_ERROR_REFUSED) {
+    Log.i(TAG, "录制调用被拒绝");
+}
+```
+
+**参数**:
+- `params`: 本地录制参数
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+- `V2TXLIVE_ERROR_INVALID_PARAMETER`: 参数不合法
+- `V2TXLIVE_ERROR_REFUSED`: API被拒绝，推流尚未开始
+
+**说明**: 推流开启后才能开始录制，非推流状态下开启录制无效
+**使用时机**: 推流过程中
+
+## showDebugView
+
+```java
+public abstract void showDebugView(boolean isShow);
+```
+```objc
+- (void)showDebugView:(BOOL)isShow;
+```
+```dart
+Future<V2TXLiveCode> showDebugView(bool isShow)
+```
+
+```java
+// 显示调试视图
+pusher.showDebugView(true);
+// 隐藏调试视图
+pusher.showDebugView(false);
+```
+
+**参数**:
+- `isShow`: 是否显示【默认值: false】
+
+**使用时机**: 无限制
+
+## setProperty
+> **适用平台：** Android / Flutter
+
+```java
+public abstract int setProperty(String key, Object value);
+```
+```dart
+Future<V2TXLiveCode> setProperty(String key, Object value)
+```
+
+```java
+pusher.setProperty("key", "value");
+```
+
+**参数**:
+- `key`: 高级API对应的key，详情参考`V2TXLiveProperty`定义
+- `value`: 调用key所对应的高级API时需要的参数
+
+**返回值**: `V2TXLiveCode`
+- `V2TXLIVE_OK`: 成功
+- `V2TXLIVE_ERROR_INVALID_PARAMETER`: 操作失败，key不允许为空
+
+**说明**: 该接口用于调用一些高级功能，有特殊需求，请于商务或架构师联系
+**使用时机**: 无限制
+
+## initWithLiveMode
+> **适用平台：** iOS
+
+**参数**:
+- `liveMode`: 推流协议类型
+  - `V2TXLiveModeRTMP`: RTMP协议（默认）
+  - `V2TXLiveModeRTC`: ROOM协议
+
+**使用时机**: 应用启动时调用
+
+## sendCustomVideoFrame
+> **适用平台：** iOS / Flutter
+
+```objc
+- (V2TXLiveCode)sendCustomVideoFrame:(V2TXLiveVideoFrame *)videoFrame;
+```
+```dart
+Future<V2TXLiveCode> sendCustomVideoFrame(V2TXLiveVideoFrame videoFrame)
+```
+
+**功能**: 在自定义采集模式下发送视频数据到SDK
+**前提条件**: 必须先调用`enableCustomVideoCapture`开启自定义采集
+
+## sendCustomAudioFrame
+> **适用平台：** iOS / Flutter
+
+```objc
+- (V2TXLiveCode)sendCustomAudioFrame:(V2TXLiveAudioFrame *)audioFrame;
+```
+```dart
+Future<V2TXLiveCode> sendCustomAudioFrame(V2TXLiveAudioFrame audioFrame)
+```
+
+**功能**: 在自定义采集模式下发送音频数据到SDK
+
+## enableAudioProcessObserver
+> **适用平台：** iOS
+
+```objc
+- (V2TXLiveCode)enableAudioProcessObserver:(BOOL)enable 
+                                  format:(V2TXLiveAudioFrameObserverFormat *)format;
+```
+
+**功能**: 开启/关闭对前处理后的本地音频帧的监听
+
+**使用时机**: 必须在`startPush`之前调用
+
+## stopLocalRecording
+> **适用平台：** iOS
+
+```objc
+- (void)stopLocalRecording;
+```
+
+**功能**: 停止录制音视频流
+
+**自动处理**: 停止推流后，如果还在录制中，SDK会自动结束录制
+
+## enableVoiceActivityDetection
+> **适用平台：** iOS
+
+```objc
+- (void)enableVoiceActivityDetection:(BOOL)enable;
+```
+
+**功能**: 启用人声检测
+**回调**: 在`OnVoiceActivityDetectionUpdate`回调中获取语音活动状态
+
+## setProperty / getProperty
+> **适用平台：** iOS
+
+```objc
+- (V2TXLiveCode)setProperty:(NSString *)key value:(NSObject *)value;
+- (NSString *)getProperty:(NSString *)key;
+```
+
+**功能**: 调用高级API接口
+**参考文档**: `V2TXLiveProperty.h`中的定义
+
+**使用场景**: 调用一些实验性功能或高级配置
+
+## create
+> **适用平台：** Flutter
+
+```dart
+static Future<V2TXLivePusher> create(V2TXLiveMode liveMode) async
+```
+
+**功能**: 创建推流器实例
+**使用示例**:
+```dart
+V2TXLivePusher pusher = await V2TXLivePusher.create(V2TXLiveMode.V2TXLiveModeRTC);
+```
+
+**参数**:
+- `liveMode`: 推流模式 [V2TXLiveMode]
+
+**返回值**:
+- `Future<V2TXLivePusher>`: 推流器实例
+
+## removeObserver
+> **适用平台：** Flutter
+
+```dart
+void removeListener(V2TXLivePusherObserver observer)
+```
+
+**功能**: 移除推流器回调观察者
+
+**参数**:
+- `observer`: 推流器回调观察者对象 [V2TXLivePusherObserver]
+
+## destroy
+> **适用平台：** Flutter
+
+```dart
+void destroy()
+```
+
+**功能**: 销毁推流器实例
+
+## stopCamera
+> **适用平台：** Flutter
+
+```dart
+Future<void> stopCamera()
+```
+
+**功能**: 关闭本地摄像头
+
+## stopMicrophone
+> **适用平台：** Flutter
+
+```dart
+Future<V2TXLiveCode> stopMicrophone()
+```
+
+**功能**: 关闭麦克风
+
+## stopScreenCapture
+> **适用平台：** Flutter
+
+```dart
+Future<V2TXLiveCode> stopScreenCapture()
+```
+
+**功能**: 关闭屏幕共享
+
+## resumeAudio
+> **适用平台：** Flutter
+
+```dart
+Future<V2TXLiveCode> resumeAudio()
+```
+
+**功能**: 恢复音频流
+
+## resumeVideo
+> **适用平台：** Flutter
+
+```dart
+Future<V2TXLiveCode> resumeVideo()
+```
+
+**功能**: 恢复视频流
+
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLivePlayerObserver 播放回调 (Android/iOS/Flutter)
+description: 播放器事件回调完整列表, 涵盖连接状态、音视频播放状态、音量变化等通知。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/player-event-callbacks.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 Android 接口为基准。Android (V2TXLivePlayerObserver)、iOS (V2TXLivePlayerObserver)、Flutter (V2TXLivePlayerObserver) 的核心方法名称和参数语义一致，仅签名风格不同。
+> - Android: Java 风格（如 `startLivePlay(String url)`）
+> - iOS: ObjC 风格（如 `startLivePlay:(NSString *)url`）
+> - Flutter: Dart 异步风格（如 `Future<V2TXLiveCode> startLivePlay(String url)`），所有方法返回 Future
+
+# 腾讯云直播 SDK V2TXLivePlayerObserver 播放回调 文档（Android/iOS/Flutter）
+
+适用平台：Android/iOS/Flutter。
+
+## onError
+
+```java
+public void onError(V2TXLivePlayer player, int code, String msg, Bundle extraInfo)
+```
+```objc
+- (void)onError:(id<V2TXLivePlayer>)player 
+          code:(V2TXLiveCode)code 
+       message:(NSString *)msg 
+     extraInfo:(NSDictionary *)extraInfo;
+```
+```dart
+void onError(V2TXLivePlayer player, int code, String msg, Map<String, dynamic> extraInfo)
+```
+
+**功能**: 播放器出现错误时回调
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onError(V2TXLivePlayer player, int code, String msg, Bundle extraInfo) {
+        switch (code) {
+            case V2TXLIVE_ERROR_INVALID_PARAMETER:
+                Log.e(TAG, "rtc拉流参数不合法，" + msg);
+                break;
+            case V2TXLIVE_ERROR_REQUEST_TIMEOUT:
+                Log.e(TAG, "rtc拉流超时，" + msg);
+                break;
+            case V2TXLIVE_ERROR_SERVER_PROCESS_FAILED:
+                Log.e(TAG, "rtc拉流服务器处理失败，请检查拉流参数，" + msg);
+                break;
+            case V2TXLIVE_ERROR_DISCONNECTED:
+                Log.e(TAG, "拉流断开，" + msg);
+                break;
+            case V2TXLIVE_ERROR_NO_AVAILABLE_HEVC_DECODERS:
+                Log.e(TAG, "找不到hevc解码器，可以切换到avc流进行播放，" + msg);
+                break;
+            default:
+                Log.e(TAG, "其它错误，" + msg);
+                break;
+        }
+    }
+});
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `code`: 错误码，参考 `V2TXLiveCode` 枚举
+- `msg`: 错误描述信息
+- `extraInfo`: 扩展信息，包含详细的错误上下文
+
+**使用场景**:
+- rtc拉流参数不合法
+- rtc拉流超时
+- rtc拉流服务器处理失败
+- 找不到hevc解码器
+
+## onWarning
+
+```java
+public void onWarning(V2TXLivePlayer player, int code, String msg, Bundle extraInfo)
+```
+```objc
+- (void)onWarning:(id<V2TXLivePlayer>)player 
+            code:(V2TXLiveCode)code 
+         message:(NSString *)msg 
+       extraInfo:(NSDictionary *)extraInfo;
+```
+```dart
+void onWarning(V2TXLivePlayer player, int code, String msg, Map<String, dynamic> extraInfo)
+```
+
+**功能**: 播放器出现警告时回调
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onWarning(V2TXLivePlayer player, int code, String msg, Bundle extraInfo) {
+        switch (code) {
+            case V2TXLIVE_WARNING_VIDEO_BLOCK:
+                Log.w(TAG, "视频渲染发生卡顿");
+                break;
+            case V2TXLIVE_WARNING_CURRENT_DECODE_TYPE_CHANGED:
+                int codec_type = extraInfo.getInt("codec_type");
+                if (codec_type == 0) {
+                    Log.w(TAG, "解码器类型变更，h.264，" + msg);
+                } else if (codec_type == 1) {
+                    Log.w(TAG, "解码器类型变更，h.265，" + msg);
+                }
+                break;
+            default:
+                Log.w(TAG, "其它警告，" + msg);
+                break;
+        }
+    }
+});
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `code`: 警告码，参考 `V2TXLiveCode` 枚举
+- `msg`: 警告描述信息
+- `extraInfo`: 扩展信息
+
+**使用场景**:
+- 视频渲染发生卡顿
+- 解码器类型变更
+
+## onConnected
+
+```java
+public void onConnected(V2TXLivePlayer player, Bundle extraInfo)
+```
+```objc
+- (void)onConnected:(id<V2TXLivePlayer>)player 
+         extraInfo:(NSDictionary *)extraInfo;
+```
+```dart
+void onConnected(V2TXLivePlayer player, Map<String, dynamic> extraInfo)
+```
+
+**功能**: 播放器成功连接到服务器时回调
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onConnected(V2TXLivePlayer player, Bundle extraInfo) {
+        Log.i(TAG, "服务器连接成功");
+    }
+});
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `extraInfo`: 连接相关信息
+
+**使用场景**:
+- 监控播放器网络连接状态
+
+## onVideoResolutionChanged
+
+```java
+public void onVideoResolutionChanged(V2TXLivePlayer player, int width, int height)
+```
+```objc
+- (void)onVideoResolutionChanged:(id<V2TXLivePlayer>)player 
+                           width:(NSInteger)width 
+                          height:(NSInteger)height;
+```
+```dart
+void onVideoResolutionChanged(V2TXLivePlayer player, int width, int height)
+```
+
+**功能**: 视频分辨率发生变化时回调
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onVideoResolutionChanged(V2TXLivePlayer player, int width, int height) {
+        Log.i(TAG, "视频流分辨率发生变化: width-" + width + ", height-" + height);
+    }
+});
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `width`: 新的视频宽度
+- `height`: 新的视频高度
+
+**使用场景**:
+- 自适应视频渲染视图
+- 动态调整播放器布局
+
+## onVideoPlaying
+
+```java
+public void onVideoPlaying(V2TXLivePlayer player, boolean firstPlay, Bundle extraInfo)
+```
+```objc
+- (void)onVideoPlaying:(id<V2TXLivePlayer>)player 
+            firstPlay:(BOOL)firstPlay 
+            extraInfo:(NSDictionary *)extraInfo;
+```
+```dart
+void onVideoPlaying(V2TXLivePlayer player, bool firstPlay, Map<String, dynamic> extraInfo)
+```
+
+**功能**: 视频开始播放时回调，除首次播放外，与onVideoLoading配对使用
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onVideoPlaying(V2TXLivePlayer player, boolean firstPlay, Bundle extraInfo) {
+        if (firstPlay) {
+            // 视频首次开始播放
+            Log.i(TAG, "首次开始播放");
+        } else {
+            // 视频非首次开始播放，可以隐藏加载 UI
+            Log.i(TAG, "开始播放");
+        }
+    }
+});
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `firstPlay`: 是否为首次播放标志
+- `extraInfo`: 播放相关信息
+
+**使用场景**:
+- 显示播放状态UI
+- 开始播放计时
+- 记录播放日志
+- 计算秒开耗时
+
+## onVideoLoading
+
+```java
+public void onVideoLoading(V2TXLivePlayer player, Bundle extraInfo)
+```
+```objc
+- (void)onVideoLoading:(id<V2TXLivePlayer>)player 
+             extraInfo:(NSDictionary *)extraInfo;
+```
+```dart
+void onVideoLoading(V2TXLivePlayer player, Map<String, dynamic> extraInfo)
+```
+
+**功能**: 视频数据加载时回调
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onVideoLoading(V2TXLivePlayer player, Bundle extraInfo) {
+        // 视频播放开始加载，可以显示加载 UI
+        Log.i(TAG, "视频播放开始加载");
+    }
+});
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `extraInfo`: 加载状态信息
+
+**使用场景**:
+- 显示加载动画
+- 缓冲状态提示
+
+## onAudioPlaying
+
+```java
+public void onAudioPlaying(V2TXLivePlayer player, boolean firstPlay, Bundle extraInfo)
+```
+```objc
+- (void)onAudioPlaying:(id<V2TXLivePlayer>)player 
+            firstPlay:(BOOL)firstPlay 
+            extraInfo:(NSDictionary *)extraInfo;
+```
+```dart
+void onAudioPlaying(V2TXLivePlayer player, bool firstPlay, Map<String, dynamic> extraInfo)
+```
+
+**功能**: 音频开始播放时回调
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onAudioPlaying(V2TXLivePlayer player, boolean firstPlay, Bundle extraInfo) {
+        if (firstPlay) {
+            Log.i(TAG, "音频首次开始播放");
+        } else {
+            Log.i(TAG, "音频开始播放");
+        }
+    }
+});
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `firstPlay`: 是否为首次播放标志
+- `extraInfo`: 播放相关信息
+
+**使用场景**:
+- 音频播放状态监控
+- 纯音频流播放场景
+
+## onAudioLoading
+
+```java
+public void onAudioLoading(V2TXLivePlayer player, Bundle extraInfo)
+```
+```objc
+- (void)onAudioLoading:(id<V2TXLivePlayer>)player 
+             extraInfo:(NSDictionary *)extraInfo;
+```
+```dart
+void onAudioLoading(V2TXLivePlayer player, Map<String, dynamic> extraInfo)
+```
+
+**功能**: 音频数据加载时回调
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onAudioLoading(V2TXLivePlayer player, Bundle extraInfo) {
+        // 音频播放开始加载
+        Log.i(TAG, "音频播放开始加载");
+    }
+});
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `extraInfo`: 加载状态信息
+
+**使用场景**:
+- 显示加载动画
+- 缓冲状态提示
+
+## onPlayoutVolumeUpdate
+
+```java
+public void onPlayoutVolumeUpdate(V2TXLivePlayer player, int volume)
+```
+```objc
+- (void)onPlayoutVolumeUpdate:(id<V2TXLivePlayer>)player 
+                      volume:(NSInteger)volume;
+```
+```dart
+void onPlayoutVolumeUpdate(V2TXLivePlayer player, int volume)
+```
+
+**功能**: 播放音量大小实时回调
+**前提条件**: 需要调用 `enableVolumeEvaluation()` 开启音量评估
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onPlayoutVolumeUpdate(V2TXLivePlayer player, int volume) {
+        // 音频播放音量回调，可以更新音量大小
+        Log.i(TAG, "音频播放音量，音量：" + volume);
+    }
+});
+player.enableVolumeEvaluation(300);
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `volume`: 当前播放音量值（0-100）
+
+**使用场景**:
+- 实时音量显示
+- 音频波形动画
+- 静音检测
+
+## onRenderVideoFrame
+
+```java
+public void onRenderVideoFrame(V2TXLivePlayer player, V2TXLiveVideoFrame videoFrame)
+```
+```objc
+- (void)onRenderVideoFrame:(id<V2TXLivePlayer>)player 
+                    frame:(V2TXLiveVideoFrame *)videoFrame;
+```
+```dart
+void onRenderVideoFrame(V2TXLivePlayer player, Map<String, dynamic> videoFrame)
+```
+
+**功能**: 自定义视频帧渲染回调
+**前提条件**: 需要调用 `enableObserveVideoFrame()` 开启视频帧回调
+```java
+// 开启自定义渲染
+player.enableObserveVideoFrame(true, V2TXLiveDef.V2TXLivePixelFormat.V2TXLivePixelFormatTexture2D, V2TXLiveDef.V2TXLiveBufferType.V2TXLiveBufferTypeTexture);
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onRenderVideoFrame(V2TXLivePlayer player, V2TXLiveVideoFrame videoFrame) {
+        // 自定义渲染
+    }
+});
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `videoFrame`: 视频帧数据 `V2TXLiveVideoFrame`
+
+**使用场景**:
+- 自定义视频渲染
+
+## onPlayoutAudioFrame
+
+```java
+public void onPlayoutAudioFrame(V2TXLivePlayer player, V2TXLiveAudioFrame audioFrame)
+```
+```objc
+- (void)onPlayoutAudioFrame:(id<V2TXLivePlayer>)player 
+                    frame:(V2TXLiveAudioFrame *)audioFrame;
+```
+```dart
+void onPlayoutAudioFrame(V2TXLivePlayer player, Map<String, dynamic> audioFrame)
+```
+
+**功能**: 音频数据播放回调
+**前提条件**: 需要调用 `enableObserveAudioFrame()` 开启音频帧回调
+```java
+// 开启音频数据监听
+player.enableObserveAudioFrame(true);
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onPlayoutAudioFrame(V2TXLivePlayer player, V2TXLiveAudioFrame audioFrame) {
+        // doSomething
+    }
+});
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `audioFrame`: 音频帧数据 `V2TXLiveAudioFrame`
+
+**使用场景**:
+- 自定义音频处理
+
+## onStatisticsUpdate
+
+```java
+public void onStatisticsUpdate(V2TXLivePlayer player, V2TXLivePlayerStatistics statistics)
+```
+```objc
+- (void)onStatisticsUpdate:(id<V2TXLivePlayer>)player 
+               statistics:(V2TXLivePlayerStatistics *)statistics;
+```
+```dart
+void onStatisticsUpdate(V2TXLivePlayer player, Map<String, dynamic> statistics)
+```
+
+**功能**: 播放器统计数据实时回调，2s回调一次
+**包含数据**:
+- 视频宽度/高度
+- 帧率/码率
+- 网络状况
+- 缓存大小
+- 播放延迟
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onStatisticsUpdate(V2TXLivePlayer player, V2TXLivePlayerStatistics statistics) {
+        // doSomething
+    }
+});
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `statistics`: 播放统计信息 `V2TXLivePlayerStatistics`
+
+**使用场景**:
+- 播放质量监控
+- 性能优化分析
+- 用户体验统计
+
+## onSnapshotComplete
+
+```java
+public void onSnapshotComplete(V2TXLivePlayer player, Bitmap image)
+```
+```objc
+- (void)onSnapshotComplete:(id<V2TXLivePlayer>)player 
+                   image:(nullable TXImage *)image;
+```
+```dart
+void onSnapshotComplete(V2TXLivePlayer player, Uint8List image)
+```
+
+**功能**: 截图操作完成回调
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onSnapshotComplete(V2TXLivePlayer player, Bitmap image) {
+        // doSomething
+    }
+});
+player.snapshot();
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `image`: 截取的视频画面Bitmap
+
+**使用场景**:
+- 视频截图保存
+- 画面分享功能
+
+## onReceiveSeiMessage
+
+```java
+public void onReceiveSeiMessage(V2TXLivePlayer player, int payloadType, byte[] data)
+```
+```objc
+- (void)onReceiveSeiMessage:(id<V2TXLivePlayer>)player 
+               payloadType:(int)payloadType 
+                      data:(NSData *)data;
+```
+```dart
+void onReceiveSeiMessage(V2TXLivePlayer player, int payloadType, Uint8List data)
+```
+
+**功能**: 接收SEI（Supplemental Enhancement Information）消息回调
+**前提条件**: 需要调用 `enableReceiveSeiMessage()` 开启SEI消息接收
+```java
+// 开启音频数据监听
+player.enableReceiveSeiMessage(true, 5);
+player.enableReceiveSeiMessage(true, 242);
+player.enableReceiveSeiMessage(true, 243);
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onReceiveSeiMessage(V2TXLivePlayer player, int payloadType, byte[] data) {
+        // doSomething
+    }
+});
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `payloadType`: SEI消息类型
+- `data`: SEI消息数据
+
+**使用场景**:
+- 场景信息传递
+- 互动消息传输
+
+## onStreamSwitched
+
+```java
+public void onStreamSwitched(V2TXLivePlayer player, String url, int code)
+```
+```objc
+- (void)onStreamSwitched:(id<V2TXLivePlayer>)player 
+                    url:(NSString *)url 
+                   code:(NSInteger)code;
+```
+```dart
+void onStreamSwitched(V2TXLivePlayer player, String url, int code)
+```
+
+**功能**: 分辨率切换操作完成回调，调用 `switchStream()` 时回调
+```java
+player.startLivePlayer("");
+
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onStreamSwitched(V2TXLivePlayer player, String url, int code) {
+        if (code == 0) {
+            Log.i(TAG, "切换成功");
+        } else if (code == -1) {
+            Log.i(TAG, "切换超时");
+        } else if (code == -2) {
+            Log.i(TAG, "切换失败，服务端错误");
+        } else if (code == -3) {
+            Log.i(TAG, "切换失败，客户端错误");
+        }
+    }
+});
+player.switchStream("";
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `url`: 切换后的播放地址
+- `code`: 切换状态码（0:成功，-1:超时，-2:服务端错误，-3:客户端错误）
+
+**使用场景**:
+- 清晰度切换监控
+
+## onLocalRecordBegin
+
+```java
+public void onLocalRecordBegin(V2TXLivePlayer player, int code, String storagePath)
+```
+```objc
+- (void)onLocalRecordBegin:(id<V2TXLivePlayer>)player 
+                  errCode:(NSInteger)errCode 
+              storagePath:(NSString *)storagePath;
+```
+```dart
+void onLocalRecordBegin(V2TXLivePlayer player, int code, String storagePath)
+```
+
+**功能**: 本地录制任务开始回调，调用 `startLocalRecording()` 时回调
+**状态码说明**:
+- `0`: 录制任务启动成功
+- `-1`: 内部错误导致录制失败
+- `-2`: 文件后缀名有误
+- `-6`: 录制已经启动
+- `-7`: 录制文件已存在
+- `-8`: 录制目录无写入权限
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `code`: 录制状态码
+- `storagePath`: 录制文件存储路径
+
+## onLocalRecording
+
+```java
+public void onLocalRecording(V2TXLivePlayer player, long durationMs, String storagePath)
+```
+```objc
+- (void)onLocalRecording:(id<V2TXLivePlayer>)player 
+             durationMs:(NSInteger)durationMs 
+            storagePath:(NSString *)storagePath;
+```
+```dart
+void onLocalRecording(V2TXLivePlayer player, int durationMs, String storagePath)
+```
+
+**功能**: 录制任务进行中进度回调，频率与 startLocalRecording 传入的 V2TXLiveDef.V2TXLiveLocalRecordingParams.interval 一致
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `durationMs`: 已录制时长（毫秒）
+- `storagePath`: 录制文件存储路径
+
+**使用场景**:
+- 录制进度显示
+- 录制时长限制
+- 录制状态监控
+
+## onLocalRecordComplete
+
+```java
+public void onLocalRecordComplete(V2TXLivePlayer player, int code, String storagePath)
+```
+```objc
+- (void)onLocalRecordComplete:(id<V2TXLivePlayer>)player 
+                     errCode:(NSInteger)errCode 
+                 storagePath:(NSString *)storagePath;
+```
+```dart
+void onLocalRecordComplete(V2TXLivePlayer player, int code, String storagePath)
+```
+
+**功能**: 录制任务完成回调，调用 `stopLocalRecording()` 时回调
+**状态码说明**:
+- `0`: 结束录制任务成功
+- `-1`: 录制失败
+- `-2`: 切换分辨率或横竖屏导致录制结束
+- `-3`: 录制时间太短或未采集到数据
+```java
+player.setObserver(new V2TXLivePlayerObserver() {
+    @Override
+    public void onLocalRecordBegin(V2TXLivePlayer player, int code, String storagePath) {
+        Log.i(TAG, "开始录制");
+    }
+
+    @Override
+    public void onLocalRecording(V2TXLivePlayer player, long durationMs, String storagePath) {
+        Log.i(TAG, "录制中..., durationMs: " + durationMs);
+    }
+
+    @Override
+    public void onLocalRecordComplete(V2TXLivePlayer player, int code, String storagePath) {
+        Log.i(TAG, "录制完成");
+    }
+});
+
+V2TXLiveDef.V2TXLiveLocalRecordingParams params = new V2TXLiveDef.V2TXLiveLocalRecordingParams();
+params.filePath = "filepath";
+params.interval = 2000;
+int code = player.startLocalRecording(params);
+if (code == V2TXLIVE_OK) {
+    Log.i(TAG, "录制开启成功");
+} else if (code == V2TXLIVE_ERROR_INVALID_PARAMETER) {
+    Log.i(TAG, "录制参数不合法");
+} else if (code == V2TXLIVE_ERROR_REFUSED) {
+    Log.i(TAG, "录制调用被拒绝");
+}
+```
+
+**参数**:
+- `player`: 触发回调的播放器实例
+- `code`: 录制完成状态码
+- `storagePath`: 录制文件存储路径
+
+## onPictureInPictureStateUpdate
+> **适用平台：** iOS
+
+```objc
+- (void)onPictureInPictureStateUpdate:(id<V2TXLivePlayer>)player 
+                               state:(V2TXLivePictureInPictureState)state 
+                             message:(NSString *)msg 
+                           extraInfo:(NSDictionary *)extraInfo;
+```
+
+**功能**: 画中画状态变化时回调
+**支持状态**:
+- `V2TXLivePictureInPictureStateWillStart`: 将要开始
+- `V2TXLivePictureInPictureStateDidStart`: 已经开始
+- `V2TXLivePictureInPictureStateWillStop`: 将要停止
+- `V2TXLivePictureInPictureStateDidStop`: 已经停止
+- `V2TXLivePictureInPictureStateRestoreUI`: 恢复用户界面
+**启用条件**: 需要调用 `enablePictureInPicture` 开启画中画
+
+**参数说明**:
+- `player`: 触发回调的播放器对象
+- `state`: 画中画状态，参考 `V2TXLivePictureInPictureState`
+- `msg`: 状态描述信息
+- `extraInfo`: 扩展信息
+
+## V2TXLivePlayerListenerType
+> **适用平台：** Flutter
+
+播放器监听器类型枚举，定义了所有可用的回调事件类型：
+| 枚举值 | 描述 | 参数说明 |
+|--------|------|----------|
+| `onError` | **错误回调** - SDK 不可恢复的错误通知 | `code`: 错误码（V2TXLiveCode）<br>`msg`: 错误消息<br>`extraInfo`: 扩展信息 |
+| `onWarning` | **警告回调** - 非关键问题通知（如卡顿、可恢复的解码失败） | `code`: 警告码（V2TXLiveCode）<br>`msg`: 警告消息<br>`extraInfo`: 扩展信息 |
+| `onVideoResolutionChanged` | **视频分辨率变化通知** | `width`: 视频宽度<br>`height`: 视频高度 |
+| `onConnected` | **连接成功通知** | `extraInfo`: 扩展信息 |
+| `onVideoPlaying` | **视频播放事件** | `firstPlay`: 首次播放标志<br>`extraInfo`: 扩展信息 |
+| `onAudioPlaying` | **音频播放事件** | `firstPlay`: 首次播放标志<br>`extraInfo`: 扩展信息 |
+| `onVideoLoading` | **视频加载事件** | `extraInfo`: 扩展信息 |
+| `onAudioLoading` | **音频加载事件** | `extraInfo`: 扩展信息 |
+| `onPlayoutVolumeUpdate` | **播放音量更新** | `volume`: 音量值（0-100） |
+| `onStatisticsUpdate` | **播放器统计信息回调** | `appCpu`: 应用 CPU 使用率（%）<br>`systemCpu`: 系统 CPU 使用率（%）<br>`width`: 视频宽度<br>`height`: 视频高度<br>`fps`: 帧率<br>`videoBitrate`: 视频码率（Kbps）<br>`audioBitrate`: 音频码率（Kbps） |
+| `onSnapshotComplete` | **截图完成回调** | `image`: 截取的视频画面（Uint8List） |
+| `onRenderVideoFrame` | **自定义视频渲染回调** | `videoFrame`: 视频帧数据（Map） |
+| `onReceiveSeiMessage` | **SEI 消息接收回调** | `payloadType`: 消息类型<br>`data`: 消息内容（Uint8List） |
+| `onPictureInPictureStateUpdate` | **画中画状态变化回调** | `state`: 状态码<br>`message`: 状态消息<br>`extraInfo`: 扩展信息 |
+| `onStreamSwitched` | **流切换回调** | 参数未详细说明 |
+
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLivePusherObserver 推流回调 (Android/iOS/Flutter)
+description: 推流器事件回调完整列表, 涵盖推流状态、首帧采集、麦克风音量变化等通知。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/pusher-event-callbacks.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 Android 接口为基准。Android (V2TXLivePusherObserver)、iOS (V2TXLivePusherObserver)、Flutter (V2TXLivePusherObserver) 的核心方法名称和参数语义一致，仅签名风格不同。
+> - Android: Java 风格（如 `startLivePlay(String url)`）
+> - iOS: ObjC 风格（如 `startLivePlay:(NSString *)url`）
+> - Flutter: Dart 异步风格（如 `Future<V2TXLiveCode> startLivePlay(String url)`），所有方法返回 Future
+
+# 腾讯云直播 SDK V2TXLivePusherObserver 推流回调 文档（Android/iOS/Flutter）
+
+适用平台：Android/iOS/Flutter。
+
+## onError
+
+```java
+public void onError(int code, String msg, Bundle extraInfo)
+```
+```objc
+- (void)onError:(V2TXLiveCode)code message:(NSString *)msg extraInfo:(NSDictionary *)extraInfo;
+```
+
+**功能**: 推流器出现错误时回调
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onError(int code, String msg, Bundle extraInfo) {
+        switch (code) {
+            case V2TXLIVE_ERROR_REQUEST_TIMEOUT:
+                Log.e(TAG, "推流连接超时");
+                break;
+            case V2TXLIVE_ERROR_SERVER_PROCESS_FAILED:
+                Log.e(TAG, "推流服务器处理失败");
+                break;
+            default:
+                Log.e(TAG, "其它错误: " + msg);
+                break;
+        }
+    }
+});
+```
+
+**参数**:
+- `code`: 错误码，参考 `V2TXLiveCode` 枚举
+- `msg`: 错误描述信息
+- `extraInfo`: 扩展信息，包含详细的错误上下文
+
+**使用场景**:
+- 网络连接失败
+- 推流地址无效
+- 编码器错误
+- 推流权限问题
+
+## onWarning
+
+```java
+public void onWarning(int code, String msg, Bundle extraInfo)
+```
+```objc
+- (void)onWarning:(V2TXLiveCode)code message:(NSString *)msg extraInfo:(NSDictionary *)extraInfo;
+```
+
+**功能**: 推流器出现警告时回调
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onWarning(int code, String msg, Bundle extraInfo) {
+        switch (code) {
+            case V2TXLiveCode.V2TXLIVE_WARNING_CURRENT_ENCODE_TYPE_CHANGED:
+                int codec_type = extraInfo.getInt("codec_type");
+                if (codec_type == 0) {
+                    Log.w(TAG, "编码器类型变更，h.264, " + msg);
+                } else if (codec_type == 1) {
+                    Log.w(TAG, "编码器类型变更，h.265, " + msg);
+                }
+                break;
+            case V2TXLiveCode.V2TXLIVE_WARNING_NETWORK_BUSY:
+                Log.w(TAG, "网络繁忙，" + msg);
+                break;
+            case V2TXLiveCode.V2TXLIVE_WARNING_CAMERA_START_FAILED:
+                Log.w(TAG, "摄像头启动失败，" + msg);
+                break;
+            case V2TXLiveCode.V2TXLIVE_WARNING_CAMERA_NO_PERMISSION:
+                Log.w(TAG, "摄像头设备未授权，" + msg);
+                break;
+            case V2TXLiveCode.V2TXLIVE_WARNING_CAMERA_OCCUPIED:
+                Log.w(TAG, "摄像头设备被占用，" + msg);
+                break;
+            case V2TXLIVE_WARNING_SCREEN_CAPTURE_START_FAILED:
+                Log.w(TAG, "屏幕采集启动失败，" + msg);
+                break;
+            case V2TXLIVE_WARNING_SCREEN_CAPTURE_NOT_SUPPORTED:
+                Log.w(TAG, "屏幕采集不支持，" + msg);
+                break;
+            case V2TXLIVE_WARNING_SCREEN_CAPTURE_INTERRUPTED:
+                Log.w(TAG, "屏幕采集中断，" + msg);
+                break;
+            case V2TXLIVE_WARNING_MICROPHONE_START_FAILED:
+                Log.w(TAG, "麦克风启动失败，" + msg);
+                break;
+            case V2TXLIVE_WARNING_MICROPHONE_NO_PERMISSION:
+                Log.w(TAG, "麦克风未授权，" + msg);
+                break;
+            case V2TXLIVE_WARNING_MICROPHONE_OCCUPIED:
+                Log.w(TAG, "麦克风被占用，" + msg);
+                break;
+            default:
+                Log.w(TAG, "其他警告，" + msg);
+                break;
+        }
+    }
+});
+```
+
+**参数**:
+- `code`: 警告码，参考 `V2TXLiveCode` 枚举
+- `msg`: 警告描述信息
+- `extraInfo`: 扩展信息
+
+**使用场景**:
+- 网络质量下降
+- 编码延迟
+- 缓冲区不足
+
+## onPushStatusUpdate
+
+```java
+public void onPushStatusUpdate(V2TXLivePushStatus status, String msg, Bundle extraInfo)
+```
+```objc
+- (void)onPushStatusUpdate:(V2TXLivePushStatus)status message:(NSString *)msg extraInfo:(NSDictionary *)extraInfo;
+```
+
+**功能**: 推流器连接状态回调通知
+**状态枚举**:
+- `V2TXLivePushStatus.V2TXLivePushStatusDisconnected`: 断开连接
+- `V2TXLivePushStatus.V2TXLivePushStatusConnecting`: 连接中
+- `V2TXLivePushStatus.V2TXLivePushStatusConnectSuccess`: 连接成功
+- `V2TXLivePushStatus.V2TXLivePushStatusReconnecting`: 重连中
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onPushStatusUpdate(V2TXLivePushStatus status, String msg, Bundle extraInfo) {
+        switch (status) {
+            case V2TXLivePushStatusConnectSuccess:
+                Log.i(TAG, "推流连接成功");
+                break;
+            case V2TXLivePushStatusConnecting:
+                Log.i(TAG, "推流连接中...");
+                break;
+            case V2TXLivePushStatusReconnecting:
+                Log.w(TAG, "推流重连中...");
+                break;
+            case V2TXLivePushStatusDisconnected:
+                Log.e(TAG, "推流连接断开");
+                break;
+        }
+    }
+});
+```
+
+**参数**:
+- `status`: 推流器连接状态 `V2TXLivePushStatus`
+- `msg`: 连接状态信息
+- `extraInfo`: 扩展信息
+
+**使用场景**:
+- 推流状态实时监控
+- 连接失败重试机制
+- 用户界面状态更新
+
+## onCaptureFirstAudioFrame
+
+```java
+public void onCaptureFirstAudioFrame()
+```
+```objc
+- (void)onCaptureFirstAudioFrame;
+- (void)onCaptureFirstAudioFrame {
+    NSLog(@"音频首帧采集完成");
+    [self updateUIWithAudioStatus:YES];
+}
+```
+
+**功能**: 首帧音频采集完成的回调通知
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onCaptureFirstAudioFrame() {
+        Log.i(TAG, "音频采集开始，首帧音频已采集");
+        // 更新UI状态，显示音频采集中
+    }
+});
+```
+
+**使用场景**:
+- 确认音频采集已开始
+- 音频相关UI状态更新
+- 音频处理初始化
+
+## onCaptureFirstVideoFrame
+
+```java
+public void onCaptureFirstVideoFrame()
+```
+```objc
+- (void)onCaptureFirstVideoFrame;
+- (void)onCaptureFirstVideoFrame {
+    NSLog(@"视频首帧采集完成");
+    [self updateUIWithVideoStatus:YES];
+    
+    // 可以开始显示预览画面
+    [self showPreviewAnimation];
+}
+```
+
+**功能**: 首帧视频采集完成的回调通知
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onCaptureFirstVideoFrame() {
+        Log.i(TAG, "视频采集开始，首帧视频已采集");
+        // 更新UI状态，显示视频采集中
+    }
+});
+```
+
+**使用场景**:
+- 确认视频采集已开始
+- 视频相关UI状态更新
+- 视频处理初始化
+
+## onMicrophoneVolumeUpdate
+
+```java
+public void onMicrophoneVolumeUpdate(int volume)
+```
+```objc
+- (void)onMicrophoneVolumeUpdate:(NSInteger)volume;
+```
+
+**功能**: 麦克风采集音量值回调
+**前提条件**: 需要调用 `enableVolumeEvaluation()` 开启采集音量大小提示
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onMicrophoneVolumeUpdate(int volume) {
+        // 实时更新音量显示
+        
+        // 静音检测
+        if (volume < 5) {
+            Log.d(TAG, "检测到静音状态");
+        }
+    }
+});
+// 开启音量评估
+pusher.enableVolumeEvaluation(300);
+```
+
+**参数**:
+- `volume`: 音量大小（0-100）
+
+**使用场景**:
+- 实时音量显示
+- 音频波形动画
+- 静音检测
+
+## onProcessAudioFrame
+> **适用平台：** Android / iOS
+
+```java
+public void onProcessAudioFrame(V2TXLiveDef.V2TXLiveAudioFrame frame)
+```
+```objc
+- (void)onProcessAudioFrame:(V2TXLiveAudioFrame *)frame;
+```
+
+**功能**: 本地采集并经过音频模块前处理、音效处理和混BGM后的音频数据回调
+**技术规格**:
+- 音频时间帧长固定为0.02s
+- 格式为PCM格式
+- 字节帧长计算公式：`采样率 × 时间帧长 × 声道数 × 采样点位宽`
+- 默认格式（48000采样率、单声道、16采样点位宽）：1920字节
+**重要注意事项**:
+1. 不要在此回调函数中做任何耗时操作
+2. SDK每隔20ms处理一帧音频数据，处理时间超过20ms会导致声音异常
+3. 音频数据可读写，可同步修改但需保证处理耗时
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onProcessAudioFrame(V2TXLiveDef.V2TXLiveAudioFrame frame) {
+        // 自定义音频处理，如添加混响效果
+        
+        // 音频数据统计
+        audioFrameCount++;
+        if (audioFrameCount % 50 == 0) {
+            Log.d(TAG, "已处理音频帧数: " + audioFrameCount);
+        }
+    }
+});
+```
+
+**参数**:
+- `frame`: PCM格式的音频数据帧
+
+**使用场景**:
+- 自定义音频处理
+- 音频特效应用
+- 音频分析统计
+
+## onProcessVideoFrame
+
+```java
+public int onProcessVideoFrame(V2TXLiveVideoFrame srcFrame, V2TXLiveVideoFrame dstFrame)
+int onProcessVideoFrame(V2TXLiveVideoFrame srcFrame, V2TXLiveVideoFrame dstFrame) {
+    thirdparty_process(srcFrame.texture.textureId, srcFrame.width, srcFrame.height, dstFrame.texture.textureId);
+    return 0;
+}
+```
+```objc
+- (void)onProcessVideoFrame:(V2TXLiveVideoFrame *_Nonnull)srcFrame dstFrame:(V2TXLiveVideoFrame *_Nonnull)dstFrame;
+```
+
+**功能**: 自定义视频处理回调
+**前提条件**: 需要调用 `enableCustomVideoProcess()` 开启自定义视频处理
+**使用场景示例**:
+**情况一：美颜组件产生新纹理**
+```java
+@Override
+public void onGLContextCreated() {
+    mFURenderer.onSurfaceCreated();
+    mFURenderer.setUseTexAsync(true);
+}
+
+@Override
+public int onProcessVideoFrame(V2TXLiveVideoFrame srcFrame, V2TXLiveVideoFrame dstFrame) {
+    dstFrame.texture.textureId = mFURenderer.onDrawFrameSingleInput(
+                        srcFrame.texture.textureId, srcFrame.width, srcFrame.height);
+    return 0;
+}
+
+@Override
+public void onGLContextDestroyed() {
+    mFURenderer.onSurfaceDestroyed();
+}
+```
+**情况二：美颜组件不产生新纹理**
+```java
+int onProcessVideoFrame(V2TXLiveVideoFrame srcFrame, V2TXLiveVideoFrame dstFrame) {
+    thirdparty_process(srcFrame.texture.textureId, srcFrame.width, srcFrame.height, dstFrame.texture.textureId);
+    return 0;
+}
+```
+
+**参数**:
+- `srcFrame`: 用于承载未处理的视频画面
+- `dstFrame`: 用于承载处理过的视频画面
+
+**返回值**: 处理结果（0表示成功）
+
+## onGLContextCreated
+> **适用平台：** Android / Flutter
+
+```java
+public void onGLContextCreated()
+```
+
+**功能**: SDK内部的OpenGL环境的创建通知
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onGLContextCreated() {
+        Log.i(TAG, "OpenGL环境已创建");
+        // 初始化美颜组件
+        if (mBeautyProcessor != null) {
+            mBeautyProcessor.initGL();
+        }
+    }
+});
+```
+
+**使用场景**:
+- 美颜组件初始化
+- 视频处理模块初始化
+- OpenGL资源创建
+
+## onGLContextDestroyed
+
+```java
+public void onGLContextDestroyed()
+```
+```objc
+- (void)onGLContextDestroyed;
+```
+
+**功能**: SDK内部的OpenGL环境的销毁通知
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onGLContextDestroyed() {
+        Log.i(TAG, "OpenGL环境已销毁");
+        // 清理美颜组件资源
+        if (mBeautyProcessor != null) {
+            mBeautyProcessor.releaseGL();
+        }
+    }
+});
+```
+
+**使用场景**:
+- 美颜组件清理
+- 视频处理模块清理
+- OpenGL资源释放
+
+## onStatisticsUpdate
+
+```java
+public void onStatisticsUpdate(V2TXLivePusherStatistics statistics)
+```
+```objc
+- (void)onStatisticsUpdate:(V2TXLivePusherStatistics *)statistics;
+```
+
+**功能**: 推流器统计数据实时回调，2s回调一次
+**包含数据**:
+- 视频宽度/高度
+- 帧率/码率
+- 网络状况
+- 缓存大小
+- 推流延迟
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onStatisticsUpdate(V2TXLivePusherStatistics statistics) {
+        Log.d(TAG, "推流统计 - 帧率: " + statistics.fps + 
+                  ", 码率: " + statistics.videoBitrate + 
+                  ", 分辨率: " + statistics.width + "x" + statistics.height);
+        
+        // 更新推流质量显示
+    }
+});
+```
+
+**参数**:
+- `statistics`: 推流统计信息 `V2TXLivePusherStatistics`
+
+**使用场景**:
+- 推流质量监控
+- 性能优化分析
+- 用户体验统计
+
+## onSnapshotComplete
+
+```java
+public void onSnapshotComplete(Bitmap image)
+```
+```objc
+- (void)onSnapshotComplete:(nullable TXImage *)image;
+```
+
+**功能**: 截图操作完成回调
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onSnapshotComplete(Bitmap image) {
+        Log.i(TAG, "截图完成，图片尺寸: " + image.getWidth() + "x" + image.getHeight());
+        
+        // 保存截图到相册
+        
+        // 显示截图预览
+    }
+});
+
+// 触发截图
+pusher.snapshot();
+```
+
+**参数**:
+- `image`: 截取的视频画面Bitmap
+
+**使用场景**:
+- 视频截图保存
+- 画面分享功能
+- 证据保存
+
+## onSetMixTranscodingConfig
+
+```java
+public void onSetMixTranscodingConfig(int code, String msg)
+```
+```objc
+- (void)onSetMixTranscodingConfig:(V2TXLiveCode)code message:(NSString *)msg;
+```
+
+**功能**: 设置云端的混流转码参数的回调，仅RTC协议支持
+**对应接口**: `setMixTranscodingConfig()`
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onSetMixTranscodingConfig(int code, String msg) {
+        if (code == 0) {
+            Log.i(TAG, "云端混流转码配置成功");
+        } else {
+            Log.e(TAG, "云端混流转码配置失败: " + msg);
+        }
+    }
+});
+
+// 配置云端混流
+V2TXLiveDef.V2TXLiveTranscodingConfig config = new V2TXLiveDef.V2TXLiveTranscodingConfig();
+// ... 配置混流参数
+pusher.setMixTranscodingConfig(config);
+```
+
+**参数**:
+- `code`: 0表示成功，其余值表示失败
+- `msg`: 具体错误原因
+
+**使用场景**:
+- 混流转码状态监控
+- 转码失败处理
+- 多路流合成状态跟踪
+
+## onVoiceActivityDetectionUpdate
+> **适用平台：** Android / iOS
+
+```java
+public void onVoiceActivityDetectionUpdate(boolean active)
+```
+```objc
+- (void)onVoiceActivityDetectionUpdate:(BOOL)active;
+```
+
+**功能**: 人声检测状态更新回调
+**前提条件**: 调用 `enableVoiceActivityDetection()` 开启人声检测
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onVoiceActivityDetectionUpdate(boolean active) {
+        if (active) {
+            Log.i(TAG, "检测到人声活动开始");
+            // 显示说话状态指示器
+            showSpeakingIndicator(true);
+        } else {
+            Log.i(TAG, "检测到人声活动停止");
+            // 隐藏说话状态指示器
+            showSpeakingIndicator(false);
+        }
+    }
+});
+
+// 开启人声检测
+pusher.enableVoiceActivityDetection(true);
+```
+
+**参数**:
+- `active`: 人声开始或停止
+
+**使用场景**:
+- 语音活动检测
+- 智能静音处理
+- 语音识别应用
+
+## onScreenCaptureStarted
+
+```java
+public void onScreenCaptureStarted()
+```
+```objc
+- (void)onScreenCaptureStarted;
+```
+
+**功能**: 当屏幕分享开始时，SDK会通过此回调通知
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onScreenCaptureStarted() {
+        Log.i(TAG, "屏幕分享已开始");
+        // 更新UI显示屏幕分享状态
+        updateScreenShareStatus(true);
+    }
+});
+```
+
+**使用场景**:
+- 屏幕分享状态监控
+- UI状态更新
+- 权限检查确认
+
+## onScreenCaptureStopped
+
+```java
+public void onScreenCaptureStopped(int reason)
+```
+```objc
+- (void)onScreenCaptureStopped:(int)reason;
+```
+
+**功能**: 当屏幕分享停止时，SDK会通过此回调通知
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onScreenCaptureStopped(int reason) {
+        Log.i(TAG, "屏幕分享已停止，原因: " + reason);
+        
+        switch (reason) {
+            case 0:
+                Log.i(TAG, "用户主动停止屏幕分享");
+                break;
+            case 1:
+                Log.w(TAG, "屏幕分享被系统中断");
+                break;
+            case 2:
+                Log.w(TAG, "显示屏状态变更导致屏幕分享停止");
+                break;
+        }
+        
+        // 更新UI显示屏幕分享状态
+        updateScreenShareStatus(false);
+    }
+});
+```
+
+**参数**:
+- `reason`: 停止原因
+  - `0`: 用户主动停止
+  - `1`: iOS表示录屏被系统中断；Mac、Windows表示屏幕分享窗口被关闭
+  - `2`: Windows表示屏幕分享的显示屏状态变更；其他平台不抛出
+
+**使用场景**:
+- 屏幕分享异常处理
+- 用户界面状态恢复
+- 权限丢失处理
+
+## onLocalRecordBegin
+> **适用平台：** Android / iOS
+
+```java
+public void onLocalRecordBegin(int code, String storagePath)
+```
+```objc
+- (void)onLocalRecordBegin:(NSInteger)errCode storagePath:(NSString *)storagePath;
+```
+
+**功能**: 录制任务开始的事件回调
+**对应接口**: `startLocalRecording()`
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onLocalRecordBegin(int code, String storagePath) {
+        if (code == 0) {
+            Log.i(TAG, "本地录制开始，文件路径: " + storagePath);
+            // 显示录制状态
+            showRecordingStatus(true);
+        } else {
+            Log.e(TAG, "本地录制开始失败，错误码: " + code);
+            // 处理录制失败情况
+            handleRecordingError(code);
+        }
+    }
+});
+```
+
+**参数**:
+- `code`: 状态码
+  - `0`: 录制任务启动成功
+  - `-1`: 内部错误导致录制任务启动失败
+  - `-2`: 文件后缀名有误
+  - `-6`: 录制已经启动，需要先停止录制
+  - `-7`: 录制文件已存在，需要先删除文件
+  - `-8`: 录制目录无写入权限
+- `storagePath`: 录制的文件地址
+
+## onLocalRecording
+> **适用平台：** Android / iOS
+
+```java
+public void onLocalRecording(long durationMs, String storagePath)
+```
+```objc
+- (void)onLocalRecording:(NSInteger)durationMs storagePath:(NSString *)storagePath;
+```
+
+**功能**: 录制任务正在进行中的进展事件回调
+**默认行为**: 不抛出本事件回调，需要在 `startLocalRecording()` 时设定回调间隔参数
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onLocalRecording(long durationMs, String storagePath) {
+        // 更新录制进度显示
+        updateRecordingProgress(durationMs);
+        
+        // 录制时长限制检查（例如限制录制1小时）
+        if (durationMs >= 3600000) {
+            Log.w(TAG, "录制时长已达限制，自动停止录制");
+            pusher.stopLocalRecording();
+        }
+    }
+});
+```
+
+**参数**:
+- `durationMs`: 录制时长
+- `storagePath`: 录制的文件地址
+
+**使用场景**:
+- 录制进度显示
+- 录制时长限制
+- 录制状态监控
+
+## onLocalRecordComplete
+> **适用平台：** Android / iOS
+
+```java
+public void onLocalRecordComplete(int code, String storagePath)
+```
+```objc
+- (void)onLocalRecordComplete:(NSInteger)errCode storagePath:(NSString *)storagePath;
+```
+
+**功能**: 录制任务已经结束的事件回调
+**对应接口**: `stopLocalRecording()`
+```java
+pusher.setObserver(new V2TXLivePusherObserver() {
+    @Override
+    public void onLocalRecordComplete(int code, String storagePath) {
+        if (code == 0) {
+            Log.i(TAG, "本地录制完成，文件路径: " + storagePath);
+            // 显示录制完成状态
+            showRecordingComplete(storagePath);
+        } else {
+            Log.w(TAG, "本地录制异常结束，状态码: " + code);
+            // 处理录制异常结束
+            handleRecordingAbnormalEnd(code);
+        }
+    }
+});
+```
+
+**参数**:
+- `code`: 状态码
+  - `0`: 结束录制任务成功
+  - `-1`: 录制失败
+  - `-2`: 切换分辨率或横竖屏导致录制结束
+  - `-3`: 录制时间太短，或未采集到任何视频或音频数据
+- `storagePath`: 录制的文件地址
+
+## V2TXLivePusherListenerType
+> **适用平台：** Flutter
+
+定义了推流器观察者的所有回调类型：
+
+--------------------------------------------------------------------------------
+title: Live SDK V2TXLiveDef 类型定义 (Android/iOS/Flutter)
+description: SDK 关键数据结构, 包括视频分辨率、画面填充模式、旋转方向等枚举和配置类型。
+source: https://gitee.com/Tencent-RTC/docs/raw/main/zh/native-live/type-definitions.md
+--------------------------------------------------------------------------------
+
+> 以下 API 参考以 Android 接口为基准。Android (V2TXLiveDef)、iOS (V2TXLiveDef)、Flutter (V2TXLiveDef) 的核心方法名称和参数语义一致，仅签名风格不同。
+> - Android: Java 风格（如 `startLivePlay(String url)`）
+> - iOS: ObjC 风格（如 `startLivePlay:(NSString *)url`）
+> - Flutter: Dart 异步风格（如 `Future<V2TXLiveCode> startLivePlay(String url)`），所有方法返回 Future
+
+# 腾讯云直播 SDK V2TXLiveDef 类型定义 文档（Android/iOS/Flutter）
+
+适用平台：Android/iOS/Flutter。
+
+## V2TXLiveMode
+
+| 枚举值 | 说明 |
+|--------|------|
+| TXLiveMode_RTMP | 支持协议: RTMP |
+| TXLiveMode_RTC | 支持协议: RTC |
+
+## V2TXLiveVideoResolution
+| 分辨率 | 码率范围 | 帧率 | 说明 |
+|--------|----------|------|------|
+| 160×160 | 100-150Kbps | 15fps | 超低分辨率，适合语音通话 |
+| 270×270 | 200-300Kbps | 15fps | 低分辨率 |
+| 480×480 | 350-525Kbps | 15fps | 标准方形分辨率 |
+| 320×240 | 250-375Kbps | 15fps | 4:3比例标准分辨率 |
+| 480×360 | 400-600Kbps | 15fps | 4:3比例中等分辨率 |
+| 640×480 | 600-900Kbps | 15fps | 标清分辨率 |
+| 320×180 | 250-400Kbps | 15fps | 16:9比例低分辨率 |
+| 480×270 | 350-550Kbps | 15fps | 16:9比例标准分辨率 |
+| 640×360 | 500-900Kbps | 15fps | 16:9比例中等分辨率 |
+| 960×540 | 800-1500Kbps | 15fps | 高清分辨率 |
+| 1280×720 | 1000-1800Kbps | 15fps | 720p高清 |
+| 1920×1080 | 2500-3000Kbps | 15fps | 1080p全高清 |
+
+## V2TXLiveVideoResolutionMode
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLiveVideoResolutionModeLandscape | 横屏模式 |
+| V2TXLiveVideoResolutionModePortrait | 竖屏模式 |
+
+## V2TXLiveVideoEncoderParam
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| videoResolution | V2TXLiveVideoResolution | 视频分辨率 |
+| videoResolutionMode | V2TXLiveVideoResolutionMode | 分辨率模式 |
+| videoFps | int | 视频采集帧率 |
+| videoBitrate | int | 目标视频码率 |
+| minVideoBitrate | int | 最低视频码率 |
+**推荐配置**:
+- **帧率**: 15fps或20fps（5fps以下卡顿明显，20fps以上浪费带宽）
+- **码率自适应**: 通过同时设置videoBitrate和minVideoBitrate来约束码率调整范围
+
+## V2TXLiveMirrorType
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLiveMirrorTypeAuto | 系统默认镜像类型，前置摄像头镜像，后置摄像头不镜像 |
+| V2TXLiveMirrorTypeEnable | 前置摄像头和后置摄像头都切换为镜像模式 |
+| V2TXLiveMirrorTypeDisable | 前置摄像头和后置摄像头都切换为非镜像模式 |
+
+## V2TXLiveFillMode
+
+| 枚举值 | 说明 | 平台 |
+|--------|------|------|
+| V2TXLiveFillModeFill | 图像铺满屏幕，超出部分将被裁剪，画面可能不完整 | 全平台 |
+| V2TXLiveFillModeFit | 图像长边填满屏幕，短边区域填充黑色，画面内容完整 | 全平台 |
+| V2TXLiveFillModeScaleFill | 图像拉伸铺满，长度和宽度可能不会按比例变化 | 全平台 |
+
+## V2TXLiveRotation
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLiveRotation0 | 不旋转 |
+| V2TXLiveRotation90 | 顺时针旋转90度 |
+| V2TXLiveRotation180 | 顺时针旋转180度 |
+| V2TXLiveRotation270 | 顺时针旋转270度 |
+
+## V2TXLivePixelFormat
+
+| 枚举值 | 说明 | 平台 |
+|--------|------|------|
+| V2TXLivePixelFormatUnknown | 未知像素格式 | 全平台 |
+| V2TXLivePixelFormatI420 | I420格式（YUV420P） | 全平台 |
+| V2TXLivePixelFormatTexture2D | OpenGL 2D纹理格式 | 全平台 |
+| V2TXLivePixelFormatNV12 | NV12格式 | iOS |
+| V2TXLivePixelFormatBGRA32 | BGRA32格式 | iOS |
+| v2TXLivePixelFormatNV12 | YUV420SP NV12格式 | Flutter |
+| v2TXLivePixelFormatBGRA32 | BGRA8888格式 | Flutter |
+
+## V2TXLiveBufferType
+
+| 枚举值 | 说明 | 平台 |
+|--------|------|------|
+| V2TXLiveBufferTypeUnknown | 未知数据包装格式 | 全平台 |
+| V2TXLiveBufferTypeByteBuffer | DirectBuffer，装载I420等buffer，在native层使用 | Android/Flutter |
+| V2TXLiveBufferTypeByteArray | byte[]，装载I420等buffer，在Java层使用 | Android/Flutter |
+| V2TXLiveBufferTypeTexture | OpenGL纹理格式，性能最好，画质损失最少 | 全平台 |
+| V2TXLiveBufferTypePixelBuffer | PixelBuffer格式，iOS平台原生视频数据格式 | iOS |
+| V2TXLiveBufferTypeNSData | NSData格式，装载I420等buffer数据 | iOS |
+
+## V2TXLiveTexture
+
+> **适用平台：** Android
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| textureId | int | 视频纹理ID |
+| eglContext10 | javax.microedition.khronos.egl.EGLContext | OpenGL接口定义 |
+| eglContext14 | android.opengl.EGLContext | Android OpenGL接口定义 |
+
+## V2TXLiveVideoFrame
+
+| 字段 | 类型 | 说明 | 平台 |
+|------|------|------|------|
+| pixelFormat | V2TXLivePixelFormat | 视频帧像素格式 | 全平台 |
+| bufferType | V2TXLiveBufferType | 视频数据包装格式 | 全平台 |
+| texture | V2TXLiveTexture | 视频纹理包装类 | Android |
+| data | byte[] | 视频数据 | 全平台 |
+| buffer | ByteBuffer | 视频数据Buffer | Android |
+| width | int | 视频宽度 | 全平台 |
+| height | int | 视频高度 | 全平台 |
+| rotation | int | 视频帧旋转角度 | 全平台 |
+| pixelBuffer | CVPixelBufferRef | 视频数据PixelBuffer | iOS |
+| textureId | GLuint | 视频纹理ID | iOS/Flutter |
+
+## V2TXLiveAudioQuality
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLiveAudioQualitySpeech | 语音音质：16k采样率，单声道，16kbps码率，适合语音通话 |
+| V2TXLiveAudioQualityDefault | 默认音质：48k采样率，单声道，50kbps码率，SDK默认配置 |
+| V2TXLiveAudioQualityMusic | 音乐音质：48k采样率，双声道+全频带，128kbps码率，适合高保真音乐场景 |
+
+## V2TXLiveAudioFrame
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| data | byte[] | 音频数据 |
+| sampleRate | int | 采样率（默认48000Hz） |
+| channel | int | 声道数（默认1，单声道） |
+| timestamp | long | 时间戳，单位ms |
+
+## V2TXLiveAudioFrameOperationMode
+> **适用平台：** Android / iOS
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLiveAudioFrameOperationModeReadWrite | 读写模式：可以获取并修改回调的音频数据（默认模式） |
+| V2TXLiveAudioFrameOperationModeReadOnly | 只读模式：仅从回调中获取音频数据 |
+
+## V2TXLiveAudioFrameObserverFormat
+> **适用平台：** Android / iOS
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| sampleRate | int | 采样率（默认48000Hz） |
+| channel | int | 声道数（默认1） |
+| samplesPerCall | int | 采样点数 |
+| mode | V2TXLiveAudioFrameOperationMode | 回调数据读写模式 |
+
+## V2TXLivePusherStatistics
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| appCpu | int | 当前App的CPU使用率（%） |
+| systemCpu | int | 当前系统的CPU使用率（%） |
+| width | int | 视频宽度 |
+| height | int | 视频高度 |
+| fps | int | 帧率（fps） |
+| videoBitrate | int | 视频码率（Kbps） |
+| audioBitrate | int | 音频码率（Kbps） |
+| rtt | int | SDK到云端的往返延时（ms） |
+| netSpeed | int | 上行速度（kbps） |
+
+## V2TXLivePlayerStatistics
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| appCpu | int | 当前App的CPU使用率（%） |
+| systemCpu | int | 当前系统的CPU使用率（%） |
+| width | int | 视频宽度 |
+| height | int | 视频高度 |
+| fps | int | 帧率（fps） |
+| videoBitrate | int | 视频码率（Kbps） |
+| audioBitrate | int | 音频码率（Kbps） |
+| audioPacketLoss | int | 网络音频丢包率（%） |
+| videoPacketLoss | int | 网络视频丢包率（%） |
+| jitterBufferDelay | int | 播放延迟（ms） |
+| audioTotalBlockTime | int | 音频播放累计卡顿时长（ms） |
+| audioBlockRate | int | 音频播放卡顿率（%） |
+| videoTotalBlockTime | int | 视频播放累计卡顿时长（ms） |
+| videoBlockRate | int | 视频播放卡顿率（%） |
+| rtt | int | 往返延时（ms） |
+| netSpeed | int | 下载速度（kbps） |
+
+## V2TXLivePushStatus
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLivePushStatusDisconnected | 与服务器断开连接 |
+| V2TXLivePushStatusConnecting | 正在连接服务器 |
+| V2TXLivePushStatusConnectSuccess | 连接服务器成功 |
+| V2TXLivePushStatusReconnecting | 重连服务器中 |
+
+## V2TXLiveMixInputType
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLiveMixInputTypeAudioVideo | 混入音视频 |
+| V2TXLiveMixInputTypePureVideo | 只混入视频 |
+| V2TXLiveMixInputTypePureAudio | 只混入音频 |
+
+## V2TXLiveMixStream
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| userId | String | 参与混流的userId |
+| streamId | String | 推流streamId |
+| x | int | 图层位置x坐标（绝对像素值） |
+| y | int | 图层位置y坐标（绝对像素值） |
+| width | int | 图层宽度（绝对像素值） |
+| height | int | 图层高度（绝对像素值） |
+| zOrder | int | 图层层次（1-15，不可重复） |
+| inputType | V2TXLiveMixInputType | 直播流输入类型 |
+
+## V2TXLiveTranscodingConfig
+
+| 字段 | 类型 | 说明 | 平台 |
+|------|------|------|------|
+| videoWidth | int | 最终转码后的视频宽度 | 全平台 |
+| videoHeight | int | 最终转码后的视频高度 | 全平台 |
+| videoBitrate | int | 最终转码后的视频码率（kbps） | 全平台 |
+| videoFramerate | int | 最终转码后的视频帧率（FPS） | 全平台 |
+| videoGOP | int | 关键帧间隔（秒） | 全平台 |
+| backgroundColor | int | 混合后画面的底色颜色 | 全平台 |
+| backgroundImage | String | 混合后画面的背景图 | 全平台 |
+| audioSampleRate | int | 最终转码后的音频采样率 | 全平台 |
+| audioBitrate | int | 最终转码后的音频码率（kbps） | 全平台 |
+| audioChannels | int | 最终转码后的音频声道数 | 全平台 |
+| mixStreams | ArrayList<V2TXLiveMixStream> | 子画面位置信息 | Android/Flutter |
+| outputStreamId | String | 输出到CDN的直播流ID | 全平台 |
+
+## V2TXLiveRecordMode
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLiveRecordModeBoth | 录制音频和视频 |
+
+## V2TXLiveLocalRecordingParams
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| filePath | String | 录制的文件地址（必填） |
+| recordMode | V2TXLiveRecordMode | 媒体录制模式 |
+| interval | int | 录制信息更新频率（毫秒） |
+
+## V2TXLiveLogLevel
+
+| 常量名 | 值 | 说明 |
+|--------|-----|------|
+| V2TXLiveLogLevelAll | 0 | 输出所有级别的log |
+| V2TXLiveLogLevelDebug | 1 | 输出DEBUG及以上级别 |
+| V2TXLiveLogLevelInfo | 2 | 输出INFO及以上级别 |
+| V2TXLiveLogLevelWarning | 3 | 输出WARNING及以上级别 |
+| V2TXLiveLogLevelError | 4 | 输出ERROR及以上级别 |
+| V2TXLiveLogLevelFatal | 5 | 只输出FATAL级别 |
+| V2TXLiveLogLevelNULL | 6 | 不输出任何SDK log |
+
+## V2TXLiveLogConfig
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| logLevel | int | 设置Log级别 |
+| enableObserver | boolean | 是否通过Observer接收Log信息 |
+| enableConsole | boolean | 是否在编辑器控制台打印Log |
+| enableLogFile | boolean | 是否启用本地Log文件 |
+| logPath | String | 本地Log存储目录 |
+
+## V2TXLiveSocks5ProxyConfig
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| supportHttps | boolean | 是否支持HTTPS |
+| supportTcp | boolean | 是否支持TCP |
+| supportUdp | boolean | 是否支持UDP |
+
+## V2TXLiveStreamInfo
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| width | int | 视频宽度 |
+| height | int | 视频高度 |
+| bitrate | int | 码率（bps） |
+| framerate | float | 帧率 |
+| url | String | 流地址 |
+
+## V2TXLivePictureInPictureState
+
+> **适用平台：** iOS
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXLivePictureInPictureStateUndefined | 画中画状态未定义 |
+| V2TXLivePictureInPictureStateOccurError | 画中画发生错误 |
+| V2TXLivePictureInPictureStateWillStart | 画中画将要开始 |
+| V2TXLivePictureInPictureStateDidStart | 画中画已经开始 |
+| V2TXLivePictureInPictureStateWillStop | 画中画将要停止 |
+| V2TXLivePictureInPictureStateDidStop | 画中画已经停止 |
+| V2TXLivePictureInPictureStateRestoreUI | 画中画恢复用户界面 |
+
+## V2TXAudioRoute
+
+> **适用平台：** iOS
+
+| 枚举值 | 说明 |
+|--------|------|
+| V2TXAudioRouteSpeakerphone | 扬声器模式，声音从手机扬声器播放 |
+| V2TXAudioRouteEarpiece | 听筒模式，声音从手机听筒播放 |
+
+## V2TXLiveRenderView
+
+> **适用平台：** Flutter
+
+| 常量名 | 值 | 说明 |
+|--------|-----|------|
+| renderViewType | 'v2_live_view_factory' |  |
+渲染视图类，用于定义视频渲染视图的类型。
+
+## TXSystemVolumeType
+
+> **适用平台：** Flutter
+
+| 常量名 | 值 | 说明 |
+|--------|-----|------|
+| TXSystemVolumeTypeAuto | 0 | 自动模式切换 |
+| TXSystemVolumeTypeMedia | 1 | 全媒体音量 |
+| TXSystemVolumeTypeVOIP | 2 | 通话音量 |
+
+## TXAudioRoute
+
+> **适用平台：** Flutter
+
+| 常量名 | 值 | 说明 |
+|--------|-----|------|
+| TXAudioRouteSpeakerphone | 0 | 扬声器播放 |
+| TXAudioRouteEarpiece | 1 | 听筒播放 |
+
+## TXVoiceReverbType
+
+> **适用平台：** Flutter
+
+| 常量名 | 值 | 说明 |
+|--------|-----|------|
+| TXVoiceReverbTypeOff | 0 | 关闭混响 |
+| TXVoiceReverbTypeKTV | 1 | KTV |
+| TXVoiceReverbTypeSmallRoom | 2 | 小房间 |
+| TXVoiceReverbTypeGreatHall | 3 | 大会堂 |
+| TXVoiceReverbTypeDeep | 4 | 深沉 |
+| TXVoiceReverbTypeLoud | 5 | 洪亮 |
+| TXVoiceReverbTypeMetallic | 6 | 金属声 |
+| TXVoiceReverbTypeMagnetic | 7 | 磁性 |
+| TXVoiceReverbTypeEthereal | 8 | 空灵 |
+| TXVoiceReverbTypeStudio | 9 | 录音棚 |
+| TXVoiceReverbTypeMelodious | 10 | 悠扬 |
+| TXVoiceReverbTypeStudio2 | 11 | 录音棚2 |
+
+## TXVoiceChangerType
+
+> **适用平台：** Flutter
+
+| 常量名 | 值 | 说明 |
+|--------|-----|------|
+| TXVoiceChangerTypeOff | 0 | 关闭变声 |
+| TXVoiceChangerTypeChild | 1 | 顽皮男孩 |
+| TXVoiceChangerTypeLittleGirl | 2 | 少女 |
+| TXVoiceChangerTypeUncle | 3 | 中年大叔 |
+| TXVoiceChangerTypeHeavyMetal | 4 | 重金属 |
+| TXVoiceChangerTypeCold | 5 | 感冒 |
+| TXVoiceChangerTypePunk | 6 | 朋克 |
+| TXVoiceChangerTypeBeast | 7 | 狂暴动物 |
+| TXVoiceChangerTypeFatty | 8 | 肥仔 |
+| TXVoiceChangerTypeStrongCurrent | 9 | 强电流 |
+| TXVoiceChangerTypeRobot | 10 | 机器人 |
+| TXVoiceChangerTypeEthereal | 11 | 空灵 |
